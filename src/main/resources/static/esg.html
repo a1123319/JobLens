@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobLens - ESG 永續指標儀表板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
+                <img src="icons/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
+                <span class="text-xl font-bold tracking-wider">JobLens</span>
+            </div>
+            <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+                <a href="search.html" class="hover:text-cyan-400 transition">企業資訊</a>
+                <a href="supply-chain.html" class="hover:text-cyan-400 transition">產業鏈</a>
+                <a href="reviews.html" class="hover:text-cyan-400 transition">評論</a>
+                <a href="about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">
+                    關於我們
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-gradient-to-r from-emerald-800 to-slate-900 text-white py-12 px-4 relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-8 opacity-10">
+            <img src="icons/esg.png" class="w-40 h-40 object-contain">
+        </div>
+        
+        <div class="container mx-auto max-w-5xl relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full text-xs font-bold">環境永續 (Environment)</span>
+                        <span class="text-slate-400 text-sm">資料年度：113年</span>
+                    </div>
+                    <h1 class="text-4xl font-bold mb-2">台灣積體電路製造 (2330)</h1>
+                    <p class="text-emerald-100 text-lg">溫室氣體排放與能源管理概況</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/10">
+                    <p class="text-xs text-slate-300 mb-1">排放密集度 (公噸CO₂e / 百萬元營收)</p>
+                    <p class="text-2xl font-bold text-white font-mono">4.27</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-12 max-w-5xl space-y-8">
+
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                <div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center p-2.5">
+                    <img src="icons/air-pollution.png" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">溫室氣體排放量分析</h3>
+                    <p class="text-sm text-slate-500">單位：公噸 CO₂e</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 h-80">
+                    <canvas id="ghgChart"></canvas>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="text-sm font-bold text-emerald-700 mb-1">範疇一 (直接排放)</h4>
+                                <p class="text-xl font-bold text-emerald-800 font-mono">1,819,396</p>
+                            </div>
+                            <span class="text-[10px] bg-emerald-200 text-emerald-700 px-1.5 py-0.5 rounded">已驗證</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 p-2 opacity-20">
+                            <img src="icons/renewable-energy.png" class="w-10 h-10 object-contain">
+                        </div>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="text-sm font-bold text-emerald-700 mb-1">範疇二 (能源間接)</h4>
+                                <p class="text-xl font-bold text-emerald-800 font-mono">10,957,397</p>
+                            </div>
+                            <span class="text-[10px] bg-emerald-200 text-emerald-700 px-1.5 py-0.5 rounded">已驗證</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="text-sm font-bold text-emerald-700 mb-1">範疇三 (其他間接)</h4>
+                                <p class="text-xl font-bold text-emerald-800 font-mono">8,223,172</p>
+                            </div>
+                            <span class="text-[10px] bg-emerald-200 text-emerald-700 px-1.5 py-0.5 rounded">已驗證</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </section>
+
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center p-2.5">
+                    <img src="icons/renewable-energy.png" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">再生能源使用概況</h3>
+                    <p class="text-sm text-slate-500">Renewable Energy Usage</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row items-center justify-center gap-12">
+                <div class="relative w-64 h-64">
+                    <canvas id="energyChart"></canvas>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        <span class="text-4xl font-bold text-emerald-600 font-mono">14.15%</span>
+                        <span class="text-xs text-slate-400 font-bold uppercase mt-1">RE 使用率</span>
+                    </div>
+                </div>
+
+                <div class="max-w-md space-y-6 w-full md:w-auto">
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-100">
+                        <h4 class="font-bold text-sm text-slate-500 mb-3">能源結構比例</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="font-bold text-emerald-700"><i class="fa-solid fa-leaf mr-1"></i> 再生能源</span>
+                                    <span class="font-bold text-emerald-700">14.15%</span>
+                                </div>
+                                <div class="w-full bg-emerald-100 rounded-full h-2">
+                                    <div class="bg-emerald-500 h-2 rounded-full" style="width: 14.15%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="font-bold text-slate-600"><i class="fa-solid fa-industry mr-1"></i> 傳統/其他能源</span>
+                                    <span class="font-bold text-slate-600">85.85%</span>
+                                </div>
+                                <div class="w-full bg-slate-200 rounded-full h-2">
+                                    <div class="bg-slate-400 h-2 rounded-full" style="width: 85.85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 text-xs text-slate-400 justify-center md:justify-start">
+                        <i class="fa-solid fa-check-circle text-emerald-500"></i>
+                        <span>數據已取得第三方驗證 (ISO 14064 / ISO 50001)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-slate-200 mt-12 pt-8 text-center text-xs text-slate-400 pb-8">
+        <p class="text-xs text-slate-400">
+            資料來源：政府資料開放平臺 (ESG資訊揭露)
+        </p>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/eye" title="eye icons">Eye icons created by Vectors Market - Flaticon</a>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/greenhouse-effect" title="greenhouse effect icons">Greenhouse effect icons created by surang - Flaticon</a>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/clean-energy" title="clean energy icons">Clean energy icons created by Flat Icons - Flaticon</a>
+    </footer>
+
+    <script>
+        // 設定 Chart.js
+        Chart.defaults.font.family = "'Noto Sans TC', sans-serif";
+        Chart.defaults.color = '#64748b';
+
+        // 1. 溫室氣體圖表 (純數據呈現)
+        const ctxGHG = document.getElementById('ghgChart').getContext('2d');
+        new Chart(ctxGHG, {
+            type: 'bar',
+            data: {
+                labels: ['範疇一', '範疇二', '範疇三'],
+                datasets: [{
+                    label: '排放量',
+                    data: [1819396, 10957397, 8223172],
+                    // 維持綠色系配色
+                    backgroundColor: ['#34d399', '#10b981', '#047857'],
+                    borderRadius: 4,
+                    barPercentage: 0.5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [2, 4], color: '#f1f5f9' },
+                        ticks: { callback: v => (v/1000000).toFixed(1) + 'M' }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 2. 再生能源圖表
+        const ctxEnergy = document.getElementById('energyChart').getContext('2d');
+        new Chart(ctxEnergy, {
+            type: 'doughnut',
+            data: {
+                labels: ['再生能源', '其他能源'],
+                datasets: [{
+                    data: [14.15, 85.85],
+                    backgroundColor: ['#10b981', '#f1f5f9'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '80%',
+                plugins: { legend: { display: false } }
+            }
+        });
+    </script>
+</body>
+</html>
