@@ -37,7 +37,7 @@ spring.jpa.show-sql=true
 ## Windows
 
 ```powershell
-.\mvnw.cmd springboot:run
+.\mvnw.cmd spring-boot:run
 ```
 
 執行後在瀏覽器網址列輸入 `localhost:8080` 並進入。

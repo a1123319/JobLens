@@ -1,5 +1,7 @@
 package com.joblens.joblens;
 
+import com.joblens.joblens.entity.Company;
+import com.joblens.joblens.repository.CompanyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -17,38 +19,25 @@ public class JoblensApplication {
 	}
 
 	@Bean
-	public CommandLineRunner demo(PeopleRepository repository) {
+	public CommandLineRunner demo(CompanyRepository companyRepository) {
 		return (args) -> {
-			// save a few Persons
-			repository.save(new People("Jack", "Bauer"));
-			repository.save(new People("Chloe", "O'Brian"));
-			repository.save(new People("Kim", "Bauer"));
-			repository.save(new People("David", "Palmer"));
-			repository.save(new People("Michelle", "Dessler"));
+			// Create a new random company
+			Company newCompany = new Company();
+			newCompany.setId((int) (Math.random() * 100000)); // Generate a random ID for demonstration
+			newCompany.setName("Random Company " + (int) (Math.random() * 1000));
+			newCompany.setCategory("Random Category " + (int) (Math.random() * 10));
+			newCompany.setSector("Random Sector " + (int) (Math.random() * 5));
 
-			// fetch all Persons
-			logger.info("Persons found with findAll():");
+			companyRepository.save(newCompany);
+			logger.info("Created and saved a new random company: " + newCompany.getName());
+
+			// Fetch all companies
+			logger.info("Companies found with findAll():");
 			logger.info("-------------------------------");
-			repository.findAll().forEach(Person -> {
-				logger.info(Person.toString());
+			companyRepository.findAll().forEach(company -> {
+				logger.info("Company[id=" + company.getId() + ", name='" + company.getName() + "']");
 			});
 			logger.info("");
-
-			// fetch an individual Person by ID
-			// People Person = repository.findById(1);
-			// logger.info("Person found with findById(1):");
-			// logger.info("--------------------------------");
-			// logger.info(Person.toString());
-			// logger.info("");
-
-			// // fetch Persons by last name
-			// logger.info("Person found with findByLastName('Bauer'):");
-			// logger.info("--------------------------------------------");
-			// repository.findByLastName("Bauer").forEach(bauer -> {
-			// 	logger.info(bauer.toString());
-			// });
-			// logger.info("");
 		};
 	}
-
 }
