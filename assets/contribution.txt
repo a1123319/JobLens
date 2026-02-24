@@ -1,0 +1,44 @@
+logo
+
+<a href="https://www.flaticon.com/free-icons/eye" title="eye icons">Eye icons created by Vectors Market - Flaticon</a>
+
+
+index.html
+
+<a href="https://www.flaticon.com/free-icons/ecommerce" title="ecommerce icons">Ecommerce icons created by Vectorslab - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/resistor" title="resistor icons">Resistor icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/car-manufacturing" title="car manufacturing icons">Car manufacturing icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/tower-pc" title="tower pc icons">Tower pc icons created by Smashicons - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/automation" title="automation icons">Automation icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/cpu" title="cpu icons">Cpu icons created by Freepik - Flaticon</a>
+
+
+search.html (1st Section)
+
+<a href="https://www.iconpacks.net/">Various icons created by iconpacks.net</a>
+
+
+search.html (2nd Section)
+
+<a href="https://www.flaticon.com/free-icons/people" title="people icons">People icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/magnifying-glass" title="magnifying glass icons">Magnifying glass icons created by Freepik - Flaticon</a>
+
+
+search.html (3rd Section)
+
+<a href="https://www.flaticon.com/free-icons/fire" title="fire icons">Fire icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/sustainability" title="sustainability icons">Sustainability icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/ratio" title="ratio icons">Ratio icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/wheelchair" title="wheelchair icons">Wheelchair icons created by Freepik - Flaticon</a>
+
+
+reviews.html
+
+<a href="https://www.iconpacks.net/">Various icons created by iconpacks.net</a>
+<a href="https://www.flaticon.com/free-icons/forum" title="forum icons">Forum icons created by Freepik - Flaticon</a>
+
+
+esg.html
+
+<a href="https://www.flaticon.com/free-icons/greenhouse-effect" title="greenhouse effect icons">Greenhouse effect icons created by surang - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/clean-energy" title="clean energy icons">Clean energy icons created by Flat Icons - Flaticon</a>

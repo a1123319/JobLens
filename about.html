@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobLens - 關於我們與資料來源</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; }
+    </style>
+</head>
+<body class="text-slate-800 flex flex-col min-h-screen">
+
+    <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
+                <img src="assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
+                <span class="text-xl font-bold tracking-wider">JobLens</span>
+            </div>
+            <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+                <a href="supply-chain.html" class="hover:text-cyan-400 transition">產業鏈</a>
+                <a href="reviews.html" class="hover:text-cyan-400 transition">評論</a>
+                <a href="about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">
+                    關於我們
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-12 px-4 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/10 rounded-full blur-2xl -ml-10 -mb-10"></div>
+        
+        <div class="container mx-auto text-center max-w-3xl relative z-10">
+            <h1 class="text-3xl md:text-4xl font-bold mb-4">關於我們</h1>
+            <p class="text-slate-400 text-lg leading-relaxed">
+                JobLens 致力於整合分散的職場數據，透過數據分析揭露企業真實面貌。<br>
+                以下是本系統所使用的權威資料來源列表。
+            </p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-10 flex-grow">
+        
+        <section class="mb-12">
+            <div class="flex items-center gap-3 mb-6 border-l-4 border-cyan-500 pl-4">
+                <h2 class="text-2xl font-bold text-slate-800">政府公開資料 (ESG)</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <a href="https://mopsfin.twse.com.tw/opendata/t187ap46_L_16.csv" target="_blank" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-lg hover:border-cyan-300 transition-all duration-300">
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800 group-hover:text-cyan-700 transition-colors">資訊安全</h3>
+                        <p class="text-sm text-slate-500 mt-1">公開資訊觀測站 ESG 揭露</p>
+                        <p class="text-xs text-slate-400 mt-2 break-all">t187ap46_L_16.csv</p>
+                    </div>
+                </a>
+
+                <a href="https://mopsfin.twse.com.tw/opendata/t187ap46_L_2.csv" target="_blank" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-lg hover:border-cyan-300 transition-all duration-300">
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800 group-hover:text-cyan-700 transition-colors">能源管理</h3>
+                        <p class="text-sm text-slate-500 mt-1">公開資訊觀測站 ESG 揭露</p>
+                        <p class="text-xs text-slate-400 mt-2 break-all">t187ap46_L_2.csv</p>
+                    </div>
+                </a>
+
+                <a href="https://mopsfin.twse.com.tw/opendata/t187ap46_L_1.csv" target="_blank" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-lg hover:border-cyan-300 transition-all duration-300">
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800 group-hover:text-cyan-700 transition-colors">溫室氣體排放</h3>
+                        <p class="text-sm text-slate-500 mt-1">公開資訊觀測站 ESG 揭露</p>
+                        <p class="text-xs text-slate-400 mt-2 break-all">t187ap46_L_1.csv</p>
+                    </div>
+                </a>
+
+                <a href="https://mopsfin.twse.com.tw/opendata/t187ap46_L_5.csv" target="_blank" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-lg hover:border-cyan-300 transition-all duration-300">
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800 group-hover:text-cyan-700 transition-colors">人力發展</h3>
+                        <p class="text-sm text-slate-500 mt-1">公開資訊觀測站 ESG 揭露</p>
+                        <p class="text-xs text-slate-400 mt-2 break-all">t187ap46_L_5.csv</p>
+                    </div>
+                </a>
+
+                <a href="https://mopsfin.twse.com.tw/opendata/t187ap46_L_21.csv" target="_blank" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-lg hover:border-cyan-300 transition-all duration-300">
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800 group-hover:text-cyan-700 transition-colors">職業安全衛生</h3>
+                        <p class="text-sm text-slate-500 mt-1">公開資訊觀測站 ESG 揭露</p>
+                        <p class="text-xs text-slate-400 mt-2 break-all">t187ap46_L_21.csv</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <div class="flex items-center gap-3 mb-6 border-l-4 border-blue-500 pl-4">
+                <h2 class="text-2xl font-bold text-slate-800">產業數據與職缺</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <a href="https://ic.tpex.org.tw/" target="_blank" class="group block">
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-lg hover:border-blue-300 transition-all">
+                        <h3 class="font-bold text-lg text-slate-800 group-hover:text-blue-600 transition-colors">產業價值鏈地圖</h3>
+                        <p class="text-sm text-slate-500 mt-1">證券櫃檯買賣中心 (TPEX)</p>
+                        <div class="mt-2 text-xs text-blue-500 font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                            點擊前往
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.104.com.tw/" target="_blank" class="group block">
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-lg hover:border-orange-300 transition-all">
+                        <h3 class="font-bold text-lg text-slate-800 group-hover:text-orange-500 transition-colors">104 人力銀行</h3>
+                        <p class="text-sm text-slate-500 mt-1">台灣最大求職平台，即時職缺數據</p>
+                        <div class="mt-2 text-xs text-orange-500 font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                            點擊前往
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section>
+            <div class="flex items-center gap-3 mb-6 border-l-4 border-purple-500 pl-4">
+                <h2 class="text-2xl font-bold text-slate-800">社群輿情與媒體</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <a href="https://www.dcard.tw/" target="_blank" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-5 hover:shadow-lg hover:border-blue-300 transition-all">
+                    <h3 class="font-bold text-lg text-slate-800 mb-2 group-hover:text-cyan-700">Dcard</h3>
+                    <p class="text-sm text-slate-500">匿名社群討論區，真實工作心得與面試經驗分享。</p>
+                </a>
+
+                <a href="https://www.ptt.cc/bbs/hotboards.html" target="_blank" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-5 hover:shadow-lg hover:border-slate-400 transition-all">
+                    <h3 class="font-bold text-lg text-slate-800 mb-2 group-hover:text-cyan-700">PTT 批踢踢實業坊</h3>
+                    <p class="text-sm text-slate-500">台灣最大 BBS 論壇，Tech_Job 等看板深度產業討論。</p>
+                </a>
+
+                <a href="https://news.pts.org.tw/" target="_blank" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-5 hover:shadow-lg hover:border-emerald-300 transition-all">
+                    <h3 class="font-bold text-lg text-slate-800 mb-2 group-hover:text-cyan-700">公視新聞網</h3>
+                    <p class="text-sm text-slate-500">公共電視台新聞，提供客觀中立的產業與社會報導。</p>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-50 border-t border-slate-200 mt-12 pt-8 text-center text-xs text-slate-400 pb-8">
+        <p>JobLens 2025 Beta | 本系統使用政府資料開放平臺數據</p>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/eye" title="eye icons">Eye icons created by Vectors Market - Flaticon</a>
+    </footer>
+
+</body>
+</html>

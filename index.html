@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobLens - 全方位職場透視系統</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; }
+        .hover-card:hover { transform: translateY(-5px); }
+        /* 隱藏捲軸但保持功能 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
+                <img src="assets/magnifying-glass.png" alt="JobLens Logo" class="w-8 h-8 object-contain">
+                <span class="text-xl font-bold tracking-wider">JobLens</span>
+            </div>
+            <div class="hidden md:flex gap-6 text-sm font-medium">
+                <a href="about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">
+                    關於我們
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-20 px-4">
+        <div class="container mx-auto text-center max-w-3xl">
+            <h1 class="text-3xl md:text-5xl font-bold mb-6">給求職者透視企業的放大鏡</h1>
+            <p class="text-slate-400 mb-10 text-lg">整合證交所 ESG 揭露與職安署大數據，提供最真實的薪資與風險情報。</p>
+            
+            <div class="relative max-w-xl mx-auto mb-16">
+                <input type="text" id="searchInput" autocomplete="off"
+                       placeholder="輸入公司代號或名稱 (例如：2330, 台積電)" 
+                       class="w-full p-4 pl-6 rounded-full text-slate-900 shadow-2xl focus:outline-none focus:ring-4 focus:ring-cyan-600/50 transition text-lg">
+                
+                <button onclick="window.location.href='search.html'" 
+                        class="absolute right-2 top-2 bg-cyan-600 hover:bg-cyan-700 text-white px-8 py-2.5 rounded-full transition font-bold text-lg shadow-lg">
+                    透視
+                </button>
+
+                <div id="suggestionBox" class="hidden absolute w-full bg-white mt-2 rounded-2xl shadow-xl overflow-hidden z-50 text-left border border-slate-100 max-h-64 overflow-y-auto no-scrollbar">
+                    </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="container mx-auto px-4 py-16 -mt-10 relative z-10">
+        <h3 class="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-layer-group text-blue-500"></i> 或者，從產業開始探索
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            
+            <a href="supply-chain.html" class="block group">
+                <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full flex flex-col items-center justify-center text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors p-3">
+                        <img src="assets/chip.png" alt="半導體" class="w-full h-full object-contain">
+                    </div>
+                    <h4 class="text-xl font-bold group-hover:text-blue-600">半導體產業</h4>
+                </div>
+            </a>
+
+            <a href="#" class="block group">
+                <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full opacity-60 flex flex-col items-center justify-center text-center">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-4 p-3">
+                        <img src="assets/automation.png" alt="自動化" class="w-full h-full object-contain">
+                    </div>
+                    <h4 class="text-xl font-bold mb-2">自動化產業</h4>
+                    <div class="text-xs text-slate-400">(建置中)</div>
+                </div>
+            </a>
+
+            <a href="#" class="block group">
+                <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full opacity-60 flex flex-col items-center justify-center text-center">
+                    <div class="w-16 h-16 bg-violet-100 rounded-full flex items-center justify-center mb-4 p-3">
+                        <img src="assets/pc.png" alt="電腦周邊" class="w-full h-full object-contain">
+                    </div>
+                    <h4 class="text-xl font-bold mb-2">電腦周邊</h4>
+                    <div class="text-xs text-slate-400">(建置中)</div>
+                </div>
+            </a>
+
+            <a href="#" class="block group">
+                <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full opacity-60 flex flex-col items-center justify-center text-center">
+                    <div class="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mb-4 p-3">
+                        <img src="assets/ecommerce.png" alt="電子商務" class="w-full h-full object-contain">
+                    </div>
+                    <h4 class="text-xl font-bold mb-2">電子商務</h4>
+                    <div class="text-xs text-slate-400">(建置中)</div>
+                </div>
+            </a>
+
+            <a href="#" class="block group">
+                <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full opacity-60 flex flex-col items-center justify-center text-center">
+                    <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4 p-3">
+                        <img src="assets/resistor.png" alt="被動元件" class="w-full h-full object-contain">
+                    </div>
+                    <h4 class="text-xl font-bold mb-2">被動元件</h4>
+                    <div class="text-xs text-slate-400">(建置中)</div>
+                </div>
+            </a>
+
+            <a href="#" class="block group">
+                <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full opacity-60 flex flex-col items-center justify-center text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 p-3">
+                        <img src="assets/car.png" alt="汽車工業" class="w-full h-full object-contain">
+                    </div>
+                    <h4 class="text-xl font-bold mb-2">汽車工業</h4>
+                    <div class="text-xs text-slate-400">(建置中)</div>
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+    <footer class="border-t border-slate-200 mt-12 py-8 text-center text-xs text-slate-400">
+        <p>JobLens 2025 Beta | 本系統使用政府資料開放平臺數據</p>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/eye" title="eye icons">Eye icons created by Vectors Market - Flaticon</a>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/ecommerce" title="ecommerce icons">Ecommerce icons created by Vectorslab - Flaticon</a>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/resistor" title="resistor icons">Resistor icons created by Freepik - Flaticon</a>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/car-manufacturing" title="car manufacturing icons">Car manufacturing icons created by Freepik - Flaticon</a>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/tower-pc" title="tower pc icons">Tower pc icons created by Smashicons - Flaticon</a>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/automation" title="automation icons">Automation icons created by Freepik - Flaticon</a>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/cpu" title="cpu icons">Cpu icons created by Freepik - Flaticon</a>
+    </footer>
+
+    <script>
+        // 模擬資料庫 (未來可改為從後端 API 獲取)
+        const companies = [
+            { code: '2330', name: '台積電', fullName: '台灣積體電路製造', industry: '半導體業' },
+            { code: '2454', name: '聯發科', fullName: '聯發科技', industry: '半導體業' },
+            { code: '2303', name: '聯電', fullName: '聯華電子', industry: '半導體業' },
+            { code: '2603', name: '長榮', fullName: '長榮海運', industry: '航運業' },
+            { code: '2609', name: '陽明', fullName: '陽明海運', industry: '航運業' },
+            { code: '2881', name: '富邦金', fullName: '富邦金融控股', industry: '金融保險' },
+            { code: '2882', name: '國泰金', fullName: '國泰金融控股', industry: '金融保險' },
+            { code: '2317', name: '鴻海', fullName: '鴻海精密工業', industry: '電子零組件' }
+        ];
+
+        const searchInput = document.getElementById('searchInput');
+        const suggestionBox = document.getElementById('suggestionBox');
+
+        // 監聽輸入事件
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim().toLowerCase();
+            
+            if (query.length === 0) {
+                suggestionBox.classList.add('hidden');
+                return;
+            }
+
+            // 篩選符合的公司 (比對代號、簡稱或全名)
+            const matches = companies.filter(c => 
+                c.code.includes(query) || 
+                c.name.includes(query) || 
+                c.fullName.includes(query)
+            );
+
+            if (matches.length > 0) {
+                renderSuggestions(matches);
+                suggestionBox.classList.remove('hidden');
+            } else {
+                suggestionBox.innerHTML = '<div class="p-4 text-slate-400 text-center text-sm">找不到相關公司資料</div>';
+                suggestionBox.classList.remove('hidden');
+            }
+        });
+
+        // 點擊頁面其他地方時隱藏選單
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !suggestionBox.contains(e.target)) {
+                suggestionBox.classList.add('hidden');
+            }
+        });
+
+        // 渲染建議列表
+        function renderSuggestions(list) {
+            const html = list.map(item => `
+                <div class="p-3 hover:bg-slate-50 cursor-pointer border-b border-slate-50 last:border-0 transition flex justify-between items-center group" 
+                     onclick="selectCompany('${item.code}', '${item.fullName}')">
+                    <div>
+                        <span class="font-mono font-bold text-cyan-700 mr-2 bg-cyan-50 px-2 py-0.5 rounded text-sm">${item.code}</span>
+                        <span class="font-bold text-slate-700 group-hover:text-cyan-800">${item.fullName}</span>
+                        <span class="text-xs text-slate-400 ml-1">(${item.name})</span>
+                    </div>
+                    <span class="text-xs text-slate-400 border border-slate-200 px-2 py-0.5 rounded-full group-hover:border-emerald-200 group-hover:text-cyan-600">${item.industry}</span>
+                </div>
+            `).join('');
+            suggestionBox.innerHTML = html;
+        }
+
+        // 選擇公司後的動作 (已移除自動跳轉)
+        function selectCompany(code, name) {
+            searchInput.value = `${code} ${name}`;
+            suggestionBox.classList.add('hidden');
+        }
+    </script>
+
+</body>
+</html>

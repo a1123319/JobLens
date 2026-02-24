@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobLens - 全方位職場透視系統</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; }
+        .input-focus-effect:focus { box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.2); border-color: #0891b2; }
+        
+        /* Tab 動畫效果 */
+        .tab-content { display: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
+        .tab-content.active { display: block; opacity: 1; }
+        
+        .tab-btn.active { color: #0891b2; border-bottom-color: #0891b2; }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
+                <img src="assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
+                <span class="text-xl font-bold tracking-wider">JobLens</span>
+            </div>
+            <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+                <a href="supply-chain.html" class="hover:text-cyan-400 transition">產業鏈</a>
+                <a href="reviews.html" class="hover:text-cyan-400 transition">評論</a>
+                <a href="about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">
+                    關於我們
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-10 px-4">
+        <div class="container mx-auto text-center max-w-2xl">
+            <h1 class="text-2xl md:text-3xl font-bold mb-3">給求職者透視企業的放大鏡</h1>
+            <div class="relative mt-6">
+                 <input type="text" placeholder="請輸入公司代號或名稱"
+                    class="w-full p-3 pl-6 rounded-full text-slate-900 shadow-xl focus:outline-none ring-4 ring-cyan-500/50 transition">
+                <button class="absolute right-1.5 top-1.5 bg-cyan-600 hover:bg-cyan-700 text-white px-5 py-1.5 rounded-full transition font-medium text-sm">
+                    重新搜尋
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 space-y-8">
+        
+        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center border-l-8 border-cyan-600">
+            <div>
+                <div class="flex items-center gap-3 mb-1">
+                    <h2 class="text-3xl font-bold">台灣積體電路製造 (2330)</h2>
+                    <span class="bg-slate-200 text-slate-600 px-2 py-1 rounded text-xs font-bold">半導體業 - 晶圓製造</span>
+                </div>
+                <p class="text-slate-500 text-sm">資料年度：2023 | 資料來源：公開資訊觀測站</p>
+            </div>
+            
+            <div class="mt-6 md:mt-0 flex flex-col md:flex-row items-end md:items-center gap-3">
+                <a href="supply-chain.html" class="bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm flex items-center gap-2 group border border-blue-200">
+                    <img src="assets/value-chain.png" class="w-5 h-5 object-contain">
+                    查看所屬產業鏈
+                </a>
+                <a href="reviews.html" class="bg-purple-100 text-purple-700 hover:bg-purple-600 hover:text-white px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm flex items-center gap-2 group">
+                    <img src="assets/robot.png" class="w-5 h-5 object-contain group-hover:animate-bounce">
+                    查看 AI 輿情分析
+                </a>
+            </div>
+        </div>
+
+        <section>
+            <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 官方徵才管道
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <a href="https://careers.tsmc.com/zh_TW/careers/SearchJobs" target="_blank" class="block group">
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md hover:border-cyan-300 transition-all">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center p-2.5 group-hover:scale-110 transition-transform">
+                                <img src="assets/work.png" class="w-full h-full object-contain">
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-base text-slate-800">台積電 官方招募網站</h4>
+                                <p class="text-xs text-slate-500">瀏覽最完整的職缺列表</p>
+                            </div>
+                        </div>
+                        <div class="text-slate-300 group-hover:text-cyan-600 transition-colors">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </div>
+                    </div>
+                </a>
+                <a href="https://www.104.com.tw/company/a5h92m0?jobsource=google" target="_blank" class="block group">
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md hover:border-orange-300 transition-all">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center text-orange-500 text-xl group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-briefcase"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-base text-slate-800">104 人力銀行</h4>
+                                <p class="text-xs text-slate-500">查看面試心得與職缺分布</p>
+                            </div>
+                        </div>
+                        <div class="text-slate-300 group-hover:text-orange-500 transition-colors">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <div class="border-b border-slate-200 sticky top-[72px] bg-[#f8fafc] z-40 pt-2">
+            <div class="flex space-x-8 overflow-x-auto no-scrollbar">
+                <button onclick="switchTab('jobs')" id="tab-btn-jobs" class="tab-btn active py-4 px-1 border-b-2 border-transparent font-bold text-sm whitespace-nowrap text-slate-500 hover:text-cyan-600 transition">
+                    <i class="fa-solid fa-list-ul mr-2"></i>職缺列表
+                </button>
+                <button onclick="switchTab('salary')" id="tab-btn-salary" class="tab-btn py-4 px-1 border-b-2 border-transparent font-bold text-sm whitespace-nowrap text-slate-500 hover:text-cyan-600 transition">
+                    <i class="fa-solid fa-sack-dollar mr-2"></i>薪資與福利透視
+                </button>
+                <button onclick="switchTab('esg')" id="tab-btn-esg" class="tab-btn py-4 px-1 border-b-2 border-transparent font-bold text-sm whitespace-nowrap text-slate-500 hover:text-cyan-600 transition">
+                    <i class="fa-solid fa-leaf mr-2"></i>工安與環境永續 (ESG)
+                </button>
+                <button onclick="switchTab('rank')" id="tab-btn-rank" class="tab-btn py-4 px-1 border-b-2 border-transparent font-bold text-sm whitespace-nowrap text-slate-500 hover:text-cyan-600 transition">
+                    <i class="fa-solid fa-ranking-star mr-2"></i>同業薪資排名
+                </button>
+            </div>
+        </div>
+        <div class="min-h-[400px]"> 
+            <div id="tab-jobs" class="tab-content active">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden mt-6">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                        <h4 class="font-bold text-slate-700">職缺列表</h4>
+                        <span class="text-xs text-slate-400" id="job-count-label">載入中...</span>
+                    </div>
+                    
+                    <div id="job-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                        </div>
+
+                    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
+                        <button onclick="changePage(-1)" id="prev-btn" class="text-sm font-bold text-slate-500 hover:text-cyan-700 disabled:opacity-30 disabled:hover:text-slate-500 transition flex items-center gap-1">
+                            <i class="fa-solid fa-chevron-left"></i> 上一頁
+                        </button>
+                        <span class="text-xs font-bold text-slate-400" id="page-indicator">Page 1</span>
+                        <button onclick="changePage(1)" id="next-btn" class="text-sm font-bold text-slate-500 hover:text-cyan-700 disabled:opacity-30 disabled:hover:text-slate-500 transition flex items-center gap-1">
+                            下一頁 <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-salary" class="tab-content">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mt-6">
+                    <div class="md:col-span-8 bg-white rounded-xl shadow-sm p-6 border border-slate-100">
+                        <div class="flex justify-between items-center mb-6">
+                            <h4 class="text-lg font-bold flex items-center gap-2">
+                                <img src="assets/money.png" class="w-6 h-6 object-contain">
+                                年度薪資結構
+                            </h4>
+                            <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-bold">對象：非主管全時員工</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                <p class="text-slate-500 text-sm mb-1">平均數 (Mean)</p>
+                                <p class="text-2xl font-bold text-slate-700">316.7 萬 / 年</p>
+                            </div>
+                            <div class="bg-cyan-50 p-4 rounded-lg border border-cyan-200">
+                                <p class="text-cyan-800 text-sm mb-1 font-bold"><i class="fa-solid fa-bullseye"></i> 中位數 (Median)</p>
+                                <p class="text-3xl font-bold text-cyan-800">256.3 萬 / 年</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                            <div class="flex flex-col md:flex-row justify-between items-end md:items-center mb-4 gap-4">
+                                <div class="w-full md:w-auto">
+                                    <label class="block text-sm font-bold text-slate-600 mb-1">輸入您的期望年薪 (萬):</label>
+                                    <div class="relative">
+                                        <input type="number" id="user-salary-input" value="150" min="0" step="10" 
+                                               oninput="updateSalaryPosition()"
+                                               class="input-focus-effect w-full md:w-48 pl-4 pr-10 py-2 rounded-lg border border-slate-300 font-bold text-slate-700 outline-none transition">
+                                        <span class="absolute right-3 top-2 text-slate-400 text-sm font-bold">萬</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs text-slate-500 block">公司中位數參考</span>
+                                    <span class="text-cyan-700 font-bold text-lg">256.3 萬</span>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-200 rounded-full h-6 relative mt-6 mb-2">
+                                <div class="absolute left-[70%] -top-2 transform -translate-x-1/2 flex flex-col items-center z-10" id="median-marker">
+                                    <div class="w-1 h-10 bg-cyan-600/50"></div>
+                                    <div class="absolute -top-6 bg-cyan-700 text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap shadow-sm">中位數</div>
+                                </div>
+                                <div id="user-bar" class="bg-blue-500 h-6 rounded-full relative transition-all duration-500 ease-out flex items-center justify-end pr-2 shadow-sm" style="width: 40%">
+                                    <span class="text-[10px] text-white font-bold">YOU</span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-4 text-center" id="salary-feedback">您的期望薪資約落在該公司的 <span class="font-bold text-blue-600">後 30%</span> 區間。</p>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-4 flex flex-col gap-6">
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100 flex-1">
+                            <h4 class="text-lg font-bold flex items-center gap-2 mb-4">
+                                <img src="assets/people.png" class="w-5 h-5 object-contain"> 職場環境
+                            </h4>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm text-slate-600">女性主管佔比</span>
+                                <span class="font-bold text-purple-600">14.6%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-purple-500 h-2 rounded-full" style="width: 14.6%"></div></div>
+                        </div>
+                         <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100 flex-1">
+                            <h4 class="text-lg font-bold flex items-center gap-2 mb-4">
+                                <img src="assets/danger.png" class="w-5 h-5 object-contain"> 風險快篩
+                            </h4>
+                            <p class="text-xs text-slate-500 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-check text-green-500"></i> 反競爭行為：無裁罰紀錄。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-esg" class="tab-content">
+                <div class="flex justify-between items-center mb-6 mt-6">
+                    <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                         工安數據概覽
+                    </h3>
+                    <div class="relative">
+                        <select id="safety-year-select" onchange="updateSafetyData()" class="bg-white text-slate-700 text-sm font-bold py-2 pl-3 pr-8 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-600 cursor-pointer shadow-sm hover:bg-slate-50">
+                            <option value="2024">2024 年 (民國113)</option>
+                            <option value="2023">2023 年 (民國112)</option>
+                            <option value="2022">2022 年 (民國111)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-8">
+                    <div class="mb-6 pb-4 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                        <div>
+                            <h4 class="text-lg font-bold text-slate-700">職業災害、火災與環境指標</h4>
+                            <p class="text-slate-400 text-xs mt-1">資料來源：職業災害統計</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-orange-50 p-6 rounded-xl border border-orange-100 flex flex-col items-center justify-center text-center hover:shadow-md transition cursor-default">
+                            <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mb-3 p-2.5">
+                                <img src="assets/injury.png" class="w-full h-full object-contain">
+                            </div>
+                            <h5 class="text-slate-500 text-xs font-bold mb-1 uppercase">職業災害人數</h5>
+                            <p class="text-3xl font-bold text-slate-800" id="safety-count">-</p>
+                            <p class="text-xs text-slate-400 mt-2">人</p>
+                        </div>
+                        <div class="bg-blue-50 p-6 rounded-xl border border-blue-100 flex flex-col items-center justify-center text-center hover:shadow-md transition cursor-default">
+                            <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-3 p-2.5">
+                                <img src="assets/ratio.png" class="w-full h-full object-contain">
+                            </div>
+                            <h5 class="text-slate-500 text-xs font-bold mb-1 uppercase">職業災害比率</h5>
+                            <p class="text-3xl font-bold text-slate-800" id="safety-rate">-</p>
+                            <p class="text-xs text-slate-400 mt-2">占員工總人數</p>
+                        </div>
+                        <div class="bg-red-50 p-6 rounded-xl border border-red-100 flex flex-col items-center justify-center text-center hover:shadow-md transition cursor-default">
+                            <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-3 p-2.5">
+                                <img src="assets/fire.png" class="w-full h-full object-contain">
+                            </div>
+                            <h5 class="text-slate-500 text-xs font-bold mb-1 uppercase">火災件數</h5>
+                            <p class="text-3xl font-bold text-slate-800" id="safety-fire">-</p>
+                            <p class="text-xs text-slate-400 mt-2">件</p>
+                        </div>
+
+                        <a href="esg.html" class="group block h-full">
+                            <div class="h-full rounded-xl bg-slate-800 p-1 shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                                <div class="h-full rounded-lg bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 p-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 w-24 h-24 bg-cyan-600/10 rounded-full blur-2xl -mr-10 -mt-10 transition group-hover:bg-cyan-600/20"></div>
+                                    <div class="w-14 h-14 rounded-full bg-cyan-600/20 border border-cyan-600/30 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-900/50 p-3">
+                                        <img src="assets/esg.png" class="w-full h-full object-contain">
+                                    </div>
+                                    <h5 class="text-slate-400 text-xs font-bold mb-1 uppercase tracking-widest">ESG 專區</h5>
+                                    <p class="text-xl font-bold text-white mb-3">環境儀表板</p>
+                                    <span class="inline-flex items-center gap-2 text-xs font-bold text-cyan-400 bg-cyan-600/10 px-3 py-1.5 rounded-full group-hover:bg-cyan-600 group-hover:text-white transition-colors">
+                                        點擊查看詳情 <i class="fa-solid fa-arrow-right"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-rank" class="tab-content">
+                <div class="bg-white border border-blue-100 rounded-xl shadow-lg p-8 relative overflow-hidden mt-6">
+                    <div class="absolute top-0 right-0 p-8 opacity-5 text-blue-900 transition duration-500">
+                        <i class="fa-solid fa-trophy text-9xl"></i>
+                    </div>
+                    
+                    <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded">薪資中位數比較</span>
+                                <h4 class="text-slate-500 font-bold text-sm tracking-wider uppercase">產業排名快報</h4>
+                            </div>
+                            
+                            <div class="flex items-baseline gap-3 mb-4">
+                                <span class="text-3xl font-bold text-slate-700">排名</span>
+                                <span class="text-6xl font-bold text-blue-600 font-mono" id="rank-display">-</span>
+                                <span class="text-xl text-slate-400" id="rank-total">/ - (同類股)</span>
+                            </div>
+                            
+                            <p class="text-slate-600 max-w-lg leading-relaxed text-sm md:text-base">
+                                薪資水平是評估職缺吸引力的關鍵指標。透過數據比對，讓您快速掌握該公司在同產業中的薪資定位與競爭力。
+                            </p>
+                        </div>
+                        
+                        <a href="leaderboard.html" class="bg-blue-600 text-white px-6 py-3 rounded-full font-bold hover:bg-blue-700 transition shadow-md flex items-center gap-2 text-sm md:text-base whitespace-nowrap group">
+                            查看完整排行榜 <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="border-t border-slate-200 mt-12 pt-8 text-center text-xs text-slate-400 pb-8">
+        <p>JobLens 2025 Beta | 本系統使用政府資料開放平臺數據</p>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/eye" title="eye icons">Eye icons created by Vectors Market - Flaticon</a>
+        <a style="display: block" href="https://www.iconpacks.net/">Various icons created by iconpacks.net</a>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/people" title="people icons">People icons created by Freepik - Flaticon</a>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/magnifying-glass" title="magnifying glass icons">Magnifying glass icons created by Freepik - Flaticon</a>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/fire" title="fire icons">Fire icons created by Freepik - Flaticon</a>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/sustainability" title="sustainability icons">Sustainability icons created by Freepik - Flaticon</a>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/ratio" title="ratio icons">Ratio icons created by Freepik - Flaticon</a>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/wheelchair" title="wheelchair icons">Wheelchair icons created by Freepik - Flaticon</a>
+    </footer>
+
+    <script>
+        // Tab 切換邏輯
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            document.getElementById(`tab-btn-${tabId}`).classList.add('active');
+        }
+
+        // --- 1. 職缺資料 ---
+        // (略微縮減資料以節省空間，請保留您原本的完整數據)
+        const jobData = [
+            { title: "儲備模組副工程師 (台南)", link: "https://www.104.com.tw/job/76avm", salary: "待遇面議" },
+            { title: "廠務助理工程師(裝機工程)", link: "https://www.104.com.tw/job/7g7h8", salary: "月薪33,800以上" },
+            { title: "實驗室技術員", link: "https://www.104.com.tw/job/78he6", salary: "月薪32,000~43,000元" },
+            { title: "Equipment Buyer- 身心障礙人才招募", link: "https://www.104.com.tw/job/7h8dm", salary: "待遇面議" },
+            { title: "DL技術員-Administrative Supports-身心障礙人才招募", link: "https://www.104.com.tw/job/7gl8o", salary: "月薪32,000~43,000元" },
+            { title: "研發製程中心 - 工程技術員-身心障礙人才招募", link: "https://www.104.com.tw/job/7gl8q", salary: "月薪32,000~43,000元" },
+            { title: "R&D 製程研發資訊技術專案工程師-身心障礙人才招募", link: "https://www.104.com.tw/job/7gl8z", salary: "待遇面議" },
+            { title: "研發製程中心 - 製程工程師-身心障礙人才招募", link: "https://www.104.com.tw/job/7gl9r", salary: "待遇面議" },
+            { title: "R&D AI / ML 研發工程師-身心障礙人才招募", link: "https://www.104.com.tw/job/7gla6", salary: "待遇面議" },
+            { title: "研發製程中心 - 製造部課長(四二輪) - 身心障礙人才招募", link: "https://www.104.com.tw/job/7glaw", salary: "待遇面議" },
+            { title: "R&D培訓支援工程師-身心障礙人才招募", link: "https://www.104.com.tw/job/7glb8", salary: "待遇面議" },
+            { title: "Digital IC designer-身心障礙人才招募", link: "https://www.104.com.tw/job/7glbj", salary: "待遇面議" },
+            { title: "R&D設備及製程模擬工程師-身心障礙人才招募", link: "https://www.104.com.tw/job/7glbp", salary: "待遇面議" },
+            { title: "FEMP Engineer-身心障礙人才招募", link: "https://www.104.com.tw/job/7glbx", salary: "待遇面議" },
+            { title: "RD Process engineer-身心障礙人才招募", link: "https://www.104.com.tw/job/7glc5", salary: "待遇面議" },
+            { title: "元件模型工程師-身心障礙人才招募", link: "https://www.104.com.tw/job/7glc9", salary: "待遇面議" },
+            { title: "RD AI and SW 工程師-身心障礙人才招募", link: "https://www.104.com.tw/job/7glcm", salary: "待遇面議" },
+            { title: "3DIC 熱傳研發工程師-身心障礙人才招募", link: "https://www.104.com.tw/job/7gvpd", salary: "待遇面議" },
+            { title: "Process Engineer-身心障礙人才招募", link: "https://www.104.com.tw/job/7gvpk", salary: "待遇面議" },
+            { title: "3DIC 模擬研發工程師-身心障礙人才招募", link: "https://www.104.com.tw/job/7gvpr", salary: "待遇面議" },
+            { title: "Simulation Engineer-身心障礙人才招募", link: "https://www.104.com.tw/job/7gvro", salary: "待遇面議" },
+            { title: "OPC研發工程師-身心障礙人才招募", link: "https://www.104.com.tw/job/7gvrp", salary: "待遇面議" },
+            { title: "Design Rule Engineer-身心障礙人才招募", link: "https://www.104.com.tw/job/7gvrw", salary: "待遇面議" }
+        ];
+
+        let currentPage = 1;
+        const itemsPerPage = 6;
+
+        function renderJobs() {
+            const listContainer = document.getElementById('job-list');
+            const totalItems = jobData.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            
+            if (currentPage < 1) currentPage = 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const currentJobs = jobData.slice(start, end);
+
+            document.getElementById('job-count-label').innerText = `共 ${totalItems} 筆資料`;
+
+            listContainer.innerHTML = currentJobs.map(job => `
+                <div class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full group">
+                    <div class="mb-4">
+                        <h5 class="font-bold text-slate-800 text-lg mb-3 line-clamp-2 h-[3.5rem]">${job.title}</h5>
+                        <div class="flex items-center text-sm text-slate-500 font-medium">
+                            <span class="bg-slate-50 border border-slate-100 px-3 py-1 rounded-full text-slate-600 flex items-center">
+                                <img src="assets/money.png" class="w-4 h-4 mr-1 object-contain">
+                                ${job.salary}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 mt-auto">
+                        <a href="${job.link}" target="_blank" class="block w-full text-center py-2.5 bg-cyan-100 text-cyan-700 font-bold rounded-lg hover:bg-cyan-600 hover:text-white transition-colors group-hover:shadow-md">
+                            立即應徵 <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('page-indicator').innerText = `Page ${currentPage} / ${totalPages}`;
+            document.getElementById('prev-btn').disabled = currentPage === 1;
+            document.getElementById('next-btn').disabled = currentPage === totalPages;
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            renderJobs();
+        }
+
+        // --- 2. 工安數據 ---
+        const safetyData = {
+            "2024": { count: 37, rate: "0.05%", fire: 0 },
+            "2023": { count: 35, rate: "0.04%", fire: 0 },
+            "2022": { count: 32, rate: "0.04%", fire: 1 }
+        };
+
+        function updateSafetyData() {
+            const year = document.getElementById('safety-year-select').value;
+            const data = safetyData[year] || { count: "-", rate: "-", fire: "-" };
+            document.getElementById('safety-count').innerText = data.count;
+            document.getElementById('safety-rate').innerText = data.rate;
+            document.getElementById('safety-fire').innerText = data.fire;
+        }
+
+        // --- 3. 薪資互動 ---
+        const companyMedian = 256.3; 
+        function updateSalaryPosition() {
+            const inputVal = parseFloat(document.getElementById('user-salary-input').value) || 0;
+            const bar = document.getElementById('user-bar');
+            const feedback = document.getElementById('salary-feedback');
+            const marker = document.getElementById('median-marker');
+            
+            const maxVal = companyMedian * 2; 
+            let percentage = (inputVal / maxVal) * 100;
+            if (percentage > 100) percentage = 100;
+            if (percentage < 5) percentage = 5; 
+
+            bar.style.width = percentage + '%';
+            marker.style.left = (companyMedian / maxVal) * 100 + '%';
+
+            if (inputVal < companyMedian) {
+                feedback.innerHTML = `您的期望薪資約落在該公司的 <span class="font-bold text-blue-600">後 30%</span> 區間。`;
+            } else {
+                feedback.innerHTML = `您的期望薪資 <span class="font-bold text-cyan-700">高於中位數</span> 水準。`;
+            }
+        }
+
+        // --- 4. 排名卡片 ---
+        const rawData = [
+            {"公司代號":2454,"非擔任主管之全時員工薪資中位數(仟元/人)":3438,"大類":"半導體"},
+            {"公司代號":2379,"非擔任主管之全時員工薪資中位數(仟元/人)":3246,"大類":"半導體"},
+            {"公司代號":3034,"非擔任主管之全時員工薪資中位數(仟元/人)":2865,"大類":"半導體"},
+            {"公司代號":2330,"非擔任主管之全時員工薪資中位數(仟元/人)":2645,"大類":"半導體"},
+            {"公司代號":2303,"非擔任主管之全時員工薪資中位數(仟元/人)":1611,"大類":"半導體"},
+            {"公司代號":3711,"非擔任主管之全時員工薪資中位數(仟元/人)":1450,"大類":"半導體"},
+            {"公司代號":2603,"非擔任主管之全時員工薪資中位數(仟元/人)":2415,"大類":"航運"},
+            {"公司代號":2609,"非擔任主管之全時員工薪資中位數(仟元/人)":2048,"大類":"航運"},
+            {"公司代號":2317,"非擔任主管之全時員工薪資中位數(仟元/人)":1937,"大類":"電子零組件"},
+            {"公司代號":2881,"非擔任主管之全時員工薪資中位數(仟元/人)":1293,"大類":"金融"},
+        ];
+        
+        function initRankCard() {
+            const targetId = 2330;
+            const sectorData = rawData.filter(d => d['大類'] === '半導體');
+            sectorData.sort((a, b) => b['非擔任主管之全時員工薪資中位數(仟元/人)'] - a['非擔任主管之全時員工薪資中位數(仟元/人)']);
+            
+            const rank = sectorData.findIndex(d => d['公司代號'] === targetId) + 1;
+            const total = sectorData.length;
+            
+            document.getElementById('rank-display').innerText = `#${rank}`;
+            document.getElementById('rank-total').innerText = `/ ${total} (半導體同類股)`;
+        }
+
+        window.onload = () => {
+            renderJobs();
+            updateSalaryPosition();
+            updateSafetyData();
+            initRankCard();
+        };
+    </script>
+</body>
+</html>

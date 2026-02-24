@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobLens - 產業排行榜</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; }
+        .table-row-anim { transition: all 0.3s ease; }
+        .table-row-anim:hover { transform: scale(1.01); z-index: 10; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
+                <img src="assets/magnifying-glass.png" alt="JobLens Logo" class="w-8 h-8 object-contain">
+                <span class="text-xl font-bold tracking-wider">JobLens</span>
+            </div>
+            <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+                <a href="search.html" class="hover:text-cyan-400 transition">企業資訊</a>
+                <a href="supply-chain.html" class="hover:text-cyan-400 transition">產業鏈</a>
+                <a href="reviews.html" class="hover:text-cyan-400 transition">評論</a>
+                <a href="about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">
+                    關於我們
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8 max-w-5xl">
+        <div class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-slate-800">超級比一比</h1>
+            <p class="text-slate-500 mt-2">完整產業薪資與福利數據比較</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-100">
+            <div class="p-4 bg-slate-100 border-b border-slate-200 flex flex-col lg:flex-row gap-4 justify-between items-center">
+                <div class="flex items-center gap-2 w-full lg:w-auto">
+                    <label class="text-xs font-bold text-slate-500 uppercase whitespace-nowrap"><i class="fa-solid fa-filter mr-1"></i> 比較項目</label>
+                    <select id="filter-metric" onchange="renderLeaderboard()" class="w-full lg:w-64 p-2 rounded border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm cursor-pointer">
+                        <option value="非擔任主管之全時員工薪資中位數(仟元/人)">非擔任主管薪資中位數</option>
+                        <option value="非擔任主管職務之全時員工薪資平均數(仟元/人)">非擔任主管薪資平均數</option>
+                        <option value="員工薪資平均數(仟元/人)">全員平均薪資</option>
+                        <option value="員工福利平均數(仟元/人)">員工福利平均</option>
+                    </select>
+                </div>
+                <div class="flex gap-4 w-full lg:w-auto">
+                    <div class="flex items-center gap-2 flex-1">
+                        <label class="text-xs font-bold text-slate-500 uppercase">範圍</label>
+                        <select id="filter-scope" onchange="renderLeaderboard()" class="w-full p-2 rounded border border-slate-300 text-sm cursor-pointer">
+                            <option value="industry" selected>同產業 (晶圓製造)</option>
+                            <option value="sector">同類股 (半導體)</option>
+                            <option value="all">全產業</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2 flex-1">
+                        <label class="text-xs font-bold text-slate-500 uppercase">排序</label>
+                        <select id="filter-order" onchange="renderLeaderboard()" class="w-full p-2 rounded border border-slate-300 text-sm cursor-pointer">
+                            <option value="desc" selected>由高到低</option>
+                            <option value="asc">由低到高</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 text-xs font-bold text-slate-500 uppercase border-b border-slate-200">
+                        <tr>
+                            <th class="p-4 w-20 text-center">排名</th>
+                            <th class="p-4">公司名稱</th>
+                            <th class="p-4 text-center">細分產業</th>
+                            <th class="p-4 text-right" id="th-metric-name">數值</th>
+                            <th class="p-4 w-32 text-center">狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body" class="text-sm text-slate-700 divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const currentCompanyId = 2330; 
+        const rawData = [
+            {"公司代號":2454,"公司名稱":"聯發科","員工福利平均數(仟元/人)":4978,"員工薪資平均數(仟元/人)":4633,"非擔任主管職務之全時員工薪資平均數(仟元/人)":4310,"非擔任主管之全時員工薪資中位數(仟元/人)":3438,"產業別":"IC設計","大類":"半導體"},
+            {"公司代號":2379,"公司名稱":"瑞昱","員工福利平均數(仟元/人)":5056,"員工薪資平均數(仟元/人)":4751,"非擔任主管職務之全時員工薪資平均數(仟元/人)":3915,"非擔任主管之全時員工薪資中位數(仟元/人)":3246,"產業別":"IC設計","大類":"半導體"},
+            {"公司代號":3034,"公司名稱":"聯詠","員工福利平均數(仟元/人)":3889,"員工薪資平均數(仟元/人)":3586,"非擔任主管職務之全時員工薪資平均數(仟元/人)":3521,"非擔任主管之全時員工薪資中位數(仟元/人)":2865,"產業別":"IC設計","大類":"半導體"},
+            {"公司代號":2330,"公司名稱":"台積電","員工福利平均數(仟元/人)":3633,"員工薪資平均數(仟元/人)":3329,"非擔任主管職務之全時員工薪資平均數(仟元/人)":3391,"非擔任主管之全時員工薪資中位數(仟元/人)":2645,"產業別":"晶圓製造","大類":"半導體"},
+            {"公司代號":2303,"公司名稱":"聯電","員工福利平均數(仟元/人)":2265,"員工薪資平均數(仟元/人)":2046,"非擔任主管職務之全時員工薪資平均數(仟元/人)":1800,"非擔任主管之全時員工薪資中位數(仟元/人)":1611,"產業別":"晶圓製造","大類":"半導體"},
+            {"公司代號":3711,"公司名稱":"日月光投控","員工福利平均數(仟元/人)":1950,"員工薪資平均數(仟元/人)":1800,"非擔任主管職務之全時員工薪資平均數(仟元/人)":1750,"非擔任主管之全時員工薪資中位數(仟元/人)":1450,"產業別":"封裝測試","大類":"半導體"},
+            {"公司代號":2603,"公司名稱":"長榮","員工福利平均數(仟元/人)":2909,"員工薪資平均數(仟元/人)":2642,"非擔任主管職務之全時員工薪資平均數(仟元/人)":2523,"非擔任主管之全時員工薪資中位數(仟元/人)":2415,"產業別":"航運","大類":"航運"},
+            {"公司代號":2609,"公司名稱":"陽明","員工福利平均數(仟元/人)":3079,"員工薪資平均數(仟元/人)":2680,"非擔任主管職務之全時員工薪資平均數(仟元/人)":2342,"非擔任主管之全時員工薪資中位數(仟元/人)":2048,"產業別":"航運","大類":"航運"},
+            {"公司代號":2317,"公司名稱":"鴻海","員工福利平均數(仟元/人)":2930,"員工薪資平均數(仟元/人)":2496,"非擔任主管職務之全時員工薪資平均數(仟元/人)":2670,"非擔任主管之全時員工薪資中位數(仟元/人)":1937,"產業別":"組裝代工","大類":"電子零組件"},
+            {"公司代號":2881,"公司名稱":"富邦金","員工福利平均數(仟元/人)":1604,"員工薪資平均數(仟元/人)":1347,"非擔任主管職務之全時員工薪資平均數(仟元/人)":1624,"非擔任主管之全時員工薪資中位數(仟元/人)":1293,"產業別":"金控","大類":"金融"},
+        ];
+
+        function renderLeaderboard() {
+            const metricKey = document.getElementById('filter-metric').value;
+            const scope = document.getElementById('filter-scope').value;
+            const order = document.getElementById('filter-order').value;
+            const currentCompany = rawData.find(c => c['公司代號'] === currentCompanyId);
+            
+            // 篩選邏輯
+            let filteredData = [...rawData];
+            let scopeText = "全產業";
+            if (scope === 'industry') {
+                filteredData = rawData.filter(item => item['產業別'] === currentCompany['產業別']);
+                scopeText = "同產業 (晶圓製造)";
+            } else if (scope === 'sector') {
+                filteredData = rawData.filter(item => item['大類'] === currentCompany['大類']);
+                scopeText = "同類股 (半導體)";
+            }
+
+            // 排序邏輯
+            filteredData.sort((a, b) => order === 'desc' ? b[metricKey] - a[metricKey] : a[metricKey] - b[metricKey]);
+
+            // 對應欄位名稱
+            const metricNameMap = {
+                '非擔任主管之全時員工薪資中位數(仟元/人)': '薪資中位數 (仟元)',
+                '非擔任主管職務之全時員工薪資平均數(仟元/人)': '非主管平均 (仟元)',
+                '員工薪資平均數(仟元/人)': '全員平均薪資 (仟元)',
+                '員工福利平均數(仟元/人)': '員工福利平均 (仟元)'
+            };
+
+            document.getElementById('th-metric-name').innerText = metricNameMap[metricKey];
+
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = filteredData.map((item, index) => {
+                const isCurrent = item['公司代號'] === currentCompanyId;
+                const rankColor = index < 3 ? "bg-yellow-400 text-white" : "bg-slate-200 text-slate-500";
+                
+                return `
+                    <tr class="${isCurrent ? 'bg-cyan-50 border-l-4 border-l-cyan-600 font-bold' : 'hover:bg-slate-50'} table-row-anim border-b border-slate-100">
+                        <td class="p-4 text-center">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center mx-auto text-sm font-bold shadow-sm ${rankColor}">${index + 1}</div>
+                        </td>
+                        <td class="p-4">
+                            <div class="${isCurrent ? 'text-emerald-900' : 'text-slate-800'}">${item['公司名稱']} (${item['公司代號']})</div>
+                        </td>
+                        <td class="p-4 text-center text-slate-500 text-xs">
+                            <span class="bg-slate-100 px-2 py-1 rounded">${item['產業別']}</span>
+                        </td>
+                        <td class="p-4 text-right font-mono text-base ${isCurrent ? 'text-cyan-700' : 'text-slate-600'}">
+                            ${item[metricKey].toLocaleString()}
+                        </td>
+                        <td class="p-4 text-center">
+                            ${isCurrent ? '<span class="text-xs font-bold text-cyan-700 bg-emerald-100 px-2 py-1 rounded-full">Viewing</span>' : ''}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        window.onload = renderLeaderboard;
+    </script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobLens - 職場輿情 AI 分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
+                <img src="assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
+                <span class="text-xl font-bold tracking-wider">JobLens</span>
+            </div>
+            <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+                <a href="search.html#salary" class="hover:text-cyan-400 transition">企業資訊</a>
+                <a href="supply-chain.html" class="hover:text-cyan-400 transition">產業鏈</a>
+                <a href="about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">
+                    關於我們
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-gradient-to-r from-purple-800 to-purple-900 text-white py-10 px-4">
+        <div class="container mx-auto text-center max-w-2xl">
+            <h1 class="text-2xl md:text-3xl font-bold mb-3">職場輿情 AI 深度分析</h1>
+            <p class="text-purple-200 mb-6 text-sm">彙整 PTT、Dcard 與各大媒體真實資料</p>
+            <h2 class="text-xl font-bold bg-white/10 inline-block px-4 py-1 rounded-full">台積電 (2330)</h2>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 space-y-12">
+        <section class="h-[800px]"> <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full items-stretch">
+                
+                <div class="lg:col-span-7 bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col h-full">
+                    <div class="flex justify-between items-center mb-4 flex-shrink-0">
+                        <h4 class="text-lg font-bold text-slate-700 flex items-center gap-2">
+                            <img src="assets/word-cloud.png" class="w-6 h-6 object-contain"> 情緒文字雲
+                        </h4>
+                        <div class="flex gap-2 text-xs">
+                            <span class="flex items-center gap-1"><div class="w-3 h-3 rounded-full bg-emerald-500"></div> 正面</span>
+                            <span class="flex items-center gap-1"><div class="w-3 h-3 rounded-full bg-slate-400"></div> 中立</span>
+                            <span class="flex items-center gap-1"><div class="w-3 h-3 rounded-full bg-red-500"></div> 負面</span>
+                        </div>
+                    </div>
+
+                    <div class="w-full bg-slate-50 rounded-xl border border-slate-200 relative p-4 flex items-center justify-center overflow-hidden flex-1">
+                        <canvas id="word-cloud-canvas" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 flex flex-col gap-6 h-full">
+                    
+                    <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col h-[50%]">
+                        <h4 class="text-lg font-bold text-slate-700 mb-4 flex items-center justify-between flex-shrink-0">
+                            <span class="flex items-center gap-2">
+                                <img src="assets/review.png" class="w-6 h-6 object-contain"> 真實評論摘錄
+                            </span>
+                        </h4>
+                        <div class="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
+                            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-sm">
+                                <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded">Dcard</span>
+                                <p class="text-slate-700 mt-2">分紅真的很敢給，新人第一年就有感。但是這幾個月常常要加班到九點。</p>
+                            </div>
+                            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-sm">
+                                <span class="bg-slate-800 text-white text-xs font-bold px-2 py-0.5 rounded">PTT</span>
+                                <p class="text-slate-700 mt-2">部門風氣還不錯，主管願意教人。這裡算是練功的好地方。</p>
+                            </div>
+                            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-sm">
+                                <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded">Dcard</span>
+                                <p class="text-slate-700 mt-2">南科廠區很大，生活機能還在發展中，要有交通工具比較方便。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col h-[50%]">
+                        <h4 class="text-lg font-bold text-slate-700 mb-4 flex items-center justify-between flex-shrink-0">
+                            <span class="flex items-center gap-2">
+                                <img src="assets/news.png" class="w-6 h-6 object-contain"> 企業相關新聞
+                            </span>
+                        </h4>
+                        <div class="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
+                            <div class="flex gap-3 group cursor-pointer border-b border-slate-50 pb-3 hover:bg-slate-50 p-2 rounded transition-all">
+                                <div class="w-16 h-16 bg-slate-100 rounded flex-shrink-0 flex items-center justify-center text-slate-300">
+                                    <i class="fa-solid fa-image"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-bold text-slate-800 group-hover:text-cyan-700 transition-colors line-clamp-2">
+                                        台積電 2024 年擴大召募，預計釋出數千名工程師職缺
+                                    </h5>
+                                    <p class="text-[10px] text-slate-400 mt-1">2024/06/10 | 公視新聞</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-3 group cursor-pointer border-b border-slate-50 pb-3 hover:bg-slate-50 p-2 rounded transition-all">
+                                <div class="w-16 h-16 bg-slate-100 rounded flex-shrink-0 flex items-center justify-center text-slate-300">
+                                    <i class="fa-solid fa-image"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-bold text-slate-800 group-hover:text-cyan-700 transition-colors line-clamp-2">
+                                        先進製程里程碑：台積電 2 奈米技術開發進度超前
+                                    </h5>
+                                    <p class="text-[10px] text-slate-400 mt-1">2024/05/20 | 公視新聞</p>
+                                </div>
+                            </div>
+                             <div class="flex gap-3 group cursor-pointer border-b border-slate-50 pb-3 hover:bg-slate-50 p-2 rounded transition-all">
+                                <div class="w-16 h-16 bg-slate-100 rounded flex-shrink-0 flex items-center justify-center text-slate-300">
+                                    <i class="fa-solid fa-image"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-bold text-slate-800 group-hover:text-cyan-700 transition-colors line-clamp-2">
+                                        熊本廠開幕效應：帶動周邊半導體供應鏈設廠熱潮
+                                    </h5>
+                                    <p class="text-[10px] text-slate-400 mt-1">2024/04/12 | 公視新聞</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-slate-200 mt-12 pt-8 text-center text-xs text-slate-400 pb-8">
+        <p>JobLens 2025 Beta | 本系統使用政府資料開放平臺數據</p>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/eye" title="eye icons">Eye icons created by Vectors Market - Flaticon</a>
+        <a style="display: block" href="https://www.iconpacks.net/">Various icons created by iconpacks.net</a>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/forum" title="forum icons">Forum icons created by Freepik - Flaticon</a>
+    </footer>
+
+    <script>
+        const rawWordsData = [
+            { text: "分紅大方", size: 60, sentiment: 0.9 },
+            { text: "常態加班", size: 55, sentiment: -0.8 },
+            { text: "年薪300萬", size: 45, sentiment: 0.95 },
+            { text: "壓力山大", size: 42, sentiment: -0.7 },
+            { text: "學到很多", size: 38, sentiment: 0.6 },
+            { text: "輪班星人", size: 35, sentiment: -0.5 },
+            { text: "福利佳", size: 28, sentiment: 0.8 },
+            { text: "午餐好吃", size: 22, sentiment: 0.3 },
+            { text: "南科", size: 30, sentiment: 0 },
+            { text: "制度完整", size: 26, sentiment: 0 },
+            { text: "生活機能", size: 20, sentiment: 0 }
+        ];
+
+        function renderWordCloud() {
+            const canvas = document.getElementById('word-cloud-canvas');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            // 計算最大與最小字頻，用於計算顏色梯度
+            const sizes = rawWordsData.map(item => item.size);
+            const maxSize = Math.max(...sizes);
+            const minSize = Math.min(...sizes);
+
+            WordCloud(canvas, {
+                list: rawWordsData.map(item => [item.text, item.size]),
+                gridSize: 8,
+                weightFactor: 1.5,
+                fontFamily: "'Noto Sans TC', sans-serif",
+                color: (word) => {
+                    const d = rawWordsData.find(w => w.text === word);
+                    
+                    // 計算該字詞的大小比例 (0 ~ 1)
+                    // 如果最大最小相等(防呆)，ratio 設為 1
+                    let ratio = 1;
+                    if (maxSize !== minSize) {
+                        ratio = (d.size - minSize) / (maxSize - minSize);
+                    }
+                    
+                    // 根據情緒決定基底色調 (Hue)，再根據大小調整飽和度(S)與亮度(L)
+                    let h, s, l;
+
+                    if (d.sentiment > 0.1) {
+                        // 正面 (綠色系, Emerald: Hue ~155)
+                        h = 155; 
+                        s = 40 + (ratio * 50); 
+                        l = 65 - (ratio * 25); 
+                    } else if (d.sentiment < -0.1) {
+                        // 負面 (紅色系, Red: Hue ~350)
+                        h = 350;
+                        s = 50 + (ratio * 40); 
+                        l = 70 - (ratio * 25); 
+                    } else {
+                        // 中立 (灰色系, Slate: Hue ~215)
+                        h = 215;
+                        s = 5 + (ratio * 15);  
+                        l = 75 - (ratio * 35); 
+                    }
+
+                    return `hsl(${h}, ${s}%, ${l}%)`;
+                },
+                rotateRatio: 0,
+                shape: 'circle',
+                shrinkToFit: true
+            });
+        }
+        document.addEventListener("DOMContentLoaded", renderWordCloud);
+        window.onresize = renderWordCloud;
+    </script>
+</body>
+</html>
