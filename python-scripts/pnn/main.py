@@ -1,3 +1,5 @@
+import os
+
 import feedparser
 import requests
 import urllib3
@@ -7,6 +9,17 @@ import json
 from requests import HTTPError
 import random
 import time
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.proxy import Proxy
+from selenium.webdriver.common.proxy import ProxyType
+from requests import Session
+from requests.adapters import HTTPAdapter
+import ssl
+import mysql.connector
+from mysql.connector import Error
+from datetime import datetime
 
 # Suppress the InsecureRequestWarning from urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -14,13 +27,36 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # Define problematic Unicode strings as variables to avoid file write/read corruption
 PTS_IMAGE_CAPTION_TEXT = "圖 /"
 
-def scrape_article(url):
+# Source - https://stackoverflow.com/a/78341139
+# Posted by Joe Savage
+# Retrieved 2026-02-26, License - CC BY-SA 4.0
+
+class CustomHTTPAdapter(HTTPAdapter):
+
+    def init_poolmanager(self, *args, **kwargs):
+        # this creates a default context with secure default settings,
+        # which enables server certficiate verification using the
+        # system's default CA certificates
+        context = ssl.create_default_context()
+
+        # alternatively, you could create your own context manually
+        # but this does NOT enable server certificate verification
+        # context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+
+        super().init_poolmanager(*args, **kwargs, ssl_context=context)
+
+
+def scrape_article(session: Session, url, proxy=None):
     """
     Scrapes a news article from the given URL and returns a dictionary
     with 'author', 'text', 'published-date', and 'title'.
     Handles multiple article formats.
     """
-    response = requests.get(url, timeout=10, verify=False)
+
+    if isinstance(proxy, str):
+        proxy = {'http': proxy, 'https': proxy}
+
+    response = session.get(url, timeout=10, verify=False, proxies=proxy)
     response.raise_for_status()
     
     # Use apparent_encoding for BeautifulSoup, which requests derives from headers or content
@@ -89,66 +125,37 @@ def fetch_rss(url):
         print(f"Error fetching RSS feed: {e}")
         return None
 
-def search_news(entries, keyword):
+def search_rss(rss_feeds, keyword):
     """Searches for a keyword in the news entries."""
-    if not entries:
+    if not rss_feeds:
         return []
 
     keyword = keyword.lower()
     found_articles = []
-    for entry in entries:
+    for entry in rss_feeds:
         title = entry.get("title", "").lower()
         summary = entry.get("summary", "").lower()
         if keyword in title or keyword in summary:
             found_articles.append(entry)
     return found_articles
 
-def main():
-    """Main function to run the news searcher."""
-    rss_url = "https://news.pts.org.tw/xml/newsfeed.xml"
-    
-    print(f"Fetching news from {rss_url}...")
-    news_entries = fetch_rss(rss_url)
-    
-    if not news_entries:
-        print("Could not retrieve news. Exiting.")
-        return
+def search_news(driver, query):    
+    driver.get(f"https://news.pts.org.tw/search/{query}")
+    driver.implicitly_wait(2)
+    news_titles = driver.find_elements(by=By.CSS_SELECTOR, value="h2 > a")
+    try:
+        return [e.get_attribute('href') for e in news_titles]
+    except:
+        return []
 
-    print(f"Successfully fetched {len(news_entries)} news articles.")
-
-    print("\n--- All News Articles ---")
-    for article in news_entries:
-        print(f"{article.title}\n\n{article.summary}")
-        print("-" * 40) # Separator for readability
-    print("-------------------------\\n")
-    
-    while True:
-        try:
-            keyword = input("Enter keyword to search (or Ctrl+C to exit): ").strip()
-            if not keyword:
-                continue
-                
-            results = search_news(news_entries, keyword)
-            
-            if results:
-                print(f"\nFound {len(results)} articles matching '{keyword}':")
-                for i, article in enumerate(results, 1):
-                    print(f"  {i}. {article.title}")
-                    print(f"     Link: {article.link}")
-                    # print(f"     Summary: {article.summary}") # Summary can be long
-                    print("-" * 20)
-            else:
-                print(f"No articles found matching '{keyword}'.")
-
-        except KeyboardInterrupt:
-            print("\nExiting program.")
-            break
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-
-if __name__ == "__main__":
+def scrape():
     output = []
     failed = []
+    proxies_count = 20
+    delay = 10
+    session = Session()
+    session.headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36'
+    session.mount("https://", CustomHTTPAdapter())
 
     if len(sys.argv) != 4:
         print('Pass two numbers for the range of news (e.g., 800000 1)\nand a suffix of file')
@@ -168,14 +175,33 @@ if __name__ == "__main__":
     else:
         steps = 1
         b += 1
+    # options = Options()
+    # options.page_load_strategy = 'eager'
+    # options.add_argument('--headless')
+
+    # driver = webdriver.Chrome(options=options)
+    # print(search_news(driver, "台積電"))
+    # driver.quit()
+
+    with open('proxies.txt', encoding='utf-8') as f:
+        proxy_list = [i.strip() for i in f.readlines()]
+
+    proxies = proxy_list.copy()
+    random.shuffle(proxies)
 
     try:
         for id in range(a, b, steps):
             url = f"https://news.pts.org.tw/article/{id}"
             print(f"{url}: ", end='')
             
+            if len(proxies) == 0:
+                proxies = proxy_list.copy()
+                random.shuffle(proxies)
+
+            proxy = proxies.pop()
+
             try:
-                scraped_data = scrape_article(url)
+                scraped_data = scrape_article(session, url, proxy)
                 scraped_data["href"] = url
                 output.append(scraped_data)
                 print(f"succeeded")
@@ -195,3 +221,82 @@ if __name__ == "__main__":
             json.dump(output, f, indent=2, ensure_ascii=False)
         with open(f"failed{suffix}.json", encoding="utf-8", mode="w") as f:
             json.dump(failed, f, indent=2 ,ensure_ascii=False)
+
+def in_database(db, url):
+    id = int(url.split('/')[-1])
+    with db.cursor() as cursor:
+        cursor.execute("SELECT Id from pnn WHERE Id = %s", (id,))
+        cursor.fetchall()
+
+        return cursor.rowcount > 0
+
+def update_pnn_with_rss(db, pnn):
+    id = int(url.split('/')[-1])
+    with db.cursor() as cursor:
+        if in_database(db, url):
+            print(f'{url} is already recorded')
+            return
+
+        cursor.execute(
+            r"INSERT INTO pnn (Id, Title, Text, PublishedTime, UpdatedTime, Url) VALUES (%s, %s, %s, %s, %s, %s)",
+            (id,
+            pnn['title'],
+            pnn['text'],
+            pnn['published-date'],
+            pnn['modified-date'] if pnn['modified-date'] != "" else None,
+            pnn['url'],)
+        )
+
+        db.commit()
+
+def main():
+    user = os.environ['MYSQL_USERNAME']
+    password = os.environ['MYSQL_PASSWORD']
+    ip = os.environ.get('MYSQL_IP', "localhost")
+    rss_url = "https://news.pts.org.tw/xml/newsfeed.xml"
+    session = Session()
+    session.headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36'
+    now = datetime.now()
+
+    db_connection = mysql.connector.connect(
+        host=ip,
+        user=user,
+        passwd=password,
+        database="joblens",
+    )
+    
+    if not db_connection.is_connected():
+        print('Failed to connect MySQL. Exiting.')
+    
+    print(f"Fetching news from {rss_url}...")
+    news_entries = fetch_rss(rss_url)
+
+    print(f"Successfully fetched {len(news_entries)} news articles.")
+    print(f"\n--- RSS {now.strftime('%Y-%m-%dT%H:%M:%S')} ---")
+    scraped_res = []
+
+    for article in news_entries:
+        print(f"{article.title}\n\n{article.summary}")
+        print("-" * 40) # Separator for readability
+
+    for article in news_entries:
+        try:
+            if in_database(db_connection, article.id):
+                print(f'Skipped {article.id}: Found in DB.')
+                continue
+
+            print(f'Scraping "{article.id}"')
+            scraped_res.append(scrape_article(session, article.id) | {'url': article.id})
+            update_pnn_with_rss(db_connection, scraped_res[-1])
+        except Exception as e:
+            print(f"Failed: {e}")
+            print('Wait 60s until the next try')
+            time.sleep(60)
+
+    with open(f"rss_{now.strftime('%Y-%m-%dT%H_%M_%S')}.json", 'w', encoding='utf-8') as f:
+        json.dump(scraped_res, f, ensure_ascii=False, indent=2)
+
+    db_connection.close()
+            
+if __name__ == "__main__":
+    main()
