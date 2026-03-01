@@ -231,10 +231,10 @@ def in_database(db, url):
         return cursor.rowcount > 0
 
 def update_pnn_with_rss(db, pnn):
-    id = int(url.split('/')[-1])
+    id = int(pnn['url'].split('/')[-1])
     with db.cursor() as cursor:
-        if in_database(db, url):
-            print(f'{url} is already recorded')
+        if in_database(db, pnn['url']):
+            print(f'{pnn['url']} is already recorded')
             return
 
         cursor.execute(
