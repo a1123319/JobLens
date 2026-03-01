@@ -258,45 +258,46 @@ def main():
     session.headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36'
     now = datetime.now()
 
-    db_connection = mysql.connector.connect(
-        host=ip,
-        user=user,
-        passwd=password,
-        database="joblens",
-    )
-    
-    if not db_connection.is_connected():
-        print('Failed to connect MySQL. Exiting.')
-    
-    print(f"Fetching news from {rss_url}...")
-    news_entries = fetch_rss(rss_url)
+    try:
+        db_connection = mysql.connector.connect(
+            host=ip,
+            user=user,
+            passwd=password,
+            database="joblens",
+        )
+        
+        if not db_connection.is_connected():
+            print('Failed to connect MySQL. Exiting.')
+        
+        print(f"Fetching news from {rss_url}...")
+        news_entries = fetch_rss(rss_url)
 
-    print(f"Successfully fetched {len(news_entries)} news articles.")
-    print(f"\n--- RSS {now.strftime('%Y-%m-%dT%H:%M:%S')} ---")
-    scraped_res = []
+        print(f"Successfully fetched {len(news_entries)} news articles.")
+        print(f"\n--- RSS {now.strftime('%Y-%m-%dT%H:%M:%S')} ---")
+        scraped_res = []
 
-    for article in news_entries:
-        print(f"{article.title}\n\n{article.summary}")
-        print("-" * 40) # Separator for readability
+        for article in news_entries:
+            print(f"{article.title}\n\n{article.summary}")
+            print("-" * 40) # Separator for readability
 
-    for article in news_entries:
-        try:
-            if in_database(db_connection, article.id):
-                print(f'Skipped {article.id}: Found in DB.')
-                continue
+        for article in news_entries:
+            try:
+                if in_database(db_connection, article.id):
+                    print(f'Skipped {article.id}: Found in DB.')
+                    continue
 
-            print(f'Scraping "{article.id}"')
-            scraped_res.append(scrape_article(session, article.id) | {'url': article.id})
-            update_pnn_with_rss(db_connection, scraped_res[-1])
-        except Exception as e:
-            print(f"Failed: {e}")
-            print('Wait 60s until the next try')
-            time.sleep(60)
+                print(f'Scraping "{article.id}"')
+                scraped_res.append(scrape_article(session, article.id) | {'url': article.id})
+                update_pnn_with_rss(db_connection, scraped_res[-1])
+            except Exception as e:
+                print(f"Failed: {e}")
+                print('Wait 60s until the next try')
+                time.sleep(60)
 
-    with open(f"rss_{now.strftime('%Y-%m-%dT%H_%M_%S')}.json", 'w', encoding='utf-8') as f:
-        json.dump(scraped_res, f, ensure_ascii=False, indent=2)
-
-    db_connection.close()
+        with open(f"rss_{now.strftime('%Y-%m-%dT%H_%M_%S')}.json", 'w', encoding='utf-8') as f:
+            json.dump(scraped_res, f, ensure_ascii=False, indent=2)
+    finally:
+        db_connection.close()
             
 if __name__ == "__main__":
     main()
