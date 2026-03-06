@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobLens - 供應鏈分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; }
+        .chart-container { position: relative; height: 300px; width: 100%; }
+        /* 隱藏捲軸但保持功能 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='/index.html'">
+                <img src="/assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
+                <span class="text-xl font-bold tracking-wider">JobLens</span>
+            </div>
+            <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+                <a href="/search.html" class="hover:text-cyan-400 transition">企業資訊</a>
+                <a href="/reviews.html" class="hover:text-cyan-400 transition">評論</a>
+                <a href="/about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">
+                    關於我們
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-10 px-4">
+        <div class="container mx-auto text-center max-w-2xl">
+            <h1 class="text-2xl md:text-3xl font-bold mb-3">半導體產業供應鏈</h1>
+            <p class="text-slate-400 mb-6 text-sm">從上游到下游，全面透視產業鏈夥伴</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 space-y-12">
+        <section id="supply-chain-overview" class="scroll-mt-24">
+            <h3 class="text-2xl font-bold text-slate-800 mb-8 flex items-center gap-2">
+                <span class="bg-cyan-500 w-2 h-8 rounded-full"></span> 供應鏈結構圖
+            </h3>
+            
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-8 pb-12 overflow-visible relative">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 rounded-t-2xl"></div>
+                
+                <div id="main_ic_panel" class="grid grid-cols-1 lg:grid-cols-3 gap-12 relative mb-12">
+                    <div class="chain-col relative group flex flex-col h-full">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div
+                                class="w-8 h-8 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center font-bold shadow-sm">
+                                1</div>
+                            <h4 class="text-xl font-bold text-slate-700">上游 <span
+                                    class="text-sm text-slate-400 font-normal">設計與研發</span></h4>
+                        </div>
+                        <div
+                            class="bg-slate-50 rounded-xl p-6 border border-slate-200 h-full relative shadow-sm hover:shadow-md transition-shadow flex flex-col justify-center">
+                            <div class="hidden lg:block absolute top-1/2 left-full w-12 h-1 bg-slate-300 z-0"></div>
+                            <div
+                                class="hidden lg:block absolute top-1/2 -right-12 w-3 h-3 bg-slate-300 rounded-full transform translate-x-1/2 -translate-y-1/2 z-10 border-2 border-white">
+                            </div>
+                            <div class="flex flex-col gap-8 relative z-10">
+                                <div id="ic_link_DC00" onclick="toggleCompanyList('companyList_DC00')"
+                                    class="cursor-pointer bg-white border border-slant-200 hover:border-cyan-400 rounded-lg p-5 shadow-sm hover:shadow-md transition-all text-center group-node hover:-translate-y-1">
+                                    <div class="text-cyan-600 mb-2"><i class="fa-solid fa-pen-ruler text-2xl"></i></div>
+                                    <h5 class="font-bold text-slate-700">IP 設計 / IC 設計代工服務</h5>
+                                </div>
+                                <div class="flex justify-center -my-4 z-0">
+                                    <i class="fa-solid fa-arrow-down text-slate-400"></i>
+                                </div>
+                                <div id="ic_link_D100" onclick="toggleCompanyList('companyList_D100')"
+                                    class="cursor-pointer bg-gradient-to-br from-cyan-500 to-cyan-600 text-white rounded-lg p-6 shadow-lg shadow-cyan-200 hover:shadow-xl hover:scale-105 transition-all text-center ring-4 ring-white">
+                                    <div class="mb-2"><i class="fa-solid fa-microchip text-3xl"></i></div>
+                                    <h5 class="font-bold text-xl">IC 設計</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="chain-col relative flex flex-col h-full">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div
+                                class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shadow-sm">
+                                2</div>
+                            <h4 class="text-xl font-bold text-slate-700">中游 <span class="text-sm text-slate-400 font-normal">製造</span>
+                            </h4>
+                        </div>
+                        <div
+                            class="bg-slate-50 rounded-xl p-6 border border-slate-200 h-full relative shadow-sm hover:shadow-md transition-shadow">
+                            <div class="hidden lg:block absolute top-1/2 left-full w-12 h-1 bg-slate-300 z-0"></div>
+                            <div
+                                class="hidden lg:block absolute top-1/2 -right-12 w-3 h-3 bg-slate-300 rounded-full transform translate-x-1/2 -translate-y-1/2 z-10 border-2 border-white">
+                            </div>
+                            <div class="flex flex-col gap-6 h-full relative z-10 justify-center">
+                                <div class="flex flex-col gap-3">
+                                    <div id="ic_link_D400" onclick="toggleCompanyList('companyList_D400')"
+                                        class="cursor-pointer bg-white border border-slate-200 hover:border-blue-400 hover:bg-blue-50 rounded-lg p-3 transition-all flex items-center gap-4 hover:-translate-y-1 shadow-sm">
+                                        <div
+                                            class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-lg flex-shrink-0">
+                                            <i class="fa-solid fa-robot"></i></div>
+                                        <div class="text-left">
+                                            <h6 class="font-bold text-slate-700 text-sm leading-tight">生產製程及檢測設備</h6>
+                                        </div>
+                                    </div>
+                                    <div id="ic_link_D200" onclick="toggleCompanyList('companyList_D200')"
+                                        class="cursor-pointer bg-white border border-slate-200 hover:border-blue-400 hover:bg-blue-50 rounded-lg p-3 transition-all flex items-center gap-4 hover:-translate-y-1 shadow-sm">
+                                        <div
+                                            class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-lg flex-shrink-0">
+                                            <i class="fa-solid fa-layer-group"></i></div>
+                                        <div class="text-left">
+                                            <h6 class="font-bold text-slate-700 text-sm">光罩</h6>
+                                        </div>
+                                    </div>
+                                    <div id="ic_link_D500" onclick="toggleCompanyList('companyList_D500')"
+                                        class="cursor-pointer bg-white border border-slate-200 hover:border-blue-400 hover:bg-blue-50 rounded-lg p-3 transition-all flex items-center gap-4 hover:-translate-y-1 shadow-sm">
+                                        <div
+                                            class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-lg flex-shrink-0">
+                                            <i class="fa-solid fa-flask"></i></div>
+                                        <div class="text-left">
+                                            <h6 class="font-bold text-slate-700 text-sm">化學品</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-center -my-2 z-0">
+                                    <i class="fa-solid fa-arrow-down text-slate-400"></i>
+                                </div>
+                                <div id="ic_link_D300" onclick="toggleCompanyList('companyList_D300')"
+                                    class="cursor-pointer bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-6 shadow-lg shadow-blue-200 hover:shadow-xl hover:scale-105 transition-all text-center ring-4 ring-white mt-2">
+                                    <div class="mb-2"><i class="fa-solid fa-industry text-3xl"></i></div>
+                                    <h5 class="font-bold text-xl">IC / 晶圓製造</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="chain-col flex flex-col h-full">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div
+                                class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold shadow-sm">
+                                3</div>
+                            <h4 class="text-xl font-bold text-slate-700">下游 <span
+                                    class="text-sm text-slate-400 font-normal">封測與銷售</span></h4>
+                        </div>
+                        <div
+                            class="bg-slate-50 rounded-xl p-6 border border-slate-200 h-full shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex flex-col gap-4 h-full relative z-10">
+                
+                                <div class="flex flex-col gap-3">
+                                    <div id="ic_link_D600" onclick="toggleCompanyList('companyList_D600')"
+                                        class="cursor-pointer bg-white border border-slate-200 hover:border-purple-400 hover:bg-purple-50 rounded-lg p-3 transition-all flex items-center gap-4 hover:-translate-y-1 shadow-sm">
+                                        <div
+                                            class="w-10 h-10 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center text-lg flex-shrink-0">
+                                            <i class="fa-solid fa-screwdriver-wrench"></i></div>
+                                        <div class="text-left">
+                                            <h6 class="font-bold text-slate-700 text-sm leading-tight">生產製程及檢測設備</h6>
+                                        </div>
+                                    </div>
+                                    <div id="ic_link_D700" onclick="toggleCompanyList('companyList_D700')"
+                                        class="cursor-pointer bg-white border border-slate-200 hover:border-purple-400 hover:bg-purple-50 rounded-lg p-3 transition-all flex items-center gap-4 hover:-translate-y-1 shadow-sm">
+                                        <div
+                                            class="w-10 h-10 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center text-lg flex-shrink-0">
+                                            <i class="fa-solid fa-border-all"></i></div>
+                                        <div class="text-left">
+                                            <h6 class="font-bold text-slate-700 text-sm">基板</h6>
+                                        </div>
+                                    </div>
+                                    <div id="ic_link_D800" onclick="toggleCompanyList('companyList_D800')"
+                                        class="cursor-pointer bg-white border border-slate-200 hover:border-purple-400 hover:bg-purple-50 rounded-lg p-3 transition-all flex items-center gap-4 hover:-translate-y-1 shadow-sm">
+                                        <div
+                                            class="w-10 h-10 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center text-lg flex-shrink-0">
+                                            <i class="fa-solid fa-grip-lines"></i></div>
+                                        <div class="text-left">
+                                            <h6 class="font-bold text-slate-700 text-sm">導線架</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                
+                                <div class="flex justify-center py-1">
+                                    <i class="fa-solid fa-arrow-down text-slate-400"></i>
+                                </div>
+                
+                                <div id="ic_link_D900" onclick="toggleCompanyList('companyList_D900')"
+                                    class="cursor-pointer bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg p-6 shadow-lg shadow-purple-200 hover:shadow-xl hover:scale-105 transition-all text-center ring-4 ring-white">
+                                    <div class="mb-2"><i class="fa-solid fa-box-open text-3xl"></i></div>
+                                    <h5 class="font-bold text-xl">IC 封裝測試</h5>
+                                </div>
+                
+                                <div class="flex justify-center py-1">
+                                    <i class="fa-solid fa-arrow-down text-slate-400"></i>
+                                </div>
+                
+                                <div id="ic_link_DA00" onclick="toggleCompanyList('companyList_DA00')"
+                                    class="cursor-pointer bg-white border border-slate-200 hover:border-purple-400 hover:bg-purple-50 rounded-lg p-3 transition-all flex items-center gap-4 hover:-translate-y-1 shadow-sm">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center text-lg flex-shrink-0">
+                                        <i class="fa-solid fa-cubes"></i></div>
+                                    <div class="text-left">
+                                        <h6 class="font-bold text-slate-700 text-sm uppercase tracking-wider">IC 模組</h6>
+                                    </div>
+                                </div>
+                                <div class="border-t-2 border-dashed border-slate-300 w-full"></div>
+                                <div id="ic_link_DB00" onclick="toggleCompanyList('companyList_DB00')"
+                                    class="cursor-pointer bg-white border border-slate-200 hover:border-purple-400 hover:bg-purple-50 rounded-lg p-3 transition-all flex items-center gap-4 hover:-translate-y-1 shadow-sm">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center text-lg flex-shrink-0">
+                                        <i class="fa-solid fa-truck-ramp-box"></i></div>
+                                    <div class="text-left">
+                                        <h6 class="font-bold text-slate-700 text-sm uppercase tracking-wider">IC 通路</h6>
+                                    </div>
+                                </div>
+                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="company-lists" class="mt-20 space-y-6 relative z-20">
+                    <h4 class="text-xl font-bold text-slate-700 pl-4 border-l-4 border-cyan-500 flex items-center gap-2">
+                        點擊上方圖表查看公司列表
+                    </h4>
+                    
+                    <div id="companyList_DC00"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-blue-100">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                            IP 設計 / IC 設計代工服務 <span class="text-sm font-normal text-slate-500">(共7家)</span>
+                        </p>
+                    
+                        <div class="grid grid-cols-1 gap-y-10">
+                            <div class="company-details">
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">
+                                    本國上市公司 (6家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1 mb-6">
+                                    <a href="/company/2401/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">凌陽</a>
+                                    <a href="/company/3035/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">智原</a>
+                                    <a href="/company/3443/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">創意</a>
+                                    <a href="/company/5222/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">全訊</a>
+                                    <a href="/company/6533/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">晶心科</a>
+                                    <a href="/company/6695/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">芯鼎</a>
+                                </div>
+                    
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">
+                                    外國上市公司 (1家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1">
+                                    <a href="/company/3661/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">世芯-KY</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="companyList_D300"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-blue-100">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                            IC 晶圓製造 <span class="text-sm font-normal text-slate-500">(共18家)</span>
+                        </p>
+                    
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-10">
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-layer-group mr-2 text-blue-600"></i>晶圓製造
+                                </h5>
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">本國上市公司 (15家)</div>
+                                        <div class="flex flex-wrap gap-2 px-1">
+                                            <a href="/company/2303/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯電</a>
+                    
+                                            <a href="/search.html"
+                                                class="bg-cyan-500 hover:bg-cyan-600 text-white text-sm px-4 py-1.5 rounded-full transition-all duration-200 font-bold shadow-md hover:shadow-lg transform hover:-translate-y-0.5">台積電</a>
+                    
+                                            <a href="/company/2337/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">旺宏</a>
+                                            <a href="/company/2340/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">台亞</a>
+                                            <a href="/company/2344/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">華邦電</a>
+                                            <a href="/company/2371/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">大同</a>
+                                            <a href="/company/2408/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">南亞科</a>
+                                            <a href="/company/2434/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">統懋</a>
+                                            <a href="/company/2455/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">全新</a>
+                                            <a href="/company/3016/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">嘉晶</a>
+                                            <a href="/company/3532/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">台勝科</a>
+                                            <a href="/company/4919/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">新唐</a>
+                                            <a href="/company/5222/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">全訊</a>
+                                            <a href="/company/6770/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">力積電</a>
+                                            <a href="/company/8028/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">昇陽半導體</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-memory mr-2 text-purple-600"></i>DRAM 製造
+                                </h5>
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">本國上市公司 (3家)</div>
+                                        <div class="flex flex-wrap gap-2 px-1">
+                                            <a href="/company/2344/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">華邦電</a>
+                                            <a href="/company/2408/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">南亞科</a>
+                                            <a href="/company/6770/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">力積電</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-microchip mr-2 text-slate-500"></i>其他 IC / 二極體製造
+                                </h5>
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">本國上市公司 (6家)</div>
+                                        <div class="flex flex-wrap gap-2 px-1">
+                                            <a href="/company/2302/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">麗正</a>
+                                            <a href="/company/2340/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">台亞</a>
+                                            <a href="/company/2342/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">茂矽</a>
+                                            <a href="/company/2434/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">統懋</a>
+                                            <a href="/company/2481/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">強茂</a>
+                                            <a href="/company/3679/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">誠創</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                        </div>
+                    </div>
+
+                    <div id="companyList_D100"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-cyan-100">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+                            IC 設計 <span class="text-sm font-normal text-slate-500">(共71家)</span>
+                        </p>
+                    
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-10">
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-lightbulb mr-2 text-yellow-500"></i>LED 驅動 IC
+                                </h5>
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">本國上市公司 (3家)</div>
+                                        <div class="flex flex-wrap gap-2 px-1">
+                                            <a href="/company/2308/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">台達電</a>
+                                            <a href="/company/3014/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯陽</a>
+                                            <a href="/company/8081/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">天鈺</a>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">外國上市公司 (1家)</div>
+                                        <div class="flex flex-wrap gap-2 px-1">
+                                            <a href="/company/6415/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">矽力*-KY</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-sun mr-2 text-orange-400"></i>光源管理 IC
+                                </h5>
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">本國上市公司 (1家)</div>
+                                        <div class="flex flex-wrap gap-2 px-1">
+                                            <a href="/company/8016/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">矽創</a>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">外國上市公司 (1家)</div>
+                                        <div class="flex flex-wrap gap-2 px-1">
+                                            <a href="/company/6415/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">矽力*-KY</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-laptop mr-2 text-blue-500"></i>消費性 IC
+                                </h5>
+                                <div>
+                                    <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">本國上市公司 (15家)</div>
+                                    <div class="flex flex-wrap gap-2 px-1">
+                                        <a href="/company/2308/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">台達電</a>
+                                        <a href="/company/2401/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">凌陽</a>
+                                        <a href="/company/2436/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">偉詮電</a>
+                                        <a href="/company/2454/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯發科</a>
+                                        <a href="/company/2458/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">義隆</a>
+                                        <a href="/company/3014/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯陽</a>
+                                        <a href="/company/3034/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯詠</a>
+                                        <a href="/company/3527/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">揚智</a>
+                                        <a href="/company/3118/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">鈺寶-創</a>
+                                        <a href="/company/3530/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">晶相光</a>
+                                        <a href="/company/4919/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">新唐</a>
+                                        <a href="/company/4952/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">凌通</a>
+                                        <a href="/company/6695/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">芯鼎</a>
+                                        <a href="/company/6698/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">威鋒電子</a>
+                                        <a href="/company/8016/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">矽創</a>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-memory mr-2 text-purple-500"></i>記憶體 IC
+                                </h5>
+                                <div>
+                                    <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">本國上市公司 (5家)</div>
+                                    <div class="flex flex-wrap gap-2 px-1">
+                                        <a href="/company/2337/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">旺宏</a>
+                                        <a href="/company/2344/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">華邦電</a>
+                                        <a href="/company/2408/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">南亞科</a>
+                                        <a href="/company/3006/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">晶豪科</a>
+                                        <a href="/company/6531/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">愛普*</a>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-microchip mr-2 text-emerald-500"></i>微控制器 IC
+                                </h5>
+                                <div>
+                                    <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">本國上市公司 (8家)</div>
+                                    <div class="flex flex-wrap gap-2 px-1">
+                                        <a href="/company/2308/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">台達電</a>
+                                        <a href="/company/2436/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">偉詮電</a>
+                                        <a href="/company/2458/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">義隆</a>
+                                        <a href="/company/3014/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯陽</a>
+                                        <a href="/company/3034/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯詠</a>
+                                        <a href="/company/4952/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">凌通</a>
+                                        <a href="/company/5471/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">松翰</a>
+                                        <a href="/company/6202/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">盛群</a>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-bolt mr-2 text-green-500"></i>電源管理 IC
+                                </h5>
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">本國上市公司 (15家)</div>
+                                        <div class="flex flex-wrap gap-2 px-1">
+                                            <a href="/company/2308/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">台達電</a>
+                                            <a href="/company/2436/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">偉詮電</a>
+                                            <a href="/company/2454/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯發科</a>
+                                            <a href="/company/3034/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯詠</a>
+                                            <a href="/company/3257/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">虹冠電</a>
+                                            <a href="/company/3588/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">通嘉</a>
+                                            <a href="/company/3592/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">瑞鼎</a>
+                                            <a href="/company/4952/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">凌通</a>
+                                            <a href="/company/8081/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">天鈺</a>
+                                            <a href="/company/6719/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">力智</a>
+                                            <a href="/company/6698/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">威鋒電子</a>
+                                            <a href="/company/6799/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">來頡</a>
+                                            <a href="/company/8016/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">矽創</a>
+                                            <a href="/company/8299/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">致新</a>
+                                            <a href="/company/8261/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">富鼎</a>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">外國上市公司 (1家)</div>
+                                        <div class="flex flex-wrap gap-2 px-1">
+                                            <a href="/company/6415/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">矽力*-KY</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-hard-drive mr-2 text-slate-500"></i>磁碟儲存控制器 IC
+                                </h5>
+                                <div>
+                                    <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">本國上市公司 (1家)</div>
+                                    <div class="flex flex-wrap gap-2 px-1">
+                                        <a href="/company/2401/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">凌陽</a>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-wifi mr-2 text-blue-400"></i>網路通訊 IC
+                                </h5>
+                                <div>
+                                    <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">本國上市公司 (5家)</div>
+                                    <div class="flex flex-wrap gap-2 px-1">
+                                        <a href="/company/2379/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">瑞昱</a>
+                                        <a href="/company/2454/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯發科</a>
+                                        <a href="/company/3088/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯傑</a>
+                                        <a href="/company/4968/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">立積</a>
+                                        <a href="/company/6526/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">達發</a>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-plug mr-2 text-indigo-400"></i>輸出入介面 IC
+                                </h5>
+                                <div>
+                                    <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">本國上市公司 (5家)</div>
+                                    <div class="flex flex-wrap gap-2 px-1">
+                                        <a href="/company/2401/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">凌陽</a>
+                                        <a href="/company/3014/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯陽</a>
+                                        <a href="/company/5269/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">祥碩</a>
+                                        <a href="/company/6243/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">迅杰</a>
+                                        <a href="/company/6698/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">威鋒電子</a>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-sliders mr-2 text-cyan-500"></i>平面顯示器控制 IC
+                                </h5>
+                                <div>
+                                    <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">本國上市公司 (3家)</div>
+                                    <div class="flex flex-wrap gap-2 px-1">
+                                        <a href="/company/2454/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯發科</a>
+                                        <a href="/company/3034/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯詠</a>
+                                        <a href="/company/4952/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">凌通</a>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-tv mr-2 text-sky-600"></i>平面顯示器驅動 IC
+                                </h5>
+                                <div>
+                                    <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">本國上市公司 (5家)</div>
+                                    <div class="flex flex-wrap gap-2 px-1">
+                                        <a href="/company/3034/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯詠</a>
+                                        <a href="/company/3545/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">敦泰</a>
+                                        <a href="/company/3592/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">瑞鼎</a>
+                                        <a href="/company/8081/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">天鈺</a>
+                                        <a href="/company/8016/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">矽創</a>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-compact-disc mr-2 text-slate-400"></i>光儲存控制 IC
+                                </h5>
+                                <div>
+                                    <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">本國上市公司 (2家)</div>
+                                    <div class="flex flex-wrap gap-2 px-1">
+                                        <a href="/company/2401/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">凌陽</a>
+                                        <a href="/company/2454/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯發科</a>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-camera mr-2 text-rose-500"></i>影像感測 IC
+                                </h5>
+                                <div>
+                                    <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">本國上市公司 (3家)</div>
+                                    <div class="flex flex-wrap gap-2 px-1">
+                                        <a href="/company/2401/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">凌陽</a>
+                                        <a href="/company/3034/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯詠</a>
+                                        <a href="/company/8016/"
+                                            class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">矽創</a>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                        </div>
+                    </div>
+                    <div id="companyList_D200"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-blue-100">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                            光罩 <span class="text-sm font-normal text-slate-500">(共2家)</span>
+                        </p>
+                        <div class="grid grid-cols-1 gap-y-10">
+                            <div class="company-details">
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">
+                                    本國上市公司 (2家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1">
+                                    <a href="/company/2338/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">光罩</a>
+                                    <a href="/company/2438/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">翔耀</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="companyList_D400"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-blue-100">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                            生產製程及檢測設備 <span class="text-sm font-normal text-slate-500">(共22家)</span>
+                        </p>
+                        <div class="grid grid-cols-1 gap-y-10">
+                            <div class="company-details">
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">
+                                    本國上市公司 (22家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1">
+                                    <a href="/company/2360/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">致茂</a>
+                                    <a href="/company/2467/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">志聖</a>
+                                    <a href="/company/3030/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">德律</a>
+                                    <a href="/company/3413/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">京鼎</a>
+                                    <a href="/company/3535/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">晶彩科</a>
+                                    <a href="/company/3583/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">辛耘</a>
+                                    <a href="/company/4949/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">有成精密</a>
+                                    <a href="/company/5222/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">全訊</a>
+                                    <a href="/company/5434/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">崇越</a>
+                                    <a href="/company/6277/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">宏正</a>
+                                    <a href="/company/6438/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">迅得</a>
+                                    <a href="/company/6515/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">穎崴</a>
+                                    <a href="/company/6609/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯策</a>
+                                    <a href="/company/6706/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">惠特</a>
+                                    <a href="/company/6789/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">采鈺</a>
+                                    <a href="/company/6909/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">創控</a>
+                                    <a href="/company/6937/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">天虹</a>
+                                    <a href="/company/6990/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聚賢研發-創</a>
+                                    <a href="/company/7712/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">暉盛-創</a>
+                                    <a href="/company/7760/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">鴻勁</a>
+                                    <a href="/company/7769/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">長廣</a>
+                                    <a href="/company/8374/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">羅昇</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="companyList_D500"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-blue-100">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                            化學品 <span class="text-sm font-normal text-slate-500">(共12家)</span>
+                        </p>
+                        <div class="grid grid-cols-1 gap-y-10">
+                            <div class="company-details">
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">
+                                    本國上市公司 (12家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1">
+                                    <a href="/company/1711/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">永光</a>
+                                    <a href="/company/1717/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">長興</a>
+                                    <a href="/company/1727/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">中華化</a>
+                                    <a href="/company/2493/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">揚博</a>
+                                    <a href="/company/3010/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">華立</a>
+                                    <a href="/company/3305/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">昇貿</a>
+                                    <a href="/company/4720/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">德淵</a>
+                                    <a href="/company/4722/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">國精化</a>
+                                    <a href="/company/4755/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">三福化</a>
+                                    <a href="/company/4764/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">雙鍵</a>
+                                    <a href="/company/5234/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">達興材料</a>
+                                    <a href="/company/5434/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">崇越</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="companyList_D600"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-purple-100">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                            生產製程及檢測設備 <span class="text-sm font-normal text-slate-500">(共14家)</span>
+                        </p>
+                    
+                        <div class="grid grid-cols-1 gap-y-10">
+                            <div class="company-details">
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">
+                                    本國上市公司 (14家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1">
+                                    <a href="/company/2308/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">台達電</a>
+                                    <a href="/company/2360/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">致茂</a>
+                                    <a href="/company/2467/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">志聖</a>
+                                    <a href="/company/3030/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">德律</a>
+                                    <a href="/company/3055/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">蔚華科</a>
+                                    <a href="/company/3583/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">辛耘</a>
+                                    <a href="/company/4770/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">上品</a>
+                                    <a href="/company/6277/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">宏正</a>
+                                    <a href="/company/6438/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">迅得</a>
+                                    <a href="/company/6515/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">穎崴</a>
+                                    <a href="/company/6937/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">天虹</a>
+                                    <a href="/company/6990/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聚賢研發-創</a>
+                                    <a href="/company/7712/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">暉盛-創</a>
+                                    <a href="/company/8070/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">長華*</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="companyList_D700"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-purple-100">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                            基板 <span class="text-sm font-normal text-slate-500">(共6家)</span>
+                        </p>
+                    
+                        <div class="grid grid-cols-1 gap-y-10">
+                            <div class="company-details">
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">
+                                    本國上市公司 (6家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1">
+                                    <a href="/company/2459/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">敦吉</a>
+                                    <a href="/company/3189/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">景碩</a>
+                                    <a href="/company/4938/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">和碩</a>
+                                    <a href="/company/6271/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">同欣電</a>
+                                    <a href="/company/6552/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">易華電</a>
+                                    <a href="/company/8070/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">長華*</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="companyList_D800"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-purple-100">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                            導線架 <span class="text-sm font-normal text-slate-500">(共6家)</span>
+                        </p>
+                    
+                        <div class="grid grid-cols-1 gap-y-10">
+                            <div class="company-details">
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">
+                                    本國上市公司 (6家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1">
+                                    <a href="/company/2351/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">順德</a>
+                                    <a href="/company/2483/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">百容</a>
+                                    <a href="/company/2486/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">一詮</a>
+                                    <a href="/company/3653/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">健策</a>
+                                    <a href="/company/5285/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">界霖</a>
+                                    <a href="/company/8070/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">長華*</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="companyList_D900"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-purple-100">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                            IC 封裝測試 <span class="text-sm font-normal text-slate-500">(共17家)</span>
+                        </p>
+                    
+                        <div class="grid grid-cols-1 gap-y-10">
+                            <div class="company-details">
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">
+                                    本國上市公司 (17家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1">
+                                    <a href="/company/1447/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">南染</a>
+                                    <a href="/company/1434/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">福懋</a>
+                                    <a href="/company/2329/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">華泰</a>
+                                    <a href="/company/2337/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">旺宏</a>
+                                    <a href="/company/2340/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">台亞</a>
+                                    <a href="/company/2369/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">菱生</a>
+                                    <a href="/company/2441/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">超豐</a>
+                                    <a href="/company/2449/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">京元電子</a>
+                                    <a href="/company/3130/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯鈞</a>
+                                    <a href="/company/3711/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">日月光投控</a>
+                                    <a href="/company/6239/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">力成</a>
+                                    <a href="/company/6257/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">矽格</a>
+                                    <a href="/company/6271/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">同欣電</a>
+                                    <a href="/company/8110/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">華東</a>
+                                    <a href="/company/8131/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">福懋科</a>
+                                    <a href="/company/8150/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">南茂</a>
+                                    <a href="/company/8162/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">微矽電子-創</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="companyList_DA00"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-purple-100">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                            IC 模組 <span class="text-sm font-normal text-slate-500">(共10家)</span>
+                        </p>
+                    
+                        <div class="grid grid-cols-1 gap-y-10">
+                            <div class="company-details">
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">
+                                    本國上市公司 (10家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1">
+                                    <a href="/company/1434/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">福懋</a>
+                                    <a href="/company/2308/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">台達電</a>
+                                    <a href="/company/2451/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">創見</a>
+                                    <a href="/company/3068/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">立萬利</a>
+                                    <a href="/company/3135/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">凌航</a>
+                                    <a href="/company/3150/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">鈺寶-創</a>
+                                    <a href="/company/5222/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">全訊</a>
+                                    <a href="/company/6271/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">同欣電</a>
+                                    <a href="/company/8131/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">福懋科</a>
+                                    <a href="/company/8271/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">宇瞻</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="companyList_DB00"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-purple-100">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                            IC 通路 <span class="text-sm font-normal text-slate-500">(共16家)</span>
+                        </p>
+                    
+                        <div class="grid grid-cols-1 gap-y-10">
+                            <div class="company-details">
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded">
+                                    本國上市公司 (16家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1">
+                                    <a href="/company/2308/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">台達電</a>
+                                    <a href="/company/2347/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">聯強</a>
+                                    <a href="/company/2459/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">敦吉</a>
+                                    <a href="/company/3010/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">華立</a>
+                                    <a href="/company/3026/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">禾伸堂</a>
+                                    <a href="/company/3028/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">增你強</a>
+                                    <a href="/company/3033/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">威健</a>
+                                    <a href="/company/3036/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">文曄</a>
+                                    <a href="/company/3048/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">益登</a>
+                                    <a href="/company/3209/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">全科</a>
+                                    <a href="/company/3312/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">弘憶股</a>
+                                    <a href="/company/3528/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">安馳</a>
+                                    <a href="/company/3702/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">大聯大</a>
+                                    <a href="/company/6189/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">豐藝</a>
+                                    <a href="/company/6192/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">巨路</a>
+                                    <a href="/company/8112/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">至上</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <footer class="border-t border-slate-200 mt-12 pt-8 text-center text-xs text-slate-400 pb-8">
+        <p>JobLens 2025 Beta | 本系統使用政府資料開放平臺 (ESG資訊揭露、職安署) 數據</p>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/eye" title="eye icons">Eye icons created by Vectors Market - Flaticon</a>
+    </footer>
+
+    <script src="search.js"></script>
+    <script>
+        // 列表切換功能
+        function toggleCompanyList(listId) {
+            const allLists = document.querySelectorAll('.company-list');
+            allLists.forEach(list => {
+                if (list.id !== listId) list.classList.add('hidden');
+            });
+            const companyListDiv = document.getElementById(listId);
+            if (companyListDiv) companyListDiv.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
