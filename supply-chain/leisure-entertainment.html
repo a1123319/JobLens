@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobLens - 供應鏈分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; }
+        .chart-container { position: relative; height: 300px; width: 100%; }
+        /* 隱藏捲軸但保持功能 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='/index.html'">
+                <img src="/assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
+                <span class="text-xl font-bold tracking-wider">JobLens</span>
+            </div>
+            <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+                <a href="/search.html" class="hover:text-cyan-400 transition">企業資訊</a>
+                <a href="/reviews.html" class="hover:text-cyan-400 transition">評論</a>
+                <a href="/about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">
+                    關於我們
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-10 px-4">
+        <div class="container mx-auto text-center max-w-2xl">
+            <h1 class="text-2xl md:text-3xl font-bold mb-3">休閒娛樂產業業別</h1>
+            <p class="text-slate-400 mb-6 text-sm">從不同業別之間切入，認識休閒娛樂產業的上市公司資訊</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 space-y-12">
+        <section id="supply-chain-overview" class="scroll-mt-24">
+            <h3 class="text-2xl font-bold text-slate-800 mb-8 flex items-center gap-2">
+                <span class="bg-cyan-500 w-2 h-8 rounded-full"></span> 產業種類
+            </h3>
+            
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-8 pb-12 overflow-visible relative">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 rounded-t-2xl"></div>
+                
+                <div id="main_ic_panel" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative mb-12">
+    
+                    <div class="group cursor-pointer bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center transition-all duration-300 hover:-translate-y-3 hover:shadow-2xl hover:bg-slate-50 hover:border-cyan-400 hover:ring-2 hover:ring-cyan-400/50" onclick="toggleCompanyList('companyList_LE00')">
+                        <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-5xl transition-all duration-300 group-hover:bg-cyan-100 group-hover:text-cyan-600">
+                            <i class="fa-solid fa-golf-ball-tee transition-transform group-hover:scale-110"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-700 transition-colors group-hover:text-cyan-700">高爾夫球具業</h4>
+                    </div>
+
+                    <div class="group cursor-pointer bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center transition-all duration-300 hover:-translate-y-3 hover:shadow-2xl hover:bg-slate-50 hover:border-blue-400 hover:ring-2 hover:ring-blue-400/50" onclick="toggleCompanyList('companyList_LE01')">
+                        <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-5xl transition-all duration-300 group-hover:bg-blue-100 group-hover:text-blue-600">
+                            <i class="fa-solid fa-plane-up transition-transform group-hover:scale-110"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-700 transition-colors group-hover:text-blue-700">旅遊服務業</h4>
+                    </div>
+
+                    <div class="group cursor-pointer bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center transition-all duration-300 hover:-translate-y-3 hover:shadow-2xl hover:bg-slate-50 hover:border-purple-400 hover:ring-2 hover:ring-purple-400/50" onclick="toggleCompanyList('companyList_LE02')">
+                        <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-5xl transition-all duration-300 group-hover:bg-purple-100 group-hover:text-purple-600">
+                            <i class="fa-solid fa-gamepad transition-transform group-hover:scale-110"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-700 transition-colors group-hover:text-purple-700">線上遊戲業</h4>
+                    </div>
+
+                    <div class="group cursor-pointer bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center transition-all duration-300 hover:-translate-y-3 hover:shadow-2xl hover:bg-slate-50 hover:border-rose-400 hover:ring-2 hover:ring-rose-400/50" onclick="toggleCompanyList('companyList_LE03')">
+                        <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-5xl transition-all duration-300 group-hover:bg-rose-100 group-hover:text-rose-600">
+                            <i class="fa-solid fa-ticket transition-transform group-hover:scale-110"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-700 transition-colors group-hover:text-rose-700">娛樂服務業</h4>
+                    </div>
+
+                    <div class="group cursor-pointer bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center transition-all duration-300 hover:-translate-y-3 hover:shadow-2xl hover:bg-slate-50 hover:border-amber-400 hover:ring-2 hover:ring-amber-400/50" onclick="toggleCompanyList('companyList_LE04')">
+                        <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-5xl transition-all duration-300 group-hover:bg-amber-100 group-hover:text-amber-600">
+                            <i class="fa-solid fa-hotel transition-transform group-hover:scale-110"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-700 transition-colors group-hover:text-amber-700">旅館服務業</h4>
+                    </div>
+
+                    <div class="group cursor-pointer bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center transition-all duration-300 hover:-translate-y-3 hover:shadow-2xl hover:bg-slate-50 hover:border-emerald-400 hover:ring-2 hover:ring-emerald-400/50" onclick="toggleCompanyList('companyList_LE05')">
+                        <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-5xl transition-all duration-300 group-hover:bg-emerald-100 group-hover:text-emerald-600">
+                            <i class="fa-solid fa-caravan transition-transform group-hover:scale-110"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-700 transition-colors group-hover:text-emerald-700">休閒車業</h4>
+                    </div>
+                </div>
+                
+                <div id="company-lists" class="mt-20 space-y-6 relative z-20">
+                    <h4 class="text-xl font-bold text-slate-700 pl-4 border-l-4 border-cyan-500 flex items-center gap-2">
+                        點擊上方圖表查看公司列表
+                    </h4>
+                    
+                    <div id="companyList_LE00"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-cyan-200">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-cyan-500"></span>
+                            高爾夫球具業 <span class="text-sm font-normal text-slate-500">(共 2 家)</span>
+                        </p>
+                    
+                        <div class="grid grid-cols-1 gap-y-10">
+                            <div class="company-details">
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded border-l-4 border-cyan-400">
+                                    本國上市公司 (2家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1 mb-6">
+                                    <a href="/company/6670/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">復盛應用</a>
+                                    <a href="/company/8481/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">政伸</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="companyList_LE01"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-blue-200">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                            旅遊服務業 <span class="text-sm font-normal text-slate-500">(共 2 家)</span>
+                        </p>
+                    
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-10">
+                            <div class="company-details">
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded border-l-4 border-blue-400">
+                                    本國上市公司 (2家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1 mb-6">
+                                    <a href="/company/2731/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">雄獅</a>
+                                    <a href="/company/5706/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">鳳凰</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="companyList_LE02"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-purple-200">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-purple-500"></span>
+                            線上遊戲業 <span class="text-sm font-normal text-slate-500">(共 3 家)</span>
+                        </p>
+                    
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-10">
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-lightbulb mr-2 text-yellow-500"></i>設計開發
+                                </h5>
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded border-l-4 border-purple-400">本國上市公司 (1家)</div>
+                                        <div class="flex flex-wrap gap-2 px-1">
+                                            <a href="/company/4994/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">傳奇</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="company-details">
+                                <h5 class="text-md font-bold text-slate-600 mb-4 border-b border-slate-200 pb-1 flex items-center">
+                                    <i class="fa-solid fa-sun mr-2 text-orange-400"></i>營運發行
+                                </h5>
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded border-l-4 border-purple-400">本國上市公司 (2家)</div>
+                                        <div class="flex flex-wrap gap-2 px-1">
+                                            <a href="/company/2465/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">麗臺</a>
+                                            <a href="/company/4994/"
+                                                class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">傳奇</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="companyList_LE03"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-rose-200">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+                            娛樂服務業 <span class="text-sm font-normal text-slate-500">(共 6 家)</span>
+                        </p>
+                        <div class="grid grid-cols-1 gap-y-10">
+                            <div class="company-details">
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded border-l-4 border-rose-400">
+                                    本國上市公司 (6家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1">
+                                    <a href="/company/1432/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">大魯閣</a>
+                                    <a href="/company/1532/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">勤美</a>
+                                    <a href="/company/2701/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">萬企</a>
+                                    <a href="/company/2705/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">六福</a>
+                                    <a href="/company/8462/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">柏文</a>
+                                    <a href="/company/9943/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">好樂迪</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="companyList_LE04"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-amber-200">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                            旅館服務業 <span class="text-sm font-normal text-slate-500">(共 11 家)</span>
+                        </p>
+                        <div class="grid grid-cols-1 gap-y-10">
+                            <div class="company-details">
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded border-l-4 border-amber-400">
+                                    本國上市公司 (11家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1">
+                                    <a href="/company/1532/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">勤美</a>
+                                    <a href="/company/2702/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">華園</a>
+                                    <a href="/company/2704/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">國賓</a>
+                                    <a href="/company/2705/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">六福</a>
+                                    <a href="/company/2706/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">第一店</a>
+                                    <a href="/company/2707/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">晶華</a>
+                                    <a href="/company/2712/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">遠雄來</a>
+                                    <a href="/company/2722/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">夏都</a>
+                                    <a href="/company/2739/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">寒舍</a>
+                                    <a href="/company/2748/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">雲品</a>
+                                    <a href="/company/6128/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">上福</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="companyList_LE05"
+                        class="company-list bg-white p-6 rounded-xl border border-slate-200 shadow-sm hidden ring-2 ring-emerald-200">
+                        <p class="font-bold text-slate-700 text-lg mb-6 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                            休閒車業 <span class="text-sm font-normal text-slate-500">(共 7 家)</span>
+                        </p>
+                        <div class="grid grid-cols-1 gap-y-10">
+                            <div class="company-details">
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded border-l-4 border-emerald-400">
+                                    本國上市公司 (6家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1 mb-6">
+                                    <a href="/company/2308/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">台達電</a>
+                                    <a href="/company/4536/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">拓凱</a>
+                                    <a href="/company/5306/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">桂盟</a>
+                                    <a href="/company/8481/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">政伸</a>
+                                    <a href="/company/9914/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">美利達</a>
+                                    <a href="/company/9921/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">巨大</a>
+                                </div>
+
+                                <div class="text-md font-bold text-slate-600 mb-3 bg-slate-50 p-2 rounded border-l-4 border-emerald-400">
+                                    外國上市公司 (1家)
+                                </div>
+                                <div class="flex flex-wrap gap-2 px-1">
+                                    <a href="/company/3665/"
+                                        class="bg-slate-100 text-slate-300 text-sm px-3 py-1.5 rounded-full cursor-not-allowed select-none border border-transparent">貿聯-KY</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <footer class="border-t border-slate-200 mt-12 pt-8 text-center text-xs text-slate-400 pb-8">
+        <p>JobLens 2025 Beta | 本系統使用政府資料開放平臺 (ESG資訊揭露、職安署) 數據</p>
+        <a style="display: block" href="https://www.flaticon.com/free-icons/eye" title="eye icons">Eye icons created by Vectors Market - Flaticon</a>
+    </footer>
+
+    <script src="search.js"></script>
+    <script>
+        // 列表切換功能
+        function toggleCompanyList(listId) {
+            const allLists = document.querySelectorAll('.company-list');
+            allLists.forEach(list => {
+                if (list.id !== listId) list.classList.add('hidden');
+            });
+            const companyListDiv = document.getElementById(listId);
+            if (companyListDiv) companyListDiv.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
