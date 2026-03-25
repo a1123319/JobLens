@@ -22,9 +22,12 @@
         /* Details 展開動畫輔助 */
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
+
+        /* 確保拖曳滑桿時不會選取到網頁文字 */
+        .no-select { user-select: none; -webkit-user-select: none; }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="text-slate-800 relative">
 
     <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
@@ -42,6 +45,19 @@
         </div>
     </nav>
 
+    <div class="fixed right-4 xl:right-12 top-1/2 transform -translate-y-1/2 z-50 hidden xl:flex items-stretch gap-4 h-[400px]">
+        <div class="relative w-24" id="slider-labels">
+            </div>
+        
+        <div class="relative w-1.5 bg-slate-200 rounded-full h-full" id="vertical-track">
+            <div id="vertical-progress" class="absolute top-0 left-0 w-full bg-cyan-600 rounded-full pointer-events-none" style="height: 0%;"></div>
+            
+            <div id="track-dots" class="absolute w-full h-full pointer-events-none"></div>
+
+            <div id="vertical-thumb" class="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white border-[3px] border-cyan-600 rounded-full shadow-md cursor-grab z-20 hover:scale-125 transition-transform" style="top: 0%;"></div>
+        </div>
+    </div>
+
     <header class="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-10 px-4">
         <div class="container mx-auto text-center max-w-2xl">
             <h1 class="text-2xl md:text-3xl font-bold mb-3">給求職者透視企業的放大鏡</h1>
@@ -55,7 +71,7 @@
         </div>
     </header>
 
-    <main class="container mx-auto px-4 py-8 space-y-12">
+    <main class="container mx-auto px-4 py-8 space-y-16 max-w-6xl">
         
         <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center border-l-8 border-cyan-600">
             <div>
@@ -74,58 +90,54 @@
             </div>
         </div>
 
-        <section>
-            <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 官方徵才管道
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <a href="https://careers.tsmc.com/zh_TW/careers/SearchJobs" target="_blank" class="block group">
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md hover:border-cyan-300 transition-all">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center p-2.5 group-hover:scale-110 transition-transform">
-                                <img src="/assets/work.png" class="w-full h-full object-contain">
+        <section id="section-jobs" class="scroll-mt-24 space-y-8 relative">
+            <div>
+                <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 官方徵才管道
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <a href="https://careers.tsmc.com/zh_TW/careers/SearchJobs" target="_blank" class="block group">
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md hover:border-cyan-300 transition-all">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center p-2.5 group-hover:scale-110 transition-transform">
+                                    <img src="/assets/work.png" class="w-full h-full object-contain">
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-base text-slate-800">台積電 官方招募網站</h4>
+                                    <p class="text-xs text-slate-500">瀏覽最完整的職缺列表</p>
+                                </div>
                             </div>
-                            <div>
-                                <h4 class="font-bold text-base text-slate-800">台積電 官方招募網站</h4>
-                                <p class="text-xs text-slate-500">瀏覽最完整的職缺列表</p>
-                            </div>
-                        </div>
-                        <div class="text-slate-300 group-hover:text-cyan-600 transition-colors">
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                        </div>
-                    </div>
-                </a>
-                <a href="https://www.104.com.tw/company/a5h92m0?jobsource=google" target="_blank" class="block group">
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md hover:border-orange-300 transition-all">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center text-orange-500 text-xl group-hover:scale-110 transition-transform">
-                                <i class="fa-solid fa-briefcase"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-base text-slate-800">104 人力銀行</h4>
-                                <p class="text-xs text-slate-500">查看面試心得與職缺分布</p>
+                            <div class="text-slate-300 group-hover:text-cyan-600 transition-colors">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
                             </div>
                         </div>
-                        <div class="text-slate-300 group-hover:text-orange-500 transition-colors">
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                    <a href="https://www.104.com.tw/company/a5h92m0?jobsource=google" target="_blank" class="block group">
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md hover:border-orange-300 transition-all">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center text-orange-500 text-xl group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-briefcase"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-base text-slate-800">104 人力銀行</h4>
+                                    <p class="text-xs text-slate-500">查看面試心得與職缺分布</p>
+                                </div>
+                            </div>
+                            <div class="text-slate-300 group-hover:text-orange-500 transition-colors">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
             </div>
-        </section>
 
-        <section>
-            <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 職缺列表
-            </h3>
             <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                     <h4 class="font-bold text-slate-700">最新職缺摘要</h4>
                     <span class="text-xs text-slate-400" id="job-count-label">載入中...</span>
                 </div>
                 
-                <div id="job-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                </div>
+                <div id="job-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4"></div>
 
                 <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
                     <button onclick="changePage(-1)" id="prev-btn" class="text-sm font-bold text-slate-500 hover:text-cyan-700 disabled:opacity-30 disabled:hover:text-slate-500 transition flex items-center gap-1">
@@ -139,7 +151,7 @@
             </div>
         </section>
 
-        <section>
+        <section id="section-salary" class="scroll-mt-24 relative">
             <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 薪資與福利透視
             </h3>
@@ -193,7 +205,7 @@
             </div>
         </section>
 
-        <section>
+        <section id="section-rank" class="scroll-mt-24 relative">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                 <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
                     <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 同業薪資排名 (前 10 名)
@@ -216,10 +228,10 @@
             </div>
         </section>
 
-        <section>
+        <section id="section-safety" class="scroll-mt-24 space-y-6 relative">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 工安與環境永續 (ESG)
+                    <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 職業安全與衛生
                 </h3>
                 <div class="relative">
                     <select id="safety-year-select" onchange="updateSafetyData()" class="bg-white text-slate-700 text-sm font-bold py-2 pl-3 pr-8 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-600 cursor-pointer shadow-sm hover:bg-slate-50">
@@ -231,14 +243,12 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-8">
-                <div class="mb-6 pb-4 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-                    <div>
-                        <h4 class="text-lg font-bold text-slate-700">職業災害、火災與環境指標</h4>
-                        <p class="text-slate-400 text-xs mt-1">資料來源：職業災害統計</p>
-                    </div>
+                <div class="mb-6 pb-4 border-b border-slate-100">
+                    <h4 class="text-lg font-bold text-slate-700">職業災害與火災指標快篩</h4>
+                    <p class="text-slate-400 text-xs mt-1">資料來源：職業災害統計</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-orange-50 p-6 rounded-xl border border-orange-100 flex flex-col items-center justify-center text-center hover:shadow-md transition cursor-default">
                         <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mb-3 p-2.5">
                             <img src="/assets/injury.png" class="w-full h-full object-contain">
@@ -263,73 +273,167 @@
                         <p class="text-3xl font-bold text-slate-800" id="safety-fire">-</p>
                         <p class="text-xs text-slate-400 mt-2">件</p>
                     </div>
-
-                    <a href="/esg.html" class="group block h-full">
-                        <div class="h-full rounded-xl bg-slate-800 p-1 shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-                            <div class="h-full rounded-lg bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 p-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
-                                <div class="absolute top-0 right-0 w-24 h-24 bg-cyan-600/10 rounded-full blur-2xl -mr-10 -mt-10 transition group-hover:bg-cyan-600/20"></div>
-                                <div class="w-14 h-14 rounded-full bg-cyan-600/20 border border-cyan-600/30 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-900/50 p-3">
-                                    <img src="/assets/esg.png" class="w-full h-full object-contain">
-                                </div>
-                                <h5 class="text-slate-400 text-xs font-bold mb-1 uppercase tracking-widest">ESG 專區</h5>
-                                <p class="text-xl font-bold text-white mb-3">環境儀表板</p>
-                                <span class="inline-flex items-center gap-2 text-xs font-bold text-cyan-400 bg-cyan-600/10 px-3 py-1.5 rounded-full group-hover:bg-cyan-600 group-hover:text-white transition-colors">
-                                    點擊查看詳情 <i class="fa-solid fa-arrow-right"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </a>
                 </div>
             </div>
             
-            <div class="mt-4">
-                <details class="group bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <summary class="flex justify-between items-center font-bold cursor-pointer p-5 text-slate-700 hover:bg-slate-50 transition select-none">
-                        <span class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center">
-                                <i class="fa-solid fa-triangle-exclamation"></i>
+            <details class="group bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mt-4">
+                <summary class="flex justify-between items-center font-bold cursor-pointer p-5 text-slate-700 hover:bg-slate-50 transition select-none">
+                    <span class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        重大職災事件紀錄
+                    </span>
+                    <span class="text-slate-400 transition-transform duration-300 group-open:-rotate-180">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </span>
+                </summary>
+                <div class="p-5 border-t border-slate-100 bg-slate-50 overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[900px]">
+                        <thead>
+                            <tr class="bg-slate-200 text-slate-600 text-sm">
+                                <th class="p-3 border-b border-slate-300 font-bold w-1/6">災害類型</th>
+                                <th class="p-3 border-b border-slate-300 font-bold w-1/12 text-center">件數</th>
+                                <th class="p-3 border-b border-slate-300 font-bold w-1/5">公司名稱</th>
+                                <th class="p-3 border-b border-slate-300 font-bold w-1/4">位置</th>
+                                <th class="p-3 border-b border-slate-300 font-bold w-1/4">地址</th>
+                                <th class="p-3 border-b border-slate-300 font-bold w-1/6">日期</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bg-white hover:bg-red-50 transition text-sm">
+                                <td class="p-3 border-b border-slate-200 text-red-600 font-bold">墜落、滾落</td>
+                                <td class="p-3 border-b border-slate-200 text-center font-bold">1</td>
+                                <td class="p-3 border-b border-slate-200 font-medium text-slate-800">東元電機股份有限公司</td>
+                                <td class="p-3 border-b border-slate-200 text-slate-600">能源中心R1F梁底工作臺</td>
+                                <td class="p-3 border-b border-slate-200 text-slate-500 text-xs leading-relaxed">桃園市大園區航站南路9號<br>(能源中心)</td>
+                                <td class="p-3 border-b border-slate-200 text-slate-600">2025-01-05</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+        </section>
+
+        <section id="section-esg" class="scroll-mt-24 space-y-6 relative mt-16">
+            <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2 mb-4">
+                <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 環境永續 (ESG)
+            </h3>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-8">
+
+                <div class="space-y-12">
+                    <div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center p-2">
+                                <img src="/assets/air-pollution.png" class="w-full h-full object-contain">
                             </div>
-                            重大職災事件紀錄
-                        </span>
-                        <span class="text-slate-400 transition-transform duration-300 group-open:-rotate-180">
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </span>
-                    </summary>
-                    <div class="p-5 border-t border-slate-100 bg-slate-50 overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[900px]">
-                            <thead>
-                                <tr class="bg-slate-200 text-slate-600 text-sm">
-                                    <th class="p-3 border-b border-slate-300 font-bold w-1/6">災害類型</th>
-                                    <th class="p-3 border-b border-slate-300 font-bold w-1/12 text-center">件數</th>
-                                    <th class="p-3 border-b border-slate-300 font-bold w-1/5">公司名稱</th>
-                                    <th class="p-3 border-b border-slate-300 font-bold w-1/4">位置</th>
-                                    <th class="p-3 border-b border-slate-300 font-bold w-1/4">地址</th>
-                                    <th class="p-3 border-b border-slate-300 font-bold w-1/6">日期</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="bg-white hover:bg-red-50 transition text-sm">
-                                    <td class="p-3 border-b border-slate-200 text-red-600 font-bold">墜落、滾落</td>
-                                    <td class="p-3 border-b border-slate-200 text-center font-bold">1</td>
-                                    <td class="p-3 border-b border-slate-200 font-medium text-slate-800">東元電機股份有限公司</td>
-                                    <td class="p-3 border-b border-slate-200 text-slate-600">能源中心R1F梁底工作臺</td>
-                                    <td class="p-3 border-b border-slate-200 text-slate-500 text-xs leading-relaxed">桃園市大園區航站南路9號<br>(能源中心)</td>
-                                    <td class="p-3 border-b border-slate-200 text-slate-600">2025-01-05</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-800">溫室氣體排放量分析</h3>
+                                <p class="text-xs text-slate-500">單位：公噸 CO₂e</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div class="lg:col-span-2 h-[280px]">
+                                <canvas id="ghgChart"></canvas>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="text-sm font-bold text-emerald-700 mb-1">範疇一 (直接排放)</h4>
+                                            <p class="text-xl font-bold text-emerald-800 font-mono">1,819,396</p>
+                                        </div>
+                                        <span class="text-[10px] bg-emerald-200 text-emerald-700 px-1.5 py-0.5 rounded">已驗證</span>
+                                    </div>
+                                </div>
+                                <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100 relative overflow-hidden">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="text-sm font-bold text-emerald-700 mb-1">範疇二 (能源間接)</h4>
+                                            <p class="text-xl font-bold text-emerald-800 font-mono">10,957,397</p>
+                                        </div>
+                                        <span class="text-[10px] bg-emerald-200 text-emerald-700 px-1.5 py-0.5 rounded">已驗證</span>
+                                    </div>
+                                </div>
+                                <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="text-sm font-bold text-emerald-700 mb-1">範疇三 (其他間接)</h4>
+                                            <p class="text-xl font-bold text-emerald-800 font-mono">8,223,172</p>
+                                        </div>
+                                        <span class="text-[10px] bg-emerald-200 text-emerald-700 px-1.5 py-0.5 rounded">已驗證</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </details>
+
+                    <div class="border-t border-slate-100"></div>
+
+                    <div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center p-2">
+                                <img src="/assets/renewable-energy.png" class="w-full h-full object-contain">
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-800">再生能源使用概況</h3>
+                                <p class="text-xs text-slate-500">Renewable Energy Usage</p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col md:flex-row items-center justify-center gap-12">
+                            <div class="relative w-56 h-56">
+                                <canvas id="energyChart"></canvas>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                    <span class="text-3xl font-bold text-emerald-600 font-mono">14.15%</span>
+                                    <span class="text-xs text-slate-400 font-bold uppercase mt-1">RE 使用率</span>
+                                </div>
+                            </div>
+
+                            <div class="max-w-md space-y-6 w-full md:w-auto">
+                                <div class="bg-slate-50 p-5 rounded-xl border border-slate-100">
+                                    <h4 class="font-bold text-sm text-slate-500 mb-3">能源結構比例</h4>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <div class="flex justify-between text-sm mb-1">
+                                                <span class="font-bold text-emerald-700"><i class="fa-solid fa-leaf mr-1"></i> 再生能源</span>
+                                                <span class="font-bold text-emerald-700">14.15%</span>
+                                            </div>
+                                            <div class="w-full bg-emerald-100 rounded-full h-2">
+                                                <div class="bg-emerald-500 h-2 rounded-full" style="width: 14.15%"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="flex justify-between text-sm mb-1">
+                                                <span class="font-bold text-slate-600"><i class="fa-solid fa-industry mr-1"></i> 傳統/其他能源</span>
+                                                <span class="font-bold text-slate-600">85.85%</span>
+                                            </div>
+                                            <div class="w-full bg-slate-200 rounded-full h-2">
+                                                <div class="bg-slate-400 h-2 rounded-full" style="width: 85.85%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center gap-2 text-xs text-slate-400 justify-center md:justify-start">
+                                    <i class="fa-solid fa-check-circle text-emerald-500"></i>
+                                    <span>數據已取得第三方驗證 (ISO 14064 / ISO 50001)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <section>
+        <section id="section-reviews" class="scroll-mt-24 relative">
             <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 職場輿情 AI 分析
             </h3>
             
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[800px] items-stretch">
-                
                 <div class="lg:col-span-7 bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col h-full">
                     <div class="flex justify-between items-center mb-4 flex-shrink-0">
                         <h4 class="text-lg font-bold text-slate-700 flex items-center gap-2">
@@ -341,14 +445,12 @@
                             <span class="flex items-center gap-1"><div class="w-3 h-3 rounded-full bg-red-500"></div> 負面</span>
                         </div>
                     </div>
-
                     <div class="w-full bg-slate-50 rounded-xl border border-slate-200 relative p-4 flex items-center justify-center overflow-hidden flex-1">
                         <canvas id="word-cloud-canvas" class="w-full h-full"></canvas>
                     </div>
                 </div>
 
                 <div class="lg:col-span-5 flex flex-col gap-6 h-full">
-                    
                     <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col h-[50%]">
                         <h4 class="text-lg font-bold text-slate-700 mb-4 flex items-center justify-between flex-shrink-0">
                             <span class="flex items-center gap-2">
@@ -413,7 +515,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
@@ -422,25 +523,148 @@
 
     <footer class="border-t border-slate-200 mt-12 pt-8 text-center text-xs text-slate-400 pb-8">
         <p>JobLens 2025 Beta | 本系統使用政府資料開放平臺數據</p>
-        <a style="display: block" href="https://www.flaticon.com/free-icons/eye" title="eye icons">Eye icons created by Vectors Market - Flaticon</a>
-        <a style="display: block" href="https://www.iconpacks.net/">Various icons created by iconpacks.net</a>
-        <a style="display: block" href="https://www.flaticon.com/free-icons/people" title="people icons">People icons created by Freepik - Flaticon</a>
-        <a style="display: block" href="https://www.flaticon.com/free-icons/magnifying-glass" title="magnifying glass icons">Magnifying glass icons created by Freepik - Flaticon</a>
-        <a style="display: block" href="https://www.flaticon.com/free-icons/fire" title="fire icons">Fire icons created by Freepik - Flaticon</a>
-        <a style="display: block" href="https://www.flaticon.com/free-icons/sustainability" title="sustainability icons">Sustainability icons created by Freepik - Flaticon</a>
-        <a style="display: block" href="https://www.flaticon.com/free-icons/ratio" title="ratio icons">Ratio icons created by Freepik - Flaticon</a>
-        <a style="display: block" href="https://www.flaticon.com/free-icons/wheelchair" title="wheelchair icons">Wheelchair icons created by Freepik - Flaticon</a>
     </footer>
 
     <script>
+        Chart.defaults.font.family = "'Noto Sans TC', sans-serif";
+        Chart.defaults.color = '#64748b';
+
+        // --- 0. 懸浮拖拉滑桿 (ScrollSpy Navigation) ---
+        const sectionsList = ['section-jobs', 'section-salary', 'section-rank', 'section-safety', 'section-esg', 'section-reviews'];
+        const sectionNames = ['徵才職缺', '薪資福利', '同業排名', '工安指標', '環境永續', '輿情分析'];
+        let isDragging = false;
+        const track = document.getElementById('vertical-track');
+        const thumb = document.getElementById('vertical-thumb');
+
+        // 點擊平滑滾動至區塊
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if(el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+        }
+
+        // 初始化滑桿標籤位置與刻度點
+        function initSliderDotsAndLabels() {
+            const labelsContainer = document.getElementById('slider-labels');
+            const dotsContainer = document.getElementById('track-dots');
+            labelsContainer.innerHTML = '';
+            dotsContainer.innerHTML = '';
+            
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            if (maxScroll <= 0) return;
+
+            sectionsList.forEach((sec, idx) => {
+                const el = document.getElementById(sec);
+                if (el) {
+                    let percent = (el.offsetTop / maxScroll) * 100;
+                    percent = Math.max(0, Math.min(100, percent));
+
+                    // 建立文字標籤
+                    const lbl = document.createElement('div');
+                    lbl.className = "absolute right-0 text-xs font-bold text-slate-400 transition-colors cursor-pointer whitespace-nowrap text-right px-2 hover:text-cyan-600 slider-text-label";
+                    lbl.style.top = percent + '%';
+                    lbl.style.transform = 'translateY(-50%)';
+                    lbl.innerText = sectionNames[idx];
+                    lbl.onclick = () => scrollToSection(sec);
+                    labelsContainer.appendChild(lbl);
+
+                    // 建立小刻度點
+                const dot = document.createElement('div');
+                // 加上 pointer-events-auto 突破父層限制，加 z-30 確保在上層，並放大範圍為 w-2.5 h-2.5
+                dot.className = "absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-slate-300 rounded-full cursor-pointer hover:bg-cyan-500 transition-all pointer-events-auto z-30 hover:scale-150 shadow-sm";
+                dot.style.top = percent + '%';
+                dot.onclick = () => scrollToSection(sec);
+                dotsContainer.appendChild(dot);
+                }
+            });
+        }
+
+        // 處理自定義拖曳 (滑鼠與觸控)
+        function handleDrag(clientY) {
+            const rect = track.getBoundingClientRect();
+            let y = clientY - rect.top;
+            let percent = Math.max(0, Math.min(1, y / rect.height));
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            window.scrollTo({ top: percent * maxScroll, behavior: 'auto' });
+        }
+
+        thumb.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            document.body.classList.add('no-select');
+            thumb.style.cursor = 'grabbing';
+            thumb.style.transform = 'translate(-50%, -50%) scale(1.25)';
+        });
+        
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            document.body.classList.remove('no-select');
+            thumb.style.cursor = 'grab';
+            thumb.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            handleDrag(e.clientY);
+        });
+
+        // 觸控螢幕支援
+        thumb.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            document.body.classList.add('no-select');
+            thumb.style.transform = 'translate(-50%, -50%) scale(1.25)';
+        }, {passive: true});
+
+        window.addEventListener('touchend', () => {
+            isDragging = false;
+            document.body.classList.remove('no-select');
+            thumb.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            handleDrag(e.touches[0].clientY);
+        }, {passive: true});
+
+        // 監聽網頁滾動來更新滑桿位置與顏色標示
+        window.addEventListener('scroll', () => {
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            if (maxScroll <= 0) return;
+            
+            let percent = (window.scrollY / maxScroll) * 100;
+            percent = Math.max(0, Math.min(100, percent));
+            
+            document.getElementById('vertical-progress').style.height = percent + '%';
+            document.getElementById('vertical-thumb').style.top = percent + '%';
+
+            // 更新文字高亮狀態
+            let currentIdx = 0;
+            sectionsList.forEach((sec, index) => {
+                const el = document.getElementById(sec);
+                if(el && window.scrollY >= el.offsetTop - 250) {
+                    currentIdx = index;
+                }
+            });
+            
+            const labels = document.querySelectorAll('.slider-text-label');
+            labels.forEach((lbl, idx) => {
+                if(idx === currentIdx) {
+                    lbl.classList.add('text-cyan-600', 'scale-110');
+                    lbl.classList.remove('text-slate-400');
+                } else {
+                    lbl.classList.remove('text-cyan-600', 'scale-110');
+                    lbl.classList.add('text-slate-400');
+                }
+            });
+        });
+
+
         // --- 1. 職缺資料 ---
         const jobData = [
             { title: "儲備模組副工程師 (台南)", link: "https://www.104.com.tw/job/76avm", salary: "待遇面議" },
             { title: "廠務助理工程師(裝機工程)", link: "https://www.104.com.tw/job/7g7h8", salary: "月薪33,800以上" },
             { title: "實驗室技術員", link: "https://www.104.com.tw/job/78he6", salary: "月薪32,000~43,000元" },
             { title: "Equipment Buyer- 身心障礙人才招募", link: "https://www.104.com.tw/job/7h8dm", salary: "待遇面議" },
-            { title: "DL技術員-Administrative Supports-身心障礙人才招募", link: "https://www.104.com.tw/job/7gl8o", salary: "月薪32,000~43,000元" },
-            { title: "研發製程中心 - 工程技術員-身心障礙人才招募", link: "https://www.104.com.tw/job/7gl8q", salary: "月薪32,000~43,000元" }
+            { title: "DL技術員-Administrative Supports", link: "https://www.104.com.tw/job/7gl8o", salary: "月薪32,000~43,000元" },
+            { title: "研發製程中心 - 工程技術員", link: "https://www.104.com.tw/job/7gl8q", salary: "月薪32,000~43,000元" }
         ];
 
         let currentPage = 1;
@@ -448,18 +672,15 @@
 
         function renderJobs() {
             const listContainer = document.getElementById('job-list');
+            if(!listContainer) return;
             const totalItems = jobData.length;
             const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
-            
             if (currentPage < 1) currentPage = 1;
             if (currentPage > totalPages) currentPage = totalPages;
-
             const start = (currentPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const currentJobs = jobData.slice(start, end);
+            const currentJobs = jobData.slice(start, start + itemsPerPage);
 
             document.getElementById('job-count-label').innerText = `共 ${totalItems} 筆資料`;
-
             listContainer.innerHTML = currentJobs.map(job => `
                 <div class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full group">
                     <div class="mb-4">
@@ -489,70 +710,38 @@
             renderJobs();
         }
 
-        // --- 2. 薪資趨勢圖 (Chart.js) ---
+        // --- 2. 薪資趨勢圖 ---
         function initSalaryTrendChart() {
-            const ctx = document.getElementById('salary-trend-chart').getContext('2d');
-            new Chart(ctx, {
+            const canvas = document.getElementById('salary-trend-chart');
+            if(!canvas) return; 
+            new Chart(canvas.getContext('2d'), {
                 type: 'line',
                 data: {
                     labels: ['109年', '110年', '111年', '112年', '113年'],
                     datasets: [
                         {
-                            label: '平均數',
-                            data: [2377, 2425, 3167, 2842, 3391],
-                            borderColor: '#94a3b8', // 灰色系代表平均
-                            backgroundColor: 'rgba(148, 163, 184, 0.1)',
-                            borderWidth: 3,
-                            tension: 0,
-                            pointBackgroundColor: '#94a3b8',
-                            pointRadius: 4,
-                            pointHoverRadius: 6
+                            label: '平均數', data: [2377, 2425, 3167, 2842, 3391],
+                            borderColor: '#94a3b8', backgroundColor: 'rgba(148, 163, 184, 0.1)',
+                            borderWidth: 3, tension: 0, pointBackgroundColor: '#94a3b8',
+                            pointRadius: 4, pointHoverRadius: 6
                         },
                         {
-                            label: '中位數',
-                            data: [1819, 1851, 2435, 2248, 2645],
-                            borderColor: '#0891b2', // 亮藍色代表中位數
-                            backgroundColor: 'rgba(8, 145, 178, 0.1)',
-                            borderWidth: 3,
-                            tension: 0,
-                            pointBackgroundColor: '#0891b2',
-                            pointRadius: 4,
-                            pointHoverRadius: 6
+                            label: '中位數', data: [1819, 1851, 2435, 2248, 2645],
+                            borderColor: '#0891b2', backgroundColor: 'rgba(8, 145, 178, 0.1)',
+                            borderWidth: 3, tension: 0, pointBackgroundColor: '#0891b2',
+                            pointRadius: 4, pointHoverRadius: 6
                         }
                     ]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                font: { family: "'Noto Sans TC', sans-serif", weight: 'bold' }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.dataset.label + ': ' + context.raw.toLocaleString() + ' 仟元';
-                                }
-                            }
-                        }
+                        legend: { position: 'top', labels: { font: { weight: 'bold' } } },
+                        tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + c.raw.toLocaleString() + ' 仟元'; } } }
                     },
                     scales: {
-                        y: {
-                            beginAtZero: false,
-                            grid: { color: '#f1f5f9' },
-                            ticks: {
-                                font: { family: "'Noto Sans TC', sans-serif" }
-                            }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: {
-                                font: { family: "'Noto Sans TC', sans-serif" }
-                            }
-                        }
+                        y: { beginAtZero: false, grid: { color: '#f1f5f9' } },
+                        x: { grid: { display: false } }
                     }
                 }
             });
@@ -573,7 +762,7 @@
             document.getElementById('safety-fire').innerText = data.fire;
         }
 
-        // --- 4. 排名圖表 (Chart.js) ---
+        // --- 4. 排名圖表 ---
         const rankRawData = [
             {"公司代號":2454, "公司名稱": "聯發科", "中位數": 3438, "平均數": 3754, "大類":"半導體"},
             {"公司代號":2379, "公司名稱": "瑞昱", "中位數": 3246, "平均數": 3500, "大類":"半導體"},
@@ -587,94 +776,94 @@
             {"公司代號":2344, "公司名稱": "華邦電", "中位數": 1400, "平均數": 1550, "大類":"半導體"},
             {"公司代號":6770, "公司名稱": "力積電", "中位數": 1350, "平均數": 1450, "大類":"半導體"}
         ];
-
         let rankChart = null;
 
         function updateChart(type) {
-            // 切換按鈕的樣式
-            const btnClassActive = 'px-4 py-1.5 text-sm font-bold rounded-md bg-white text-cyan-700 shadow-sm transition';
-            const btnClassInactive = 'px-4 py-1.5 text-sm font-bold rounded-md text-slate-500 hover:text-slate-700 transition';
-            
-            document.getElementById('btn-median').className = type === 'median' ? btnClassActive : btnClassInactive;
-            document.getElementById('btn-average').className = type === 'average' ? btnClassActive : btnClassInactive;
+            const canvas = document.getElementById('salary-rank-chart');
+            if(!canvas) return; 
 
-            // 取得半導體資料並排序
-            const sectorData = rankRawData.filter(d => d['大類'] === '半導體');
+            document.getElementById('btn-median').className = type === 'median' 
+                ? 'px-4 py-1.5 text-sm font-bold rounded-md bg-white text-cyan-700 shadow-sm transition' 
+                : 'px-4 py-1.5 text-sm font-bold rounded-md text-slate-500 hover:text-slate-700 transition';
+            document.getElementById('btn-average').className = type === 'average' 
+                ? 'px-4 py-1.5 text-sm font-bold rounded-md bg-white text-cyan-700 shadow-sm transition' 
+                : 'px-4 py-1.5 text-sm font-bold rounded-md text-slate-500 hover:text-slate-700 transition';
+
             const sortKey = type === 'median' ? '中位數' : '平均數';
-            
-            // 排序並取前 10 名
+            // 複製陣列避免污染原始資料
+            let sectorData = [...rankRawData];
             sectorData.sort((a, b) => b[sortKey] - a[sortKey]);
+            
+            // 確保只取前 10 名
             const top10 = sectorData.slice(0, 10);
 
             const labels = top10.map(d => `${d['公司名稱']} (${d['公司代號']})`);
             const data = top10.map(d => d[sortKey]);
             const targetId = 2330;
-            
-            // 針對台積電(2330)使用不同的顏色凸顯
+
             const bgColors = top10.map(d => d['公司代號'] === targetId ? 'rgba(8, 145, 178, 0.8)' : 'rgba(203, 213, 225, 0.6)');
             const borderColors = top10.map(d => d['公司代號'] === targetId ? 'rgb(8, 145, 178)' : 'rgb(148, 163, 184)');
-            
             const tickColors = top10.map(d => d['公司代號'] === targetId ? '#0891b2' : '#64748b');
-            const tickFonts = top10.map(d => d['公司代號'] === targetId ? 'bold' : 'normal');
 
-            if (rankChart) {
-                rankChart.destroy();
-            }
-
-            const ctx = document.getElementById('salary-rank-chart').getContext('2d');
-            rankChart = new Chart(ctx, {
+            if (rankChart) rankChart.destroy();
+            rankChart = new Chart(canvas.getContext('2d'), {
                 type: 'bar',
                 data: {
                     labels: labels,
-                    datasets: [{
-                        label: type === 'median' ? '薪資中位數' : '薪資平均數',
-                        data: data,
-                        backgroundColor: bgColors,
-                        borderColor: borderColors,
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
+                    datasets: [{ data: data, backgroundColor: bgColors, borderColor: borderColors, borderWidth: 1, borderRadius: 4 }]
                 },
                 options: {
-                    indexAxis: 'y', 
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.raw.toLocaleString() + ' 仟元';
-                                }
-                            }
-                        }
-                    },
+                    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return c.raw.toLocaleString() + ' 仟元'; } } } },
                     scales: {
-                        y: {
-                            ticks: {
-                                color: function(context) { return tickColors[context.index]; },
-                                font: function(context) { 
-                                    return { 
-                                        weight: tickFonts[context.index],
-                                        family: "'Noto Sans TC', sans-serif"
-                                    }; 
-                                }
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: false,
-                            },
-                            grid: {
-                                color: '#f1f5f9'
-                            }
-                        }
+                        y: { ticks: { color: function(c) { return tickColors[c.index]; }, font: function(c) { return { weight: tickColors[c.index]==='#0891b2'?'bold':'normal' }; } } },
+                        x: { display: false, grid: { color: '#f1f5f9' } }
                     }
                 }
             });
         }
 
-        // --- 5. 文字雲渲染 ---
+        // --- 5. ESG 圖表 ---
+        function initEsgCharts() {
+            const canvasGHG = document.getElementById('ghgChart');
+            if (canvasGHG) {
+                new Chart(canvasGHG.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['範疇一', '範疇二', '範疇三'],
+                        datasets: [{
+                            label: '排放量', data: [1819396, 10957397, 8223172],
+                            backgroundColor: ['#34d399', '#10b981', '#047857'],
+                            borderRadius: 4, barPercentage: 0.5
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { borderDash: [2, 4], color: '#f1f5f9' }, ticks: { callback: v => (v/1000000).toFixed(1) + 'M' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            const canvasEnergy = document.getElementById('energyChart');
+            if (canvasEnergy) {
+                new Chart(canvasEnergy.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['再生能源', '其他能源'],
+                        datasets: [{ data: [14.15, 85.85], backgroundColor: ['#10b981', '#f1f5f9'], borderWidth: 0, hoverOffset: 4 }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, cutout: '80%',
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+        // --- 6. 文字雲渲染 ---
         const rawWordsData = [
             { text: "分紅大方", size: 60, sentiment: 0.9 },
             { text: "常態加班", size: 55, sentiment: -0.8 },
@@ -683,10 +872,7 @@
             { text: "學到很多", size: 38, sentiment: 0.6 },
             { text: "輪班星人", size: 35, sentiment: -0.5 },
             { text: "福利佳", size: 28, sentiment: 0.8 },
-            { text: "午餐好吃", size: 22, sentiment: 0.3 },
-            { text: "南科", size: 30, sentiment: 0 },
-            { text: "制度完整", size: 26, sentiment: 0 },
-            { text: "生活機能", size: 20, sentiment: 0 }
+            { text: "午餐好吃", size: 22, sentiment: 0.3 }
         ];
 
         function renderWordCloud() {
@@ -696,48 +882,44 @@
             canvas.height = canvas.offsetHeight;
             
             const sizes = rawWordsData.map(item => item.size);
-            const maxSize = Math.max(...sizes);
-            const minSize = Math.min(...sizes);
+            const maxSize = Math.max(...sizes); const minSize = Math.min(...sizes);
 
             WordCloud(canvas, {
                 list: rawWordsData.map(item => [item.text, item.size]),
-                gridSize: 8,
-                weightFactor: 1.5,
-                fontFamily: "'Noto Sans TC', sans-serif",
+                gridSize: 8, weightFactor: 1.5, fontFamily: "'Noto Sans TC', sans-serif",
                 color: (word) => {
                     const d = rawWordsData.find(w => w.text === word);
                     let ratio = 1;
-                    if (maxSize !== minSize) {
-                        ratio = (d.size - minSize) / (maxSize - minSize);
-                    }
+                    if (maxSize !== minSize) ratio = (d.size - minSize) / (maxSize - minSize);
                     
-                    let h, s, l;
-                    if (d.sentiment > 0.1) {
-                        h = 155; s = 40 + (ratio * 50); l = 65 - (ratio * 25); 
-                    } else if (d.sentiment < -0.1) {
-                        h = 350; s = 50 + (ratio * 40); l = 70 - (ratio * 25); 
-                    } else {
-                        h = 215; s = 5 + (ratio * 15);  l = 75 - (ratio * 35); 
-                    }
-
-                    return `hsl(${h}, ${s}%, ${l}%)`;
+                    if (d.sentiment > 0.1) return `hsl(155, ${40 + ratio * 50}%, ${65 - ratio * 25}%)`;
+                    else if (d.sentiment < -0.1) return `hsl(350, ${50 + ratio * 40}%, ${70 - ratio * 25}%)`;
+                    else return `hsl(215, ${5 + ratio * 15}%, ${75 - ratio * 35}%)`;
                 },
-                rotateRatio: 0,
-                shape: 'circle',
-                shrinkToFit: true
+                rotateRatio: 0, shape: 'circle', shrinkToFit: true
             });
         }
 
-        // --- 初始化頁面 ---
+        // --- 頁面初始化 ---
         window.onload = () => {
             renderJobs();
-            initSalaryTrendChart(); // 初始化薪資趨勢圖
+            initSalaryTrendChart(); 
             updateSafetyData();
-            updateChart('median');
-            setTimeout(renderWordCloud, 100); 
+            updateChart('median');  
+            initEsgCharts();        
+            
+            // 延遲繪製以確保容器已經佈局完成
+            setTimeout(() => {
+                renderWordCloud();
+                initSliderDotsAndLabels();
+                window.dispatchEvent(new Event('scroll'));
+            }, 150); 
         };
 
-        window.addEventListener('resize', renderWordCloud);
+        window.addEventListener('resize', () => {
+            renderWordCloud();
+            initSliderDotsAndLabels();
+        });
     </script>
 </body>
 </html>

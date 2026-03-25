@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobLens - 全方位職場透視系統 (無資料狀態)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; }
+        .input-focus-effect:focus { box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.2); border-color: #0891b2; }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='/index.html'">
+                <img src="/assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
+                <span class="text-xl font-bold tracking-wider">JobLens</span>
+            </div>
+            <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+                <a href="/supply-chain/semiconductor.html" class="hover:text-cyan-400 transition">產業鏈</a>
+                <a href="/reviews.html" class="hover:text-cyan-400 transition">評論</a>
+                <a href="/about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">
+                    關於我們
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-10 px-4">
+        <div class="container mx-auto text-center max-w-2xl">
+            <h1 class="text-2xl md:text-3xl font-bold mb-3">給求職者透視企業的放大鏡</h1>
+            <div class="relative mt-6">
+                 <input type="text" placeholder="請輸入公司代號或名稱"
+                    class="w-full p-3 pl-6 rounded-full text-slate-900 shadow-xl focus:outline-none ring-4 ring-cyan-500/50 transition">
+                <button class="absolute right-1.5 top-1.5 bg-cyan-600 hover:bg-cyan-700 text-white px-5 py-1.5 rounded-full transition font-medium text-sm">
+                    重新搜尋
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 space-y-12">
+        
+        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center border-l-8 border-slate-400">
+            <div>
+                <div class="flex items-center gap-3 mb-1">
+                    <h2 class="text-3xl font-bold text-slate-700">某某企業股份有限公司</h2>
+                </div>
+                <p class="text-slate-400 text-sm">資料年度：無 | 資料來源：查無公開資訊</p>
+            </div>
+        </div>
+
+        <section>
+            <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 官方徵才管道
+            </h3>
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-8">
+                <div class="flex flex-col items-center justify-center py-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
+                    <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                        <i class="fa-solid fa-briefcase text-2xl"></i>
+                    </div>
+                    <p class="text-slate-500 font-bold">該公司未揭露該項資料</p>
+                    <p class="text-slate-400 text-sm mt-2">目前無法取得該公司的官方招募連結或人力銀行頁面</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 職缺列表
+            </h3>
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                    <h4 class="font-bold text-slate-700">最新職缺摘要</h4>
+                    <span class="text-xs text-slate-400">共 0 筆資料</span>
+                </div>
+                
+                <div class="p-8">
+                    <div class="flex flex-col items-center justify-center py-12 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
+                        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                            <i class="fa-solid fa-list-ul text-2xl"></i>
+                        </div>
+                        <p class="text-slate-500 font-bold">該公司未揭露該項資料</p>
+                        <p class="text-slate-400 text-sm mt-2">查無近期活躍的職缺資訊</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 薪資與福利透視
+            </h3>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+                <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-6 border border-slate-100 flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-lg font-bold flex items-center gap-2 text-slate-700">
+                            <img src="/assets/money.png" class="w-6 h-6 object-contain opacity-50">
+                            近五年薪資趨勢
+                        </h4>
+                    </div>
+                    <div class="w-full flex-1 min-h-[300px] flex flex-col items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
+                        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                            <i class="fa-solid fa-chart-line text-2xl"></i>
+                        </div>
+                        <p class="text-slate-500 font-bold">該公司未揭露該項資料</p>
+                        <p class="text-slate-400 text-sm mt-2">非公開發行公司無需強制申報薪資結構</p>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-1 flex flex-col gap-6">
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100 flex-1 flex flex-col justify-center">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-md font-bold text-slate-700">最新年度薪資結構</h4>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-6">
+                            <i class="fa-solid fa-file-invoice-dollar text-3xl text-slate-300 mb-3"></i>
+                            <p class="text-slate-500 font-bold text-sm">該公司未揭露該項資料</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100 flex-1 flex flex-col justify-center">
+                        <h4 class="text-md font-bold flex items-center gap-2 mb-4 text-slate-700">
+                            <img src="/assets/people.png" class="w-5 h-5 object-contain opacity-50"> 職場環境
+                        </h4>
+                        <div class="flex-1 flex flex-col items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-6">
+                            <i class="fa-solid fa-users-slash text-3xl text-slate-300 mb-3"></i>
+                            <p class="text-slate-500 font-bold text-sm">該公司未揭露該項資料</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 同業薪資排名
+                </h3>
+            </div>
+            <div class="bg-white border border-slate-100 rounded-xl shadow-lg p-6 relative overflow-hidden">
+                <div class="w-full h-[350px] flex flex-col items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
+                    <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                        <i class="fa-solid fa-ranking-star text-2xl"></i>
+                    </div>
+                    <p class="text-slate-500 font-bold">該公司未揭露該項資料</p>
+                    <p class="text-slate-400 text-sm mt-2">因缺乏薪資數據，無法進行同業排名比對</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 工安與環境永續 (ESG)
+                </h3>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-8">
+                <div class="mb-6 pb-4 border-b border-slate-100">
+                    <h4 class="text-lg font-bold text-slate-700">職業災害、火災與環境指標</h4>
+                </div>
+
+                <div class="w-full flex flex-col items-center justify-center py-12 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
+                    <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                        <i class="fa-solid fa-leaf text-2xl"></i>
+                    </div>
+                    <p class="text-slate-500 font-bold">該公司未揭露該項資料</p>
+                    <p class="text-slate-400 text-sm mt-2">未編製永續報告書或查無相關申報紀錄</p>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <div class="bg-white rounded-xl shadow-sm border border-emerald-100 overflow-hidden p-5">
+                    <div class="flex items-center gap-3 font-bold text-slate-700 mb-4">
+                        <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        重大職災事件紀錄
+                    </div>
+                    <div class="w-full flex flex-col items-center justify-center py-8 bg-emerald-50/50 border-2 border-dashed border-emerald-200 rounded-xl">
+                        <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-500 mb-4 shadow-sm">
+                            <i class="fa-solid fa-check-circle text-3xl"></i>
+                        </div>
+                        <p class="text-emerald-700 font-bold text-lg tracking-wide">查無重大職災紀錄</p>
+                        <p class="text-emerald-600/80 text-sm mt-2">太棒了！這代表該公司近期並無通報嚴重的工安意外，或許這可以成為您的選擇？</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 職場輿情 AI 分析
+            </h3>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[600px] items-stretch">
+                
+                <div class="lg:col-span-7 bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col h-full">
+                    <div class="flex justify-between items-center mb-4 flex-shrink-0">
+                        <h4 class="text-lg font-bold text-slate-700 flex items-center gap-2">
+                            <img src="/assets/word-cloud.png" class="w-6 h-6 object-contain opacity-50"> 情緒文字雲
+                        </h4>
+                    </div>
+                    <div class="w-full flex-1 flex flex-col items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
+                        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                            <i class="fa-solid fa-cloud text-2xl"></i>
+                        </div>
+                        <p class="text-slate-500 font-bold">該公司未揭露該項資料</p>
+                        <p class="text-slate-400 text-sm mt-2">網路討論聲量不足，無法生成文字雲</p>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 flex flex-col gap-6 h-full">
+                    
+                    <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col h-[50%]">
+                        <h4 class="text-lg font-bold text-slate-700 mb-4 flex items-center justify-between flex-shrink-0">
+                            <span class="flex items-center gap-2">
+                                <img src="/assets/review.png" class="w-6 h-6 object-contain opacity-50"> 真實評論摘錄
+                            </span>
+                        </h4>
+                        <div class="flex-1 flex flex-col items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
+                            <i class="fa-regular fa-comments text-3xl text-slate-300 mb-3"></i>
+                            <p class="text-slate-500 font-bold text-sm">該公司未揭露該項資料</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col h-[50%]">
+                        <h4 class="text-lg font-bold text-slate-700 mb-4 flex items-center justify-between flex-shrink-0">
+                            <span class="flex items-center gap-2">
+                                <img src="/assets/news.png" class="w-6 h-6 object-contain opacity-50"> 企業相關新聞
+                            </span>
+                        </h4>
+                        <div class="flex-1 flex flex-col items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
+                            <i class="fa-regular fa-newspaper text-3xl text-slate-300 mb-3"></i>
+                            <p class="text-slate-500 font-bold text-sm">該公司未揭露該項資料</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-slate-200 mt-12 pt-8 text-center text-xs text-slate-400 pb-8">
+        <p>JobLens 2025 Beta | 本系統使用政府資料開放平臺數據</p>
+    </footer>
+
+</body>
+</html>
