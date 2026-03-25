@@ -6,11 +6,10 @@
     <title>JobLens - 產業排行榜</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; }
-        .table-row-anim { transition: all 0.3s ease; }
-        .table-row-anim:hover { transform: scale(1.01); z-index: 10; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
     </style>
 </head>
 <body class="text-slate-800">
@@ -38,11 +37,11 @@
             <p class="text-slate-500 mt-2">完整產業薪資與福利數據比較</p>
         </div>
 
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-100">
-            <div class="p-4 bg-slate-100 border-b border-slate-200 flex flex-col lg:flex-row gap-4 justify-between items-center">
+        <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-6">
+            <div class="bg-slate-50 border border-slate-200 p-4 rounded-lg flex flex-col lg:flex-row gap-4 justify-between items-center mb-6">
                 <div class="flex items-center gap-2 w-full lg:w-auto">
                     <label class="text-xs font-bold text-slate-500 uppercase whitespace-nowrap"><i class="fa-solid fa-filter mr-1"></i> 比較項目</label>
-                    <select id="filter-metric" onchange="renderLeaderboard()" class="w-full lg:w-64 p-2 rounded border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm cursor-pointer">
+                    <select id="filter-metric" onchange="renderLeaderboard()" class="w-full lg:w-64 p-2 rounded border border-slate-300 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none shadow-sm cursor-pointer">
                         <option value="非擔任主管之全時員工薪資中位數(仟元/人)">非擔任主管薪資中位數</option>
                         <option value="非擔任主管職務之全時員工薪資平均數(仟元/人)">非擔任主管薪資平均數</option>
                         <option value="員工薪資平均數(仟元/人)">全員平均薪資</option>
@@ -52,7 +51,7 @@
                 <div class="flex gap-4 w-full lg:w-auto">
                     <div class="flex items-center gap-2 flex-1">
                         <label class="text-xs font-bold text-slate-500 uppercase">範圍</label>
-                        <select id="filter-scope" onchange="renderLeaderboard()" class="w-full p-2 rounded border border-slate-300 text-sm cursor-pointer">
+                        <select id="filter-scope" onchange="renderLeaderboard()" class="w-full p-2 rounded border border-slate-300 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none shadow-sm cursor-pointer">
                             <option value="industry" selected>同產業 (晶圓製造)</option>
                             <option value="sector">同類股 (半導體)</option>
                             <option value="all">全產業</option>
@@ -60,7 +59,7 @@
                     </div>
                     <div class="flex items-center gap-2 flex-1">
                         <label class="text-xs font-bold text-slate-500 uppercase">排序</label>
-                        <select id="filter-order" onchange="renderLeaderboard()" class="w-full p-2 rounded border border-slate-300 text-sm cursor-pointer">
+                        <select id="filter-order" onchange="renderLeaderboard()" class="w-full p-2 rounded border border-slate-300 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none shadow-sm cursor-pointer">
                             <option value="desc" selected>由高到低</option>
                             <option value="asc">由低到高</option>
                         </select>
@@ -68,24 +67,17 @@
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-slate-50 text-xs font-bold text-slate-500 uppercase border-b border-slate-200">
-                        <tr>
-                            <th class="p-4 w-20 text-center">排名</th>
-                            <th class="p-4">公司名稱</th>
-                            <th class="p-4 text-center">細分產業</th>
-                            <th class="p-4 text-right" id="th-metric-name">數值</th>
-                            <th class="p-4 w-32 text-center">狀態</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaderboard-body" class="text-sm text-slate-700 divide-y divide-slate-100"></tbody>
-                </table>
+            <div class="relative w-full h-[500px]">
+                <canvas id="leaderboard-chart"></canvas>
             </div>
         </div>
     </main>
 
     <script>
+        // 設定 Chart.js 預設字體與顏色
+        Chart.defaults.font.family = "'Noto Sans TC', sans-serif";
+        Chart.defaults.color = '#64748b';
+
         const currentCompanyId = 2330; 
         const rawData = [
             {"公司代號":2454,"公司名稱":"聯發科","員工福利平均數(仟元/人)":4978,"員工薪資平均數(仟元/人)":4633,"非擔任主管職務之全時員工薪資平均數(仟元/人)":4310,"非擔任主管之全時員工薪資中位數(仟元/人)":3438,"產業別":"IC設計","大類":"半導體"},
@@ -100,63 +92,84 @@
             {"公司代號":2881,"公司名稱":"富邦金","員工福利平均數(仟元/人)":1604,"員工薪資平均數(仟元/人)":1347,"非擔任主管職務之全時員工薪資平均數(仟元/人)":1624,"非擔任主管之全時員工薪資中位數(仟元/人)":1293,"產業別":"金控","大類":"金融"},
         ];
 
+        let leaderboardChart = null; // 用來儲存 Chart 實例
+
         function renderLeaderboard() {
             const metricKey = document.getElementById('filter-metric').value;
             const scope = document.getElementById('filter-scope').value;
             const order = document.getElementById('filter-order').value;
             const currentCompany = rawData.find(c => c['公司代號'] === currentCompanyId);
             
-            // 篩選邏輯
+            // 1. 篩選邏輯 (保留不變)
             let filteredData = [...rawData];
-            let scopeText = "全產業";
             if (scope === 'industry') {
                 filteredData = rawData.filter(item => item['產業別'] === currentCompany['產業別']);
-                scopeText = "同產業 (晶圓製造)";
             } else if (scope === 'sector') {
                 filteredData = rawData.filter(item => item['大類'] === currentCompany['大類']);
-                scopeText = "同類股 (半導體)";
             }
 
-            // 排序邏輯
+            // 2. 排序邏輯 (保留不變)
             filteredData.sort((a, b) => order === 'desc' ? b[metricKey] - a[metricKey] : a[metricKey] - b[metricKey]);
 
-            // 對應欄位名稱
-            const metricNameMap = {
-                '非擔任主管之全時員工薪資中位數(仟元/人)': '薪資中位數 (仟元)',
-                '非擔任主管職務之全時員工薪資平均數(仟元/人)': '非主管平均 (仟元)',
-                '員工薪資平均數(仟元/人)': '全員平均薪資 (仟元)',
-                '員工福利平均數(仟元/人)': '員工福利平均 (仟元)'
-            };
+            // 3. 準備圖表所需的資料與顏色陣列
+            const labels = filteredData.map(d => `${d['公司名稱']} (${d['公司代號']})`);
+            const data = filteredData.map(d => d[metricKey]);
+            
+            // 與 search.html 完全一致的配色邏輯 (目標公司用亮藍色，其他用灰藍色)
+            const bgColors = filteredData.map(d => d['公司代號'] === currentCompanyId ? 'rgba(8, 145, 178, 0.8)' : 'rgba(203, 213, 225, 0.6)');
+            const borderColors = filteredData.map(d => d['公司代號'] === currentCompanyId ? 'rgb(8, 145, 178)' : 'rgb(148, 163, 184)');
+            const tickColors = filteredData.map(d => d['公司代號'] === currentCompanyId ? '#0891b2' : '#64748b');
 
-            document.getElementById('th-metric-name').innerText = metricNameMap[metricKey];
+            // 4. 渲染或更新 Chart.js
+            const canvas = document.getElementById('leaderboard-chart');
+            
+            // 如果圖表已經存在，先銷毀舊的再重新畫
+            if (leaderboardChart) {
+                leaderboardChart.destroy();
+            }
 
-            const tbody = document.getElementById('leaderboard-body');
-            tbody.innerHTML = filteredData.map((item, index) => {
-                const isCurrent = item['公司代號'] === currentCompanyId;
-                const rankColor = index < 3 ? "bg-yellow-400 text-white" : "bg-slate-200 text-slate-500";
-                
-                return `
-                    <tr class="${isCurrent ? 'bg-cyan-50 border-l-4 border-l-cyan-600 font-bold' : 'hover:bg-slate-50'} table-row-anim border-b border-slate-100">
-                        <td class="p-4 text-center">
-                            <div class="w-8 h-8 rounded-full flex items-center justify-center mx-auto text-sm font-bold shadow-sm ${rankColor}">${index + 1}</div>
-                        </td>
-                        <td class="p-4">
-                            <div class="${isCurrent ? 'text-emerald-900' : 'text-slate-800'}">${item['公司名稱']} (${item['公司代號']})</div>
-                        </td>
-                        <td class="p-4 text-center text-slate-500 text-xs">
-                            <span class="bg-slate-100 px-2 py-1 rounded">${item['產業別']}</span>
-                        </td>
-                        <td class="p-4 text-right font-mono text-base ${isCurrent ? 'text-cyan-700' : 'text-slate-600'}">
-                            ${item[metricKey].toLocaleString()}
-                        </td>
-                        <td class="p-4 text-center">
-                            ${isCurrent ? '<span class="text-xs font-bold text-cyan-700 bg-emerald-100 px-2 py-1 rounded-full">Viewing</span>' : ''}
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            leaderboardChart = new Chart(canvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{ 
+                        data: data, 
+                        backgroundColor: bgColors, 
+                        borderColor: borderColors, 
+                        borderWidth: 1, 
+                        borderRadius: 4 
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // 設定為橫向長條圖
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false }, 
+                        tooltip: { 
+                            callbacks: { 
+                                label: function(c) { return c.raw.toLocaleString() + ' 仟元'; } 
+                            } 
+                        } 
+                    },
+                    scales: {
+                        y: { 
+                            ticks: { 
+                                // 動態設定 Y 軸文字的顏色與粗細，讓目標公司特別顯眼
+                                color: function(c) { return tickColors[c.index]; }, 
+                                font: function(c) { return { weight: tickColors[c.index]==='#0891b2' ? 'bold' : 'normal' }; } 
+                            } 
+                        },
+                        x: { 
+                            display: false, // 隱藏 X 軸底部的數值
+                            grid: { color: '#f1f5f9' } 
+                        }
+                    }
+                }
+            });
         }
 
+        // 頁面載入時自動執行一次渲染
         window.onload = renderLeaderboard;
     </script>
 </body>
