@@ -14,9 +14,6 @@ def crawl_dcard_passive_content():
     ]
     edge_path = next((p for p in possible_paths if os.path.exists(p)), None)
     if edge_path: co.set_browser_path(edge_path)
-    try: co.use_system_user_path()
-    except: pass
-    co.set_local_port(9527)
 
     print("🚀 啟動瀏覽器 (全被動監聽模式)...")
     try:
