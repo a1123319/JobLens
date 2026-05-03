@@ -289,29 +289,36 @@
                     </span>
                 </summary>
                 <div class="p-5 border-t border-slate-100 bg-slate-50 overflow-x-auto">
-                    <table class="w-full text-left border-collapse min-w-[900px]">
-                        <thead>
-                            <tr class="bg-slate-200 text-slate-600 text-sm">
-                                <th class="p-3 border-b border-slate-300 font-bold w-1/6">災害類型</th>
-                                <th class="p-3 border-b border-slate-300 font-bold w-1/12 text-center">件數</th>
-                                <th class="p-3 border-b border-slate-300 font-bold w-1/5">公司名稱</th>
-                                <th class="p-3 border-b border-slate-300 font-bold w-1/4">位置</th>
-                                <th class="p-3 border-b border-slate-300 font-bold w-1/4">地址</th>
-                                <th class="p-3 border-b border-slate-300 font-bold w-1/6">日期</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="bg-white hover:bg-red-50 transition text-sm">
-                                <td class="p-3 border-b border-slate-200 text-red-600 font-bold">墜落、滾落</td>
-                                <td class="p-3 border-b border-slate-200 text-center font-bold">1</td>
-                                <td class="p-3 border-b border-slate-200 font-medium text-slate-800">東元電機股份有限公司</td>
-                                <td class="p-3 border-b border-slate-200 text-slate-600">能源中心R1F梁底工作臺</td>
-                                <td class="p-3 border-b border-slate-200 text-slate-500 text-xs leading-relaxed">桃園市大園區航站南路9號<br>(能源中心)</td>
-                                <td class="p-3 border-b border-slate-200 text-slate-600">2025-01-05</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <!-- 增加 table-fixed 確保寬度受控，min-w 設為 1000px 確保在小螢幕也能滑動閱讀 -->
+                <table class="w-full text-left border-collapse min-w-[1000px] table-fixed">
+                    <thead>
+                        <tr class="bg-slate-200 text-slate-600 text-sm">
+                            <!-- 重新分配寬度比例，總和為 100% -->
+                            <th class="p-3 border-b border-slate-300 font-bold w-[10%]">災害類型</th>
+                            <th class="p-3 border-b border-slate-300 font-bold w-[6%] text-center">罹災人數</th>
+                            <th class="p-3 border-b border-slate-300 font-bold w-[18%]">業主</th>
+                            <th class="p-3 border-b border-slate-300 font-bold w-[12%]">事業單位</th>
+                            <th class="p-3 border-b border-slate-300 font-bold w-[20%]">工程名稱</th>
+                            <th class="p-3 border-b border-slate-300 font-bold w-[12%]">位置</th>
+                            <th class="p-3 border-b border-slate-300 font-bold w-[13%]">地址</th>
+                            <th class="p-3 border-b border-slate-300 font-bold w-[9%]">日期</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white hover:bg-red-50 transition text-sm">
+                            <td class="p-3 border-b border-slate-200 text-red-600 font-bold break-words">墜落、滾落</td>
+                            <td class="p-3 border-b border-slate-200 text-center font-bold">1</td>
+                            <!-- 加入 break-words 防止長名稱撐開表格 -->
+                            <td class="p-3 border-b border-slate-200 font-medium text-slate-800 break-words">台灣積體電路製造股份有限公司</td>
+                            <td class="p-3 border-b border-slate-200 font-medium text-slate-800 break-words">巨豐工程行</td>
+                            <td class="p-3 border-b border-slate-200 font-medium text-slate-800 break-words">台積電新研發中心一期新建工程</td>
+                            <td class="p-3 border-b border-slate-200 text-slate-600 break-words">FAB B區1樓開口墜落</td>
+                            <td class="p-3 border-b border-slate-200 text-slate-500 text-xs leading-relaxed break-words">新竹縣寶山鄉科環路168號 (能源中心)</td>
+                            <td class="p-3 border-b border-slate-200 text-slate-600">2021-02-08</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             </details>
         </section>
 
