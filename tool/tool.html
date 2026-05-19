@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobLens 內部資料匯入系統</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .section { border: 1px solid #ccc; padding: 15px; margin-top: 20px; border-radius: 8px; }
+        button { padding: 8px 16px; cursor: pointer; margin-right: 10px; }
+        input[type="text"] { padding: 8px; font-size: 16px; margin-bottom: 10px; width: 300px; }
+        .preview-box { margin-top: 15px; background: #f9f9f9; padding: 10px; border-radius: 4px; max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+
+    <h1>JobLens 爬蟲與資料匯入控制台</h1>
+    
+    <div>
+        <label>搜尋目標公司：</label>
+        <input type="text" id="companySearch" list="companyList" placeholder="載入中..." autocomplete="off">
+        <datalist id="companyList"></datalist>
+    </div>
+
+    <div class="section">
+        <h3>104 職缺 (Recruitment)</h3>
+        <label>輸入該公司在 104 的專屬代碼 (例: a5h92m0)：</label><br>
+        <input type="text" id="code104" placeholder="請貼上 104 公司代碼">
+        <br>
+        <button id="btn104">1. 執行 104 爬蟲</button>
+        <button id="btnImport104" style="display:none; background-color: #4CAF50; color: white;">2. 確認並匯入資料庫</button>
+        <p id="status104">狀態：等待執行</p>
+        <div id="preview104" class="preview-box"></div>
+    </div>
+    <div class="section">
+        <h3>Dcard / PTT 評論 (Comment)</h3>
+        <button id="btnDcard">1. 執行 Dcard 爬蟲</button>
+        <button id="btnImportDcard" style="display:none; background-color: #4CAF50; color: white;">2. 確認並匯入資料庫</button>
+        <p id="dcardStatus">狀態：等待執行</p>
+        <div id="dcardPreview" class="preview-box"></div>
+    </div>
+    <script>
+        let companiesData = [];
+        let current104Data = [];
+
+        // 載入公司清單
+        document.addEventListener('DOMContentLoaded', async () => {
+            const inputElement = document.getElementById('companySearch');
+            const dataList = document.getElementById('companyList');
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/companies');
+                companiesData = await response.json();
+                inputElement.placeholder = "請輸入或選擇公司名稱...";
+                companiesData.forEach(c => {
+                    const option = document.createElement('option');
+                    option.value = c.Name; 
+                    dataList.appendChild(option);
+                });
+            } catch (error) {
+                inputElement.placeholder = '載入失敗，請確認後端是否啟動';
+            }
+        });
+
+        // 執行 104 爬蟲
+        document.getElementById('btn104').addEventListener('click', async () => {
+            const searchVal = document.getElementById('companySearch').value;
+            const code104 = document.getElementById('code104').value.trim();
+            const statusText = document.getElementById('status104');
+            const previewArea = document.getElementById('preview104');
+            const btnImport = document.getElementById('btnImport104');
+            
+            const selectedCompany = companiesData.find(c => c.Name === searchVal);
+            if (!selectedCompany) return alert("請先在上方選擇目標公司！");
+            if (!code104) return alert("請輸入 104 公司代碼！");
+
+            statusText.innerText = `狀態：正在透過 API 快速抓取 ${selectedCompany.Name} 的職缺...`;
+            previewArea.innerHTML = ""; 
+            btnImport.style.display = "none"; 
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/crawl/104?company_code=${encodeURIComponent(code104)}`);
+                const result = await response.json();
+
+                if (result.status === "success" && result.data.length > 0) {
+                    current104Data = result.data; 
+                    statusText.innerText = `狀態：成功抓取 ${result.data.length} 筆職缺資料！請確認下方內容。`;
+                    
+                    let html = "<ul>";
+                    result.data.forEach((item) => {
+                        html += `<li><strong>${item.職缺名稱}</strong> <br> <small>薪資：${item.薪資} | 地點：${item.地點} | 條件：${item.學歷} / ${item.經歷}</small></li>`;
+                    });
+                    html += "</ul>";
+                    previewArea.innerHTML = html;
+                    btnImport.style.display = "inline-block";
+                } else {
+                    statusText.innerText = `狀態：爬取完畢，但沒有找到職缺或代碼錯誤。`;
+                }
+            } catch (error) {
+                statusText.innerText = `狀態：執行失敗，請查看後端終端機。`;
+            }
+        });
+
+        // 匯入 104 職缺至資料庫
+        document.getElementById('btnImport104').addEventListener('click', async () => {
+            const searchVal = document.getElementById('companySearch').value;
+            const selectedCompany = companiesData.find(c => c.Name === searchVal);
+            const statusText = document.getElementById('status104');
+            const btnImport = document.getElementById('btnImport104');
+
+            btnImport.innerText = "匯入中...";
+            btnImport.disabled = true;
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/import/recruitment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        company_id: selectedCompany.Id,
+                        data: current104Data
+                    })
+                });
+                
+                const result = await response.json();
+                if (response.ok) {
+                    statusText.innerText = `✅ ${result.message}`;
+                    btnImport.style.display = "none";
+                } else {
+                    statusText.innerText = `❌ 匯入失敗：${result.detail}`;
+                }
+            } catch (error) {
+                statusText.innerText = `❌ 發生錯誤，請檢查後端連線。`;
+            } finally {
+                btnImport.innerText = "2. 確認並匯入資料庫";
+                btnImport.disabled = false;
+            }
+        });
+        // 匯入 Dcard 評論至資料庫
+            document.getElementById('btnDcard').addEventListener('click', async () => {
+            const searchVal = document.getElementById('companySearch').value;
+            const selectedCompany = companiesData.find(c => c.Name === searchVal);
+            const statusText = document.getElementById('dcardStatus');
+            const previewArea = document.getElementById('dcardPreview');
+            const btnImport = document.getElementById('btnImportDcard');
+            
+            if (!selectedCompany) return alert("請先在上方選擇目標公司！");
+
+            statusText.innerText = "狀態：正在爬取 Dcard 資料，請稍候...";
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/crawl/dcard?company_name=${encodeURIComponent(selectedCompany.Name)}`);
+                const result = await response.json();
+
+                if (result.status === "success" && result.data.length > 0) {
+                    currentScrapedData = result.data;
+                    statusText.innerText = `狀態：抓取到 ${result.data.length} 筆資料`;
+                    
+                    let html = "<ul>";
+                    result.data.forEach(item => {
+                        html += `<li><strong>${item.標題}</strong><br><small>${item.內容 ? item.內容.substring(0, 50) : "無內容"}...</small></li>`;
+                    });
+                    html += "</ul>";
+                    previewArea.innerHTML = html;
+                    btnImport.style.display = "inline-block";
+                }
+            } catch (e) {
+                statusText.innerText = "狀態：爬蟲執行失敗";
+            }
+        });
+
+        document.getElementById('btnImportDcard').addEventListener('click', async () => {
+            const searchVal = document.getElementById('companySearch').value;
+            const selectedCompany = companiesData.find(c => c.Name === searchVal);
+            
+            const response = await fetch('http://127.0.0.1:8000/api/import/comment', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ company_id: selectedCompany.Id, data: currentScrapedData })
+            });
+            
+            if (response.ok) alert("匯入成功！");
+        });
+    </script>
+    
+</body>
+</html>
