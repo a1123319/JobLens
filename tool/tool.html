@@ -34,6 +34,11 @@
     </div>
     <div class="section">
         <h3>Dcard / PTT 評論 (Comment)</h3>
+        <div style="margin-bottom: 12px; font-size: 14px;">
+            <label><strong>選擇要爬取的看板：</strong></label><br>
+            <label style="cursor:pointer;"><input type="checkbox" id="chkTechJob" value="tech_job" checked> 科技業板 (tech_job)</label>&nbsp;&nbsp;&nbsp;&nbsp;
+            <label style="cursor:pointer;"><input type="checkbox" id="chkJob" value="job"> 工作板 (job)</label>
+        </div>
         <button id="btnDcard">1. 執行 Dcard 爬蟲</button>
         <button id="btnImportDcard" style="display:none; background-color: #4CAF50; color: white;">2. 確認並匯入資料庫</button>
         <p id="dcardStatus">狀態：等待執行</p>
@@ -134,8 +139,9 @@
                 btnImport.disabled = false;
             }
         });
-        // 匯入 Dcard 評論至資料庫
-            document.getElementById('btnDcard').addEventListener('click', async () => {
+
+        // 執行 Dcard 爬蟲
+        document.getElementById('btnDcard').addEventListener('click', async () => {
             const searchVal = document.getElementById('companySearch').value;
             const selectedCompany = companiesData.find(c => c.Name === searchVal);
             const statusText = document.getElementById('dcardStatus');
@@ -144,25 +150,49 @@
             
             if (!selectedCompany) return alert("請先在上方選擇目標公司！");
 
-            statusText.innerText = "狀態：正在爬取 Dcard 資料，請稍候...";
-            try {
-                const response = await fetch(`http://127.0.0.1:8000/api/crawl/dcard?company_name=${encodeURIComponent(selectedCompany.Name)}`);
-                const result = await response.json();
+            // 取得勾選的看板
+            const selectedForums = [];
+            if (document.getElementById('chkTechJob').checked) selectedForums.push("tech_job");
+            if (document.getElementById('chkJob').checked) selectedForums.push("job");
 
-                if (result.status === "success" && result.data.length > 0) {
-                    currentScrapedData = result.data;
-                    statusText.innerText = `狀態：抓取到 ${result.data.length} 筆資料`;
+            if (selectedForums.length === 0) {
+                return alert("請至少勾選一個要爬取的看板！");
+            }
+
+            statusText.innerText = "狀態：正在啟動爬蟲，請稍候...";
+            previewArea.innerHTML = "";
+            btnImport.style.display = "none";
+
+            let combinedData = [];
+            try {
+                for (const forum of selectedForums) {
+                    const boardName = forum === "tech_job" ? "科技業板" : "工作板";
+                    statusText.innerText = `狀態：正在爬取 Dcard ${boardName} 資料，請稍候...`;
+                    
+                    const response = await fetch(`http://127.0.0.1:8000/api/crawl/dcard?company_name=${encodeURIComponent(selectedCompany.Name)}&forum=${forum}`);
+                    const result = await response.json();
+                    
+                    if (result.status === "success" && result.data && result.data.length > 0) {
+                        combinedData = combinedData.concat(result.data);
+                    }
+                }
+
+                if (combinedData.length > 0) {
+                    currentScrapedData = combinedData;
+                    statusText.innerText = `狀態：成功抓取到共 ${combinedData.length} 筆資料！請確認下方預覽。`;
                     
                     let html = "<ul>";
-                    result.data.forEach(item => {
-                        html += `<li><strong>${item.標題}</strong><br><small>${item.內容 ? item.內容.substring(0, 50) : "無內容"}...</small></li>`;
+                    combinedData.forEach(item => {
+                        html += `<li><strong>[${item.評論來源}] ${item.標題}</strong><br><small>${item.內容 ? item.內容.substring(0, 60) : "無內容"}...</small></li>`;
                     });
                     html += "</ul>";
                     previewArea.innerHTML = html;
                     btnImport.style.display = "inline-block";
+                } else {
+                    statusText.innerText = "狀態：爬取完畢，但沒有在勾選的看板中找到相關留言。";
                 }
             } catch (e) {
-                statusText.innerText = "狀態：爬蟲執行失敗";
+                statusText.innerText = "狀態：爬蟲執行失敗，請確認後端終端機。";
             }
         });
 

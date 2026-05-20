@@ -1,7 +1,6 @@
 1.安裝pip install requests beautifulsoup4 pandas openpyxl
 2.進入資料夾輸入uvicorn main:app --reload開啟本地伺服器
 3.開啟tool.html 選擇公司執行104, dcard爬蟲
-
-*注意，目前是本地資料庫，沒有連上專題的資料庫，如果要測試記得開XAMPP，
-104職缺確定可以寫進資料庫，但寫進資料庫前要確認recruitmentsource要有資料才能匯入，
-dcard爬蟲還不能匯入資料庫，因為欄位順序還沒對上，還缺新聞
+4.104的爬蟲可以正常寫入資料庫，但前提是 recruitment source 要有資料
+5.104職缺有公司的專屬代碼，如台積電https://www.104.com.tw/company/a5h92m0?jobsource=index_s_cs中的 a5h92m0 就是專屬代碼
+6.Dcard爬蟲可以正常寫入資料庫，目前可以選擇科技業板及工作板，可以勾選多個(但沒測試過)

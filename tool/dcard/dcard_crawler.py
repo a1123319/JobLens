@@ -4,7 +4,7 @@ import os
 import random
 import json
 
-def crawl_dcard_passive_content(company_name):
+def crawl_dcard_passive_content(company_name, forum="tech_job"):
     # --- 1. 設定瀏覽器 ---
     co = ChromiumOptions()
     possible_paths = [
@@ -27,7 +27,7 @@ def crawl_dcard_passive_content(company_name):
     print("running Phase 1...")
     page.listen.start('search/all')
     
-    target_url = f"https://www.dcard.tw/search?query={company_name}&forum=tech_job"
+    target_url = f"https://www.dcard.tw/search?query={company_name}&forum={forum}"
     if target_url not in page.url:
         page.get(target_url)
 
@@ -94,33 +94,86 @@ def crawl_dcard_passive_content(company_name):
     page.listen.stop()
 
     # ==========================================
-    # Phase 2: 進入文章頁面監聽內文 (核心修正)
+    # Phase 2: 進入文章頁面監聽留言 (核心修正)
     # ==========================================
-    print(f"🚀 [Phase 2] 開始進入文章頁面監聽全文...")
+    print(f"🚀 [Phase 2] 開始進入文章頁面監聽留言...")
     
+    import re
+    all_comments_data = []
     success_count = 0
+    
+    # 留言清洗提取演算法：精準濾除頭像、讚數、學系、時間及按鈕字眼
+    def clean_comment_text(container_text):
+        lines = [line.strip() for line in container_text.split('\n') if line.strip()]
+        
+        clean_lines = []
+        for line in lines:
+            if line in ["回覆", "引用", "分享"]:
+                continue
+            if re.match(r'^B\d+', line):
+                continue
+            clean_lines.append(line)
+            
+        content_start_idx = 0
+        if len(clean_lines) > 1:
+            # 情況 A: 單一頭像字母 + 名字 + 讚數
+            if len(clean_lines) > 2 and len(clean_lines[0]) == 1 and clean_lines[2].isdigit():
+                content_start_idx = 3
+            # 情況 B: 學校/人設 + 讚數
+            elif clean_lines[0].isdigit() or (len(clean_lines[0]) <= 15 and clean_lines[1].isdigit()):
+                content_start_idx = 2
+            # 情況 C: 只有學校/人設
+            elif len(clean_lines[0]) <= 15:
+                content_start_idx = 1
+                
+        if content_start_idx < len(clean_lines):
+            return " ".join(clean_lines[content_start_idx:])
+        else:
+            return " ".join(clean_lines)
+
     # 確保頁面不要在這邊自動關閉，我們要複用同一個 tab
     for post in all_posts:
         try:
-            print(f"   📖 正在讀取: {post['標題'][:15]}...", end="\r")
+            print(f"   📖 正在讀取留言: {post['標題'][:15]}...", end="\r")
+            
             page.get(post['連結'])
+            # 滾動到頁面底部以確保觸發留言載入
+            page.scroll.to_bottom()
             time.sleep(random.uniform(2.5, 4)) # 給予穩定等待時間
             
-            # 使用更穩定的選擇器抓取內容，不使用 API 監聽
-            # Dcard 文章內容容器 class 通常是 sc-3405c87b-1
-            article = page.ele('css:.d_1f_1') or page.ele('tag:article')
+            # 定位所有的樓層超連結
+            floor_links = page.eles('xpath://a[contains(@href, "/b/")]')
             
-            if article:
-                post['內容'] = article.text.replace('\n', ' ')
+            comments_list = []
+            for link in floor_links:
+                try:
+                    # 向上找 4 層大容器 (對應留言區塊 div)
+                    container = link.parent(4)
+                    raw_text = container.text
+                    if raw_text:
+                        cleaned = clean_comment_text(raw_text)
+                        # 避免抓到重複或空白的留言
+                        if cleaned and cleaned not in comments_list:
+                            comments_list.append(cleaned)
+                except Exception as container_err:
+                    continue
+            
+            if comments_list:
                 success_count += 1
-            else:
-                post['內容'] = page.ele('tag:body').text[:200]
+                for c_content in comments_list:
+                    all_comments_data.append({
+                        "ID": post['ID'],
+                        "標題": post['標題'],
+                        "連結": post['連結'],
+                        "發文時間": post['發文時間'],
+                        "內容": c_content,
+                        "評論來源": "Dcard"
+                    })
                 
         except Exception as e:
-            print(f"\n   ❌ 讀取失敗: {e}")
-            post['內容'] = "讀取錯誤"
+            print(f"\n   ❌ 讀取留言失敗: {e}")
             continue
 
-    print(f"\n\n🎉 全部完成！成功讀取 {success_count}/{len(all_posts)} 篇全文。")
+    print(f"\n\n🎉 全部完成！成功讀取 {success_count}/{len(all_posts)} 篇留言。共取得 {len(all_comments_data)} 條留言。")
     page.quit() # 最終關閉瀏覽器
-    return all_posts
+    return all_comments_data
