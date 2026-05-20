@@ -69,8 +69,8 @@ def import_recruitment(req: ImportRequest):
     return {"status": "success", "message": "成功匯入 104 職缺資料庫"}
 # --- 2. 執行爬蟲 API (僅回傳預覽資料，不寫入) ---
 @app.get("/api/crawl/dcard")
-def crawl_dcard(company_name: str):
-    data = crawl_dcard_passive_content(company_name)
+def crawl_dcard(company_name: str, forum: str = "tech_job"):
+    data = crawl_dcard_passive_content(company_name, forum=forum)
     return {"status": "success", "data": data}
 
 @app.get("/api/crawl/104")
@@ -89,8 +89,8 @@ def import_comments(req: ImportRequest):
     try:
         with connection.cursor() as cursor:
             for item in req.data:
-                sql = "INSERT INTO comment (CompanyId, Content, Source) VALUES (%s, %s, %s)"
-                cursor.execute(sql, (req.company_id, item['內容'], item['評論來源']))
+                sql = "INSERT INTO comment (CompanyId, Content, CompanyNews, Source) VALUES (%s, %s, %s, %s)"
+                cursor.execute(sql, (req.company_id, item['內容'], item['連結'],item['評論來源']))
         connection.commit()
     except Exception as e:
         connection.rollback()
