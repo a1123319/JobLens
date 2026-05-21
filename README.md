@@ -12,4 +12,12 @@ PHP, Apache2, MySQL
 
 git clone至Apache2的htdocs。
 
+在 php.ini (可從xampp Apache Config找) uncomment `extension=intl;`
+
+若你在Ubuntu LTS 20.04上，安裝`php7.4-intl`:
+
+```
+sudo apt install php7.4-intl
+```
+
 在瀏覽器網址列輸入 `localhost`。
