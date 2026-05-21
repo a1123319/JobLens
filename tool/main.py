@@ -89,7 +89,7 @@ def import_comments(req: ImportRequest):
     try:
         with connection.cursor() as cursor:
             for item in req.data:
-                sql = "INSERT INTO comment (CompanyId, Content, CompanyNews, Source) VALUES (%s, %s, %s, %s)"
+                sql = "INSERT INTO comment (CompanyId, Content, Url, Source) VALUES (%s, %s, %s, %s)"
                 cursor.execute(sql, (req.company_id, item['內容'], item['連結'],item['評論來源']))
         connection.commit()
     except Exception as e:
