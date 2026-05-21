@@ -1020,21 +1020,23 @@ $news = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $safetyJsonData = json_encode($keyedSafetyData);
         ?>
         const safetyData = <?= $safetyJsonData ?>;
-        console.log(safetyData);
         
         function updateSafetyData() {
             const year = document.getElementById('safety-year-select').value;
             const data = safetyData[year];
-            console.log(data);
 
             if (year <= 2022) {
                 document.getElementById('fire-section').classList.add('hidden');
             } else {
                 document.getElementById('fire-section').classList.remove('hidden');
             }
-
+            const formatter = new Intl.NumberFormat(undefined, {
+                style: 'percent',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
             document.getElementById('safety-count').innerText = data.OccupationInjuryCount;
-            document.getElementById('safety-rate').innerText = data.OccupationalInjuryRate;
+            document.getElementById('safety-rate').innerText = data.OccupationalInjuryRate !== null ? formatter.format(data.OccupationalInjuryRate) : "無資料";
             document.getElementById('safety-fire').innerText = data.FireIncidentCount;
         }
 
