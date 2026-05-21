@@ -713,8 +713,8 @@ $news = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded">Dcard</span>
                                 <?php else: ?>
                                 <span class="bg-slate-800 text-white text-xs font-bold px-2 py-0.5 rounded">PTT</span>
-                                <p class="mt-2"><?php echo htmlspecialchars($c['Content']); ?></p>
-                                 <?php endif ?>
+                                <?php endif ?>
+                                <p class="mt-2"><?= htmlspecialchars($c['Content']); ?></p>
                             </div>
                             <?php endforeach; ?>
                         </div>
