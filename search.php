@@ -65,7 +65,6 @@ if (empty($idInput)) {
 $stmt = $pdo->prepare("
     SELECT c.*, cc.Category, cc.Sector, cc.Subsector,
            s.NonAdminstrativeAverage, s.NonAdminstrativeMedian,
-           sr.Year as OccupationalInjuryYear, sr.OccupationalInjuryRate, sr.OccupationInjuryCount, sr.FireIncidentCount,
            ge.Scope1EmissionTonCO2e, ge.Scope2EmissionTonCO2e, ge.Scope3EmissionTonCO2e,
            em.RenewEnergyUsageRate,
            rs.OneHundredAndFour, rs.Official,
@@ -81,30 +80,18 @@ $stmt = $pdo->prepare("
     WHERE c.Id = ? OR c.UniformId = ?
 ");
 $stmt->execute([$idInput, $idInput]);
-$company = null;
-$safetyRecords = [];
+$company = $stmt->fetch(PDO::FETCH_ASSOC);
 
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    // Save the general company data only once
-    if (!$company) {
-        $company = $row;
-    }
-
-    // Collect safety data into a nested array if a year exists
-    if ($row['OccupationalInjuryYear'] !== null) {
-        $safetyRecords[$row['OccupationalInjuryYear']] = [
-            'rate'  => $row['OccupationalInjuryRate'],
-            'count' => $row['OccupationInjuryCount'],
-            'fire'  => $row['FireIncidentCount']
-        ];
-    }
-}
-
-// Redirect if no rows were returned at all
 if (!$company) {
     header("Location: not-found.html");
     exit;
 }
+
+// 4. Fetch Sub-data for JavaScript Arrays
+// Recruitment Jobs
+$stmt = $pdo->prepare("SELECT * FROM safetyrisk WHERE CompanyId = ?");
+$stmt->execute([$company['Id']]);
+$safetyRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // 4. Fetch Sub-data for JavaScript Arrays
 // Recruitment Jobs
@@ -172,7 +159,7 @@ $news = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobLens - <?php echo htmlspecialchars($company['Name']); ?></title>
+    <title>JobLens - <?= htmlspecialchars($company['Name']); ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -229,8 +216,8 @@ $news = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center border-l-8 border-cyan-600">
             <div>
                 <div class="flex items-center gap-3 mb-1">
-                    <h2 class="text-3xl font-bold"><?php echo htmlspecialchars($company['Name']); ?> (<?php echo htmlspecialchars($company['Id']); ?>)</h2>
-                    <span class="bg-slate-200 text-slate-600 px-2 py-1 rounded text-xs font-bold"><?= htmlspecialchars($company['Category']); ?> - <?php echo htmlspecialchars($company['Subsector'] ?? $company['Sector']); ?></span>
+                    <h2 class="text-3xl font-bold"><?= htmlspecialchars($company['Name']); ?> (<?= htmlspecialchars($company['Id']); ?>)</h2>
+                    <span class="bg-slate-200 text-slate-600 px-2 py-1 rounded text-xs font-bold"><?= htmlspecialchars($company['Category']); ?> - <?= htmlspecialchars($company['Subsector'] ?? $company['Sector']); ?></span>
                 </div>
                 <p class="text-slate-500 text-sm">資料年度：<?= $year ?> | 資料來源：公開資訊觀測站</p>
             </div>
@@ -271,7 +258,7 @@ $news = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                     <?php endif ?>
                     <?php if (isset($company['OneHundredAndFour'])): ?>
-                    <a href="<?php echo htmlspecialchars($company['OneHundredAndFour']); ?>" target="_blank" class="block group">
+                    <a href="<?= htmlspecialchars($company['OneHundredAndFour']); ?>" target="_blank" class="block group">
                         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md hover:border-orange-300 transition-all">
                             <div class="flex items-center gap-4">
                                 <div class="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center text-orange-500 text-xl group-hover:scale-110 transition-transform">
@@ -434,9 +421,11 @@ $news = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php if (!empty($safetyRecords)): ?>
                 <div class="relative">
                     <select id="safety-year-select" onchange="updateSafetyData()" class="bg-white text-slate-700 text-sm font-bold py-2 pl-3 pr-8 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-600 cursor-pointer shadow-sm hover:bg-slate-50">
-                        <?php foreach ($safetyRecords as $year => $data): ?>
-                        <option value="<?= $year ?>"><?= $year ?> 年 (民國<?= $year - 1911 ?>年)</option>
-                        <?php endforeach; ?>
+                        <?php foreach ($safetyRecords as $s):
+                        if (isset($s["OccupationalInjuryRate"]) || isset($s["OccupationInjuryCount"]) || isset($s["FireIncident"])): ?>
+                        <option value="<?= $s["Year"] ?>"><?= $s["Year"] ?> 年 (民國<?= $s["Year"] - 1911 ?>年)</option>
+                        <?php endif;
+                        endforeach; ?>
                     </select>
                 </div>
                 <?php endif ?>
@@ -446,7 +435,6 @@ $news = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <h4 class="text-lg font-bold text-slate-700">職業災害與火災指標快篩</h4>
                     <p class="text-slate-400 text-xs mt-1">資料來源：職業災害統計</p>
                 </div>
-                            
                 <?php if (!empty($safetyRecords)): ?>
                 <div class="flex flex-col md:flex-row gap-6 w-full">
                     <div class="flex-1 bg-orange-50 p-6 rounded-xl border border-orange-100 flex flex-col items-center justify-center text-center hover:shadow-md transition cursor-default">
@@ -1027,30 +1015,27 @@ $news = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         
         // --- 3. 工安數據 ---
-        const safetyData = {
-        <?php foreach ($safetyRecords as $year => $data): ?>
-        "<?= $year ?>": { 
-            count: "<?= $data['count'] ?? "無資料" ?>", 
-            rate: "<?= isset($data['rate']) ? $data['rate'] * 100 . "%" : "無資料" ?>", 
-            fire: "<?= $data['fire'] ?? "無資料" ?>"
-        },
-        <?php endforeach; ?>
-        };
+        <?php
+        $keyedSafetyData = array_column($safetyRecords, null, 'Year');
+        $safetyJsonData = json_encode($keyedSafetyData);
+        ?>
+        const safetyData = <?= $safetyJsonData ?>;
+        console.log(safetyData);
         
         function updateSafetyData() {
             const year = document.getElementById('safety-year-select').value;
-            const data = safetyData[year] || { count: "無資料", rate: "無資料", fire: "無資料" };
+            const data = safetyData[year];
+            console.log(data);
 
             if (year <= 2022) {
                 document.getElementById('fire-section').classList.add('hidden');
             } else {
                 document.getElementById('fire-section').classList.remove('hidden');
             }
-            
 
-            document.getElementById('safety-count').innerText = data.count;
-            document.getElementById('safety-rate').innerText = data.rate;
-            document.getElementById('safety-fire').innerText = data.fire;
+            document.getElementById('safety-count').innerText = data.OccupationInjuryCount;
+            document.getElementById('safety-rate').innerText = data.OccupationalInjuryRate;
+            document.getElementById('safety-fire').innerText = data.FireIncidentCount;
         }
 
         // --- 4. 排行榜 ---
