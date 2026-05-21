@@ -1,6 +1,6 @@
-1.安裝pip install requests beautifulsoup4 pandas openpyxl
+1.安裝pip install requests beautifulsoup4 pandas openpyxl pymysql DrissionPage
 2.進入資料夾輸入uvicorn main:app --reload開啟本地伺服器
 3.開啟tool.html 選擇公司執行104, dcard爬蟲
 4.104的爬蟲可以正常寫入資料庫，但前提是 recruitment source 要有資料
 5.104職缺有公司的專屬代碼，如台積電https://www.104.com.tw/company/a5h92m0?jobsource=index_s_cs中的 a5h92m0 就是專屬代碼
-6.Dcard爬蟲可以正常寫入資料庫，目前可以選擇科技業板及工作板，可以勾選多個(但沒測試過)
+6.如果要匯入至專題資料庫請自行修改IP位址

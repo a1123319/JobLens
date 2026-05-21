@@ -10,15 +10,22 @@
         button { padding: 8px 16px; cursor: pointer; margin-right: 10px; }
         input[type="text"] { padding: 8px; font-size: 16px; margin-bottom: 10px; width: 300px; }
         .preview-box { margin-top: 15px; background: #f9f9f9; padding: 10px; border-radius: 4px; max-height: 300px; overflow-y: auto; }
+        .company-select-container { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        .company-select-container label { font-weight: bold; }
+        .company-select-container input { margin-bottom: 0; }
     </style>
 </head>
 <body>
 
     <h1>JobLens 爬蟲與資料匯入控制台</h1>
     
-    <div>
-        <label>搜尋目標公司：</label>
-        <input type="text" id="companySearch" list="companyList" placeholder="載入中..." autocomplete="off">
+    <div class="company-select-container">
+        <label for="companyIdSearch">Id (公司代碼)：</label>
+        <input type="text" id="companyIdSearch" list="companyIdList" placeholder="載入中..." autocomplete="off" style="width: 100px;">
+        <datalist id="companyIdList"></datalist>
+
+        <label for="companySearch">搜尋目標公司：</label>
+        <input type="text" id="companySearch" list="companyList" placeholder="載入中..." autocomplete="off" style="width: 250px;">
         <datalist id="companyList"></datalist>
     </div>
 
@@ -47,38 +54,108 @@
     <script>
         let companiesData = [];
         let current104Data = [];
+        let currentScrapedData = []; // 宣告儲存 Dcard/PTT 的暫存資料
+        let currentSelectedCompany = null; // 當前選取的公司物件
+
+        // 清除已爬取的暫存資料與畫面預覽
+        function clearScrapedData() {
+            current104Data = [];
+            currentScrapedData = [];
+
+            // 清除 104 爬蟲狀態與預覽
+            document.getElementById('status104').innerText = '狀態：等待執行';
+            document.getElementById('preview104').innerHTML = '';
+            document.getElementById('btnImport104').style.display = 'none';
+
+            // 清除 Dcard 爬蟲狀態與預覽
+            document.getElementById('dcardStatus').innerText = '狀態：等待執行';
+            document.getElementById('dcardPreview').innerHTML = '';
+            document.getElementById('btnImportDcard').style.display = 'none';
+        }
 
         // 載入公司清單
         document.addEventListener('DOMContentLoaded', async () => {
-            const inputElement = document.getElementById('companySearch');
-            const dataList = document.getElementById('companyList');
+            const idInputElement = document.getElementById('companyIdSearch');
+            const idDataList = document.getElementById('companyIdList');
+            const nameInputElement = document.getElementById('companySearch');
+            const nameDataList = document.getElementById('companyList');
+
             try {
                 const response = await fetch('http://127.0.0.1:8000/api/companies');
                 companiesData = await response.json();
-                inputElement.placeholder = "請輸入或選擇公司名稱...";
+                
+                idInputElement.placeholder = "輸入Id...";
+                nameInputElement.placeholder = "請輸入或選擇公司名稱...";
+
                 companiesData.forEach(c => {
-                    const option = document.createElement('option');
-                    option.value = c.Name; 
-                    dataList.appendChild(option);
+                    // 填入 Id 下拉清單
+                    const idOption = document.createElement('option');
+                    idOption.value = c.Id;
+                    idOption.textContent = c.Name;
+                    idDataList.appendChild(idOption);
+
+                    // 填入 Name 下拉清單
+                    const nameOption = document.createElement('option');
+                    nameOption.value = c.Name;
+                    nameDataList.appendChild(nameOption);
                 });
             } catch (error) {
-                inputElement.placeholder = '載入失敗，請確認後端是否啟動';
+                idInputElement.placeholder = '載入失敗';
+                nameInputElement.placeholder = '載入失敗，請確認後端是否啟動';
+            }
+        });
+
+        // 監聽 Id 輸入框的變更
+        document.getElementById('companyIdSearch').addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            const matched = companiesData.find(c => String(c.Id) === val);
+
+            if (matched) {
+                document.getElementById('companySearch').value = matched.Name;
+                if (!currentSelectedCompany || currentSelectedCompany.Id !== matched.Id) {
+                    currentSelectedCompany = matched;
+                    clearScrapedData();
+                }
+            } else {
+                document.getElementById('companySearch').value = "";
+                if (currentSelectedCompany !== null) {
+                    currentSelectedCompany = null;
+                    clearScrapedData();
+                }
+            }
+        });
+
+        // 監聽公司名稱輸入框的變更
+        document.getElementById('companySearch').addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            const matched = companiesData.find(c => c.Name === val);
+
+            if (matched) {
+                document.getElementById('companyIdSearch').value = matched.Id;
+                if (!currentSelectedCompany || currentSelectedCompany.Id !== matched.Id) {
+                    currentSelectedCompany = matched;
+                    clearScrapedData();
+                }
+            } else {
+                document.getElementById('companyIdSearch').value = "";
+                if (currentSelectedCompany !== null) {
+                    currentSelectedCompany = null;
+                    clearScrapedData();
+                }
             }
         });
 
         // 執行 104 爬蟲
         document.getElementById('btn104').addEventListener('click', async () => {
-            const searchVal = document.getElementById('companySearch').value;
             const code104 = document.getElementById('code104').value.trim();
             const statusText = document.getElementById('status104');
             const previewArea = document.getElementById('preview104');
             const btnImport = document.getElementById('btnImport104');
             
-            const selectedCompany = companiesData.find(c => c.Name === searchVal);
-            if (!selectedCompany) return alert("請先在上方選擇目標公司！");
+            if (!currentSelectedCompany) return alert("請先在上方選擇目標公司！");
             if (!code104) return alert("請輸入 104 公司代碼！");
 
-            statusText.innerText = `狀態：正在透過 API 快速抓取 ${selectedCompany.Name} 的職缺...`;
+            statusText.innerText = `狀態：正在透過 API 快速抓取 ${currentSelectedCompany.Name} 的職缺...`;
             previewArea.innerHTML = ""; 
             btnImport.style.display = "none"; 
 
@@ -107,8 +184,8 @@
 
         // 匯入 104 職缺至資料庫
         document.getElementById('btnImport104').addEventListener('click', async () => {
-            const searchVal = document.getElementById('companySearch').value;
-            const selectedCompany = companiesData.find(c => c.Name === searchVal);
+            if (!currentSelectedCompany) return alert("請先在上方選擇目標公司！");
+            
             const statusText = document.getElementById('status104');
             const btnImport = document.getElementById('btnImport104');
 
@@ -120,7 +197,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        company_id: selectedCompany.Id,
+                        company_id: currentSelectedCompany.Id,
                         data: current104Data
                     })
                 });
@@ -129,6 +206,7 @@
                 if (response.ok) {
                     statusText.innerText = `✅ ${result.message}`;
                     btnImport.style.display = "none";
+                    current104Data = []; // 匯入成功後也清除，防止重複點擊
                 } else {
                     statusText.innerText = `❌ 匯入失敗：${result.detail}`;
                 }
@@ -142,13 +220,11 @@
 
         // 執行 Dcard 爬蟲
         document.getElementById('btnDcard').addEventListener('click', async () => {
-            const searchVal = document.getElementById('companySearch').value;
-            const selectedCompany = companiesData.find(c => c.Name === searchVal);
             const statusText = document.getElementById('dcardStatus');
             const previewArea = document.getElementById('dcardPreview');
             const btnImport = document.getElementById('btnImportDcard');
             
-            if (!selectedCompany) return alert("請先在上方選擇目標公司！");
+            if (!currentSelectedCompany) return alert("請先在上方選擇目標公司！");
 
             // 取得勾選的看板
             const selectedForums = [];
@@ -169,7 +245,7 @@
                     const boardName = forum === "tech_job" ? "科技業板" : "工作板";
                     statusText.innerText = `狀態：正在爬取 Dcard ${boardName} 資料，請稍候...`;
                     
-                    const response = await fetch(`http://127.0.0.1:8000/api/crawl/dcard?company_name=${encodeURIComponent(selectedCompany.Name)}&forum=${forum}`);
+                    const response = await fetch(`http://127.0.0.1:8000/api/crawl/dcard?company_name=${encodeURIComponent(currentSelectedCompany.Name)}&forum=${forum}`);
                     const result = await response.json();
                     
                     if (result.status === "success" && result.data && result.data.length > 0) {
@@ -196,17 +272,40 @@
             }
         });
 
+        // 匯入 Dcard 評論至資料庫
         document.getElementById('btnImportDcard').addEventListener('click', async () => {
-            const searchVal = document.getElementById('companySearch').value;
-            const selectedCompany = companiesData.find(c => c.Name === searchVal);
+            if (!currentSelectedCompany) return alert("請先在上方選擇目標公司！");
             
-            const response = await fetch('http://127.0.0.1:8000/api/import/comment', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ company_id: selectedCompany.Id, data: currentScrapedData })
-            });
-            
-            if (response.ok) alert("匯入成功！");
+            const btnImport = document.getElementById('btnImportDcard');
+            const statusText = document.getElementById('dcardStatus');
+            btnImport.innerText = "匯入中...";
+            btnImport.disabled = true;
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/import/comment', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ 
+                        company_id: currentSelectedCompany.Id, 
+                        data: currentScrapedData 
+                    })
+                });
+                
+                const result = await response.json();
+                if (response.ok) {
+                    alert("匯入成功！");
+                    statusText.innerText = `✅ 匯入成功！`;
+                    btnImport.style.display = "none";
+                    currentScrapedData = []; // 匯入成功後也清除，防止重複點擊
+                } else {
+                    alert(`匯入失敗：${result.detail}`);
+                }
+            } catch (e) {
+                alert("發生錯誤，請檢查後端連線。");
+            } finally {
+                btnImport.innerText = "2. 確認並匯入資料庫";
+                btnImport.disabled = false;
+            }
         });
     </script>
     
