@@ -22,6 +22,7 @@ DB_CONFIG = {
     "user": "root",
     "password": "",
     "database": "joblens",
+    "charset": "utf8mb4",
     "cursorclass": pymysql.cursors.DictCursor
 }
 

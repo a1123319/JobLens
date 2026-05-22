@@ -3,6 +3,7 @@ import time
 import os
 import random
 import json
+import urllib.parse
 
 def crawl_dcard_passive_content(company_name, forum="tech_job"):
     # --- 1. 設定瀏覽器 ---
@@ -27,9 +28,8 @@ def crawl_dcard_passive_content(company_name, forum="tech_job"):
     print("running Phase 1...")
     page.listen.start('search/all')
     
-    target_url = f"https://www.dcard.tw/search?query={company_name}&forum={forum}"
-    if target_url not in page.url:
-        page.get(target_url)
+    target_url = f"https://www.dcard.tw/search?query={urllib.parse.quote(company_name)}&forum={forum}"
+    page.get(target_url)
 
     # 捲動幾次抓列表
     scroll_times = 3
@@ -61,7 +61,7 @@ def crawl_dcard_passive_content(company_name, forum="tech_job"):
                     post_id = str(real_post.get('id'))
                     title = real_post.get('title', '').replace('<em>', '').replace('</em>', '')
                     created_at = real_post.get('createdAt')
-                    post_url = f"https://www.dcard.tw/f/tech_job/p/{post_id}"
+                    post_url = f"https://www.dcard.tw/f/{forum}/p/{post_id}"
 
                     if post_id in seen_ids:
                         continue
@@ -145,6 +145,8 @@ def crawl_dcard_passive_content(company_name, forum="tech_job"):
             floor_links = page.eles('xpath://a[contains(@href, "/b/")]')
             
             comments_list = []
+            is_title_relevant = company_name in post['標題']
+            
             for link in floor_links:
                 try:
                     # 向上找 4 層大容器 (對應留言區塊 div)
@@ -154,7 +156,10 @@ def crawl_dcard_passive_content(company_name, forum="tech_job"):
                         cleaned = clean_comment_text(raw_text)
                         # 避免抓到重複或空白的留言
                         if cleaned and cleaned not in comments_list:
-                            comments_list.append(cleaned)
+                            # 智慧篩選：如果標題包含公司名稱，抓取所有留言；
+                            # 如果標題不包含公司名稱，則僅抓取「內容包含公司名稱」的留言！
+                            if is_title_relevant or (company_name in cleaned):
+                                comments_list.append(cleaned)
                 except Exception as container_err:
                     continue
             
