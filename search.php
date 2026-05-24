@@ -54,6 +54,51 @@ function formatPercentage(float $num, int $digit) {
     return $fmt->format($num, NumberFormatter::TYPE_DOUBLE);
 }
 
+function tokenize(string $q): string {
+    return preg_replace('/(\p{Han})/u', '$1 ', $q);
+}
+
+function searchNews(PDO $pdo, string $raw, int $limit = 20, bool $use_ngram = true): array {
+    $q = trim($raw);
+    if ($q === '') return [];
+
+    $tok = $use_ngram ? $q : tokenize($q);
+
+    $sql = "
+        SELECT Id, Title, PublishedTime, UpdatedTime, ThumbnailUrl, Url,
+               MATCH(Title, Text) AGAINST (:tok IN BOOLEAN MODE) AS score
+        FROM   pnn
+        WHERE  MATCH(Title, Text) AGAINST (:tok2 IN BOOLEAN MODE)
+        ORDER  BY score DESC
+        LIMIT  :lim
+    ";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(':tok',  $tok);
+    $st->bindValue(':tok2', $tok);
+    $st->bindValue(':lim',  $limit, PDO::PARAM_INT);
+    $st->execute();
+    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
+    // Fallback: LIKE search if fulltext returns nothing
+    if (empty($rows)) {
+        $like = '%' . $q . '%';
+        $st2 = $pdo->prepare("
+            SELECT Id, Title, PublishedTime, UpdatedTime, ThumbnailUrl, Url,
+                   0 AS score
+            FROM   pnn
+            WHERE  Title LIKE :l OR Text LIKE :l2
+            ORDER  BY PublishedTime DESC
+            LIMIT  :lim
+        ");
+        $st2->bindValue(':l',  $like);
+        $st2->bindValue(':l2', $like);
+        $st2->bindValue(':lim', $limit, PDO::PARAM_INT);
+        $st2->execute();
+        $rows = $st2->fetchAll(PDO::FETCH_ASSOC);
+    }
+    return $rows;
+}
+
 // 2. Validate ID and Redirect if missing
 $idInput = isset($_GET['id']) ? trim($_GET['id']) : '';
 if (empty($idInput)) {
@@ -149,9 +194,7 @@ $stmt->execute([$company['Id']]);
 $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // News
-$stmt = $pdo->prepare("SELECT * FROM news n JOIN pnn p ON n.NewsId = p.Id AND n.CompanyId = ?");
-$stmt->execute([$company['Id']]);
-$news = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$news = searchNews($pdo, $company['Name'], 10);
 ?>
 
 <!DOCTYPE html>
@@ -733,11 +776,11 @@ $news = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <?php endif ?>
                                 </div>
                                 <div>
-                                    <a class="text-sm font-bold text-slate-800 group-hover:text-cyan-700 transition-colors line-clamp-2" href="<?= $n["Url"] ?>" target="_blank">
-                                        <?= $n["Title"] ?>
+                                    <a class="text-sm font-bold text-slate-800 group-hover:text-cyan-700 transition-colors line-clamp-2" href="<?= htmlspecialchars($n["Url"]) ?>" target="_blank">
+                                        <?= htmlspecialchars($n["Title"]) ?>
                                     </a>
                                     <p class="text-[10px] text-slate-400 mt-1">上傳於 <?= formatDate($n['PublishedTime']) ?>
-                                    <?php if (isset($n['UpdatedTime']) && $n['UpdatedTime'] != $n['PublishedTime']):
+                                    <?php if (!empty($n['UpdatedTime']) && $n['UpdatedTime'] !== $n['PublishedTime']):
                                         echo "| 更新於 " . formatDate($n['UpdatedTime']);
                                     endif; ?>
                                     | 公視新聞</p>
