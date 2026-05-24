@@ -4,8 +4,8 @@ $year = 2024;
 // 1. Database Connection
 $host = 'localhost';
 $db_name = 'joblens';
-$username = 'root';
-$password = 'ggyy1155';
+$username = 'joblens';
+$password = 'joblens';
 $category_links = [
     "半導體" => "semicondictor.html",
     "電腦周邊" => "computer-peripherals.html",
