@@ -1,7 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 import os
-
 import feedparser
 import requests
 import urllib3
@@ -19,7 +18,7 @@ from selenium.webdriver.common.proxy import ProxyType
 from requests import Session
 from requests.adapters import HTTPAdapter, Retry
 import ssl
-import mariadb
+import pymysql
 from playsound3 import playsound
 from datetime import datetime
 import traceback
@@ -161,6 +160,8 @@ def scrape(start: int, end: int):
     session.mount('https://', HTTPAdapter(max_retries=retries))
 
     try:
+        SAVE_INTERVAL = 200
+        next_save = SAVE_INTERVAL
         for id in range(start, end, steps):
             url = f"https://news.pts.org.tw/article/{id}"
             print(f"{url}: ", end='')
@@ -188,13 +189,13 @@ def scrape(start: int, end: int):
                     pass
                 print(f"failed: {e}")
             
+            next_save -= 1
+            if next_save <= 0:
+                write_output_files(now, output, failed)
+                next_save = SAVE_INTERVAL
             time.sleep(random.random())
     finally:
-        with open(f"news-{now}.json", encoding="utf-8", mode="w") as f:
-            json.dump(output, f, indent=2, ensure_ascii=False)
-        with open(f"failed-{now}.json", encoding="utf-8", mode="w") as f:
-            json.dump(failed, f, indent=2 ,ensure_ascii=False)
-
+        write_output_files(now, output, failed)
 
 # ── Proxy session pool ────────────────────────────────────────────────────────
 class ProxySession:
@@ -282,14 +283,7 @@ def scrape_with_proxy(start: int, end: int, proxies: list[str], max_workers=1) -
                     print(f"  ✗ {result.url}  ({result.reason})")
  
     finally:
-        # Always save whatever was collected, even on KeyboardInterrupt
-        out_file    = f"news-{now}.json"
-        failed_file = f"failed-{now}.json"
- 
-        with open(out_file, encoding="utf-8", mode="w") as f:
-            json.dump(output, f, indent=2, ensure_ascii=False)
-        with open(failed_file, encoding="utf-8", mode="w") as f:
-            json.dump(failed, f, indent=2, ensure_ascii=False)
+        write_output_files(now, output, failed)
  
         for ps in proxy_sessions:
             ps.close()
@@ -297,7 +291,6 @@ def scrape_with_proxy(start: int, end: int, proxies: list[str], max_workers=1) -
         print(f"\n── Done ──────────────────────────────────────────")
         print(f"  Succeeded : {len(output)}")
         print(f"  Failed    : {len(failed)}")
-        print(f"  Saved     : {out_file}  /  {failed_file}")
 
 def in_database(db, url):
     id = int(url.split('/')[-1])
@@ -336,6 +329,12 @@ def update_pnn_with_rss(db, pnn):
         finally:
             db.commit()
 
+def write_output_files(time: str, success: dict | list[dict], failed: dict | list[dict]):
+    with open(f"news-{time}.json", encoding="utf-8", mode="w") as f:
+        json.dump(success, f, indent=2, ensure_ascii=False)
+    with open(f"failed-{time}.json", encoding="utf-8", mode="w") as f:
+        json.dump(failed, f, indent=2, ensure_ascii=False)
+
 def main():
     start = None
     end = None
@@ -355,10 +354,10 @@ def main():
     session.headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36'
 
     try:
-        db_connection = mariadb.connect(
+        db_connection = pymysql.connect(
             host=ip,
             user=user,
-            passwd=password,
+            password=password,
             database="joblens",
         )
         
