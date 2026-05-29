@@ -787,7 +787,7 @@ $news = searchNews($pdo, $company['Name'], 10);
                     <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
                         <i class="fa-solid fa-cube text-2xl"></i>
                     </div>
-                    <p class="text-slate-500 font-bold">目前該公司尚無任何輿情評論資料可投影</p>
+                    <p class="text-slate-500 font-bold">「<?= $company['Name'] ?>」尚無任何輿情評論資料可投影</p>
                 </div>
             </div>
         </section>
@@ -799,14 +799,14 @@ $news = searchNews($pdo, $company['Name'], 10);
                 <div class="lg:col-span-6 bg-white rounded-xl shadow-lg border p-6 flex flex-col">
                     <canvas id="word-cloud-canvas" class="w-full h-full flex-1"></canvas>
                 </div>
-                <div class="lg:col-span-6 bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col h-full">
+                <div class="lg:col-span-6 bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col lg:min-h-0">
                     <h4 class="text-lg font-bold text-slate-700 mb-4 flex items-center justify-between flex-shrink-0">
                         <span class="flex items-center gap-2">
                             <img src="/assets/news.png" class="w-6 h-6 object-contain"> 相關新聞
                         </span>
                     </h4>
                     <?php if ($news): ?>
-                    <div class="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
+                    <div class="lg:overflow-y-auto h-full space-y-4 pr-2">
                         <?php foreach($news as $n): ?>
                         <div class="flex gap-3 group cursor-pointer border-b border-slate-50 pb-3 hover:bg-slate-50 p-2 rounded transition-all">
                             <div class="w-16 h-16 bg-slate-100 rounded flex-shrink-0 flex items-center justify-center text-slate-300">
@@ -830,7 +830,7 @@ $news = searchNews($pdo, $company['Name'], 10);
                         <?php endforeach ?>
                     </div>
                     <?php else: ?>
-                    <div class="flex flex-col items-center justify-center py-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
+                    <div class="flex flex-1 flex-col items-center justify-center py-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
                         <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
                             <i class="fa-solid fa-newspaper text-2xl"></i>
                         </div>
