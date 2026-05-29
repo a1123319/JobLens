@@ -723,80 +723,120 @@ $news = searchNews($pdo, $company['Name'], 10);
             </div>
         </section>
 
+        <?php if ($comments): ?>
+        <section id="section-comments-sphere" class="scroll-mt-24 relative">
+            <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 互動輿情
+            </h3>
+            <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-6">
+                <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 items-stretch justify-center max-w-5xl mx-auto">
+                    <!-- Left side: 3D Canvas Sphere (No grid, solid bg-slate-50 background!) -->
+                    <div class="w-full lg:w-[450px] shrink-0 aspect-square bg-slate-50 rounded-2xl overflow-hidden border border-slate-200 shadow-inner flex items-center justify-center relative group">
+                        <canvas id="comments-sphere-canvas" class="w-full h-full cursor-grab active:cursor-grabbing z-10"></canvas>
+                        <!-- Control Overlay Guide -->
+                        <div class="absolute bottom-4 left-4 text-xs text-slate-500 bg-white/95 px-3 py-1.5 rounded-full pointer-events-none flex items-center gap-1.5 border border-slate-200/80 shadow-md backdrop-blur-sm z-20 transition group-hover:opacity-100 opacity-75">
+                            <i class="fa-solid fa-arrows-rotate animate-spin text-cyan-600" style="animation-duration: 6s;"></i>
+                            <span>拖曳以旋轉球體，點擊小點查看評論</span>
+                        </div>
+                    </div>
+                    <!-- Right side: Selected Comment details panel -->
+                    <div class="flex-1 min-w-[320px] h-[450px] flex flex-col">
+                        <div id="comment-detail-card" class="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col h-full shadow-inner transition-all duration-300">
+                            <!-- Default State -->
+                            <div id="comment-detail-placeholder" class="flex-1 flex flex-col items-center justify-center text-center py-12">
+                                <div class="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center text-cyan-600 mb-4 animate-bounce">
+                                    <i class="fa-solid fa-cube text-2xl"></i>
+                                </div>
+                                <h4 class="font-bold text-slate-700 text-lg mb-2">點擊 3D 球體上的亮點</h4>
+                                <p class="text-slate-400 text-sm max-w-[280px]">我們已將所有社群評論投影至 3D 空間中。點擊任一發光節點，即可在此展開詳細的匿名員工評論。</p>
+                            </div>
+                            
+                            <!-- Content State -->
+                            <div id="comment-detail-content" class="hidden flex-col h-full">
+                                <div class="flex justify-between items-center mb-4 flex-shrink-0">
+                                    <div class="flex items-center gap-2">
+                                        <span id="comment-detail-source" class="px-3 py-1 rounded-full text-xs font-bold shadow-sm">Dcard</span>
+                                        <span id="comment-detail-index" class="text-xs text-slate-400 font-mono">Comment #1</span>
+                                    </div>
+                                    <a id="comment-detail-link" href="#" target="_blank" class="text-xs text-cyan-600 hover:text-cyan-800 font-bold flex items-center gap-1 bg-cyan-50 px-2.5 py-1 rounded hover:bg-cyan-100 transition-colors">
+                                        <span>查看原始貼文</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                    </a>
+                                </div>
+                                
+                                <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar my-2 text-slate-700 leading-relaxed text-sm whitespace-pre-wrap font-medium">
+                                    <p id="comment-detail-text">評論內容</p>
+                                </div>
+                                
+                                <div class="pt-4 border-t border-slate-200 mt-auto flex-shrink-0 flex items-center justify-between text-xs text-slate-400">
+                                    <span><i class="fa-regular fa-face-smile text-emerald-500 mr-1"></i>社群輿情觀測</span>
+                                    <span id="comment-detail-length">長度: 0 字</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <?php else: ?>
+        <section id="section-comments-sphere" class="scroll-mt-24 relative">
+            <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 互動輿情 3D 探索
+            </h3>
+            <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-8">
+                <div class="flex flex-col items-center justify-center py-12 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
+                    <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                        <i class="fa-solid fa-cube text-2xl"></i>
+                    </div>
+                    <p class="text-slate-500 font-bold">「<?= $company['Name'] ?>」尚無任何輿情評論資料可投影</p>
+                </div>
+            </div>
+        </section>
+        <?php endif ?>
+
         <section id="section-reviews" class="scroll-mt-24 relative">
             <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2"><span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 職場輿情 AI 分析</h3>
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[600px]">
-                <div class="lg:col-span-7 bg-white rounded-xl shadow-lg border p-6 flex flex-col">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[500px]">
+                <div class="lg:col-span-6 bg-white rounded-xl shadow-lg border p-6 flex flex-col">
                     <canvas id="word-cloud-canvas" class="w-full h-full flex-1"></canvas>
                 </div>
-                <div class="lg:col-span-5 flex flex-col gap-6 h-full">
-                    <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col h-[50%]">
-                        <h4 class="text-lg font-bold text-slate-700 mb-4 flex items-center justify-between flex-shrink-0">
-                            <span class="flex items-center gap-2">
-                                <img src="/assets/review.png" class="w-6 h-6 object-contain"> 評論摘錄
-                            </span>
-                        </h4>
-                        <?php if ($comments): ?>
-                        <div class="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
-                            <?php foreach($comments as $c): ?>
-                            <div class="p-3 bg-slate-50 rounded-lg border mb-3 text-sm">
-                                <?php if (strtoupper($c['Source']) === 'DCARD'): ?>
-                                <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded">Dcard</span>
+                <div class="lg:col-span-6 bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col lg:min-h-0">
+                    <h4 class="text-lg font-bold text-slate-700 mb-4 flex items-center justify-between flex-shrink-0">
+                        <span class="flex items-center gap-2">
+                            <img src="/assets/news.png" class="w-6 h-6 object-contain"> 相關新聞
+                        </span>
+                    </h4>
+                    <?php if ($news): ?>
+                    <div class="lg:overflow-y-auto h-full space-y-4 pr-2">
+                        <?php foreach($news as $n): ?>
+                        <div class="flex gap-3 group cursor-pointer border-b border-slate-50 pb-3 hover:bg-slate-50 p-2 rounded transition-all">
+                            <div class="w-16 h-16 bg-slate-100 rounded flex-shrink-0 flex items-center justify-center text-slate-300">
+                                <?php if (isset($n["ThumbnailUrl"])): ?>
+                                <img src="<?= $n["ThumbnailUrl"] ?>" style="height: 100%; object-fit: cover;">
                                 <?php else: ?>
-                                <span class="bg-slate-800 text-white text-xs font-bold px-2 py-0.5 rounded">PTT</span>
+                                <span class="fa-solid fa-image"></span>
                                 <?php endif ?>
-                                <p class="mt-2"><?= htmlspecialchars($c['Content']); ?></p>
                             </div>
-                            <?php endforeach; ?>
-                        </div>
-                        <?php else: ?>
-                        <div class="flex flex-col items-center justify-center py-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
-                            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
-                                <i class="fa-solid fa-comment text-2xl"></i>
+                            <div>
+                                <a class="text-sm font-bold text-slate-800 group-hover:text-cyan-700 transition-colors line-clamp-2" href="<?= htmlspecialchars($n["Url"]) ?>" target="_blank">
+                                    <?= htmlspecialchars($n["Title"]) ?>
+                                </a>
+                                <p class="text-[10px] text-slate-400 mt-1">上傳於 <?= formatDate($n['PublishedTime']) ?>
+                                <?php if (!empty($n['UpdatedTime']) && $n['UpdatedTime'] !== $n['PublishedTime']):
+                                    echo "| 更新於 " . formatDate($n['UpdatedTime']);
+                                endif; ?>
+                                | 公視新聞</p>
                             </div>
-                            <p class="text-slate-500 font-bold">目前無相關評論</p>
                         </div>
-                        <?php endif ?>
+                        <?php endforeach ?>
                     </div>
-                    <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col h-[50%]">
-                        <h4 class="text-lg font-bold text-slate-700 mb-4 flex items-center justify-between flex-shrink-0">
-                            <span class="flex items-center gap-2">
-                                <img src="/assets/news.png" class="w-6 h-6 object-contain"> 相關新聞
-                            </span>
-                        </h4>
-                        <?php if ($news): ?>
-                        <div class="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
-                            <?php foreach($news as $n): ?>
-                            <div class="flex gap-3 group cursor-pointer border-b border-slate-50 pb-3 hover:bg-slate-50 p-2 rounded transition-all">
-                                <div class="w-16 h-16 bg-slate-100 rounded flex-shrink-0 flex items-center justify-center text-slate-300">
-                                    <?php if (isset($n["ThumbnailUrl"])): ?>
-                                    <img src="<?= $n["ThumbnailUrl"] ?>" style="height: 100%; object-fit: cover;">
-                                    <?php else: ?>
-                                    <span class="fa-solid fa-image"></span>
-                                    <?php endif ?>
-                                </div>
-                                <div>
-                                    <a class="text-sm font-bold text-slate-800 group-hover:text-cyan-700 transition-colors line-clamp-2" href="<?= htmlspecialchars($n["Url"]) ?>" target="_blank">
-                                        <?= htmlspecialchars($n["Title"]) ?>
-                                    </a>
-                                    <p class="text-[10px] text-slate-400 mt-1">上傳於 <?= formatDate($n['PublishedTime']) ?>
-                                    <?php if (!empty($n['UpdatedTime']) && $n['UpdatedTime'] !== $n['PublishedTime']):
-                                        echo "| 更新於 " . formatDate($n['UpdatedTime']);
-                                    endif; ?>
-                                    | 公視新聞</p>
-                                </div>
-                            </div>
-                            <?php endforeach ?>
+                    <?php else: ?>
+                    <div class="flex flex-1 flex-col items-center justify-center py-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
+                        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                            <i class="fa-solid fa-newspaper text-2xl"></i>
                         </div>
-                        <?php else: ?>
-                        <div class="flex flex-col items-center justify-center py-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
-                            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
-                                <i class="fa-solid fa-newspaper text-2xl"></i>
-                            </div>
-                            <p class="text-slate-500 font-bold">最近無相關新聞</p>
-                        </div>
-                        <?php endif ?>
+                        <p class="text-slate-500 font-bold">最近無相關新聞</p>
                     </div>
+                    <?php endif ?>
                 </div>
             </div>
         </section>
@@ -807,8 +847,8 @@ $news = searchNews($pdo, $company['Name'], 10);
         Chart.defaults.color = '#64748b';
 
         // --- 0. 懸浮拖拉滑桿 (ScrollSpy Navigation) ---
-        const sectionsList = ['section-jobs', 'section-salary', 'section-rank', 'section-safety', 'section-esg', 'section-reviews'];
-        const sectionNames = ['徵才職缺', '薪資福利', '同業排名', '工安指標', '環境永續', '輿情分析'];
+        const sectionsList = ['section-jobs', 'section-salary', 'section-rank', 'section-safety', 'section-esg', 'section-comments-sphere', 'section-reviews'];
+        const sectionNames = ['徵才職缺', '薪資福利', '同業排名', '工安指標', '環境永續', '互動輿情', '新聞字雲'];
         let isDragging = false;
         const track = document.getElementById('vertical-track');
         const thumb = document.getElementById('vertical-thumb');
@@ -1304,6 +1344,413 @@ $news = searchNews($pdo, $company['Name'], 10);
             });
         }
 
+        // --- 7. 3D 輿情球體渲染器 (Interactive 3D Point-Cloud Sphere) ---
+        const rawCommentsData = <?= json_encode($comments) ?>;
+        
+        function initComments3DSphere() {
+            const canvas = document.getElementById('comments-sphere-canvas');
+            if (!canvas || !rawCommentsData || rawCommentsData.length === 0) return;
+            
+            const ctx = canvas.getContext('2d');
+            let width = 0, height = 0, cx = 0, cy = 0;
+            const R = 150; // Sphere radius
+            const D = 2.5; // Camera distance
+            
+            // Adjust canvas resolution for high-DPI displays
+            function resizeCanvas() {
+                const rect = canvas.parentNode.getBoundingClientRect();
+                width = rect.width;
+                height = rect.height;
+                canvas.width = width * window.devicePixelRatio;
+                canvas.height = height * window.devicePixelRatio;
+                ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+                cx = width / 2;
+                cy = height / 2;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Distribute points on a sphere using Fibonacci Sphere distribution
+            const points = [];
+            const phi = Math.PI * (3 - Math.sqrt(5)); // Golden angle
+            const n = rawCommentsData.length;
+            
+            for (let i = 0; i < n; i++) {
+                const y = 1 - (i / (n - 1)) * 2; // goes from 1 to -1
+                const radiusAtY = Math.sqrt(1 - y * y);
+                const theta = phi * i;
+                const x = Math.cos(theta) * radiusAtY;
+                const z = Math.sin(theta) * radiusAtY;
+                
+                points.push({
+                    x: x, y: y, z: z, // current 3D coordinates
+                    comment: rawCommentsData[i],
+                    index: i + 1,
+                    // Interactive states
+                    hovered: false,
+                    selected: false
+                });
+            }
+            
+            // Physics / Rotation speeds
+            let angleX = 0.001; // auto rotation X
+            let angleY = 0.0015; // auto rotation Y
+            let targetAngleX = angleX;
+            let targetAngleY = angleY;
+            
+            // Drag and Hover interaction states
+            let isDraggingSphere = false;
+            let isMouseOverCanvas = false;
+            let lastMouseX = 0, lastMouseY = 0;
+            let mouseX = -9999, mouseY = -9999;
+            let hoveredPoint = null;
+            
+            // 3D rotation math
+            function rotateX(point, radians) {
+                const cos = Math.cos(radians);
+                const sin = Math.sin(radians);
+                const y1 = point.y * cos - point.z * sin;
+                const z1 = point.y * sin + point.z * cos;
+                point.y = y1;
+                point.z = z1;
+            }
+            
+            function rotateY(point, radians) {
+                const cos = Math.cos(radians);
+                const sin = Math.sin(radians);
+                const x1 = point.x * cos + point.z * sin;
+                const z1 = -point.x * sin + point.z * cos;
+                point.x = x1;
+                point.z = z1;
+            }
+            
+            // Details Panel elements
+            const placeholder = document.getElementById('comment-detail-placeholder');
+            const detailContent = document.getElementById('comment-detail-content');
+            const detailSource = document.getElementById('comment-detail-source');
+            const detailIndex = document.getElementById('comment-detail-index');
+            const detailLink = document.getElementById('comment-detail-link');
+            const detailText = document.getElementById('comment-detail-text');
+            const detailLength = document.getElementById('comment-detail-length');
+            const cardContainer = document.getElementById('comment-detail-card');
+            
+            function selectComment(pt) {
+                if (!pt || !pt.comment) return;
+                
+                // Set active states in model
+                points.forEach(p => p.selected = (p === pt));
+                
+                // Show detail card with smooth content change animation
+                cardContainer.classList.add('scale-[0.98]', 'opacity-80');
+                setTimeout(() => {
+                    placeholder.classList.add('hidden');
+                    detailContent.classList.remove('hidden');
+                    detailContent.classList.add('flex');
+                    
+                    // Case-insensitive/fallback safe data extraction
+                    const commentObj = pt.comment;
+                    const sourceVal = commentObj.Source || commentObj.source || 'Dcard';
+                    const contentVal = commentObj.Content || commentObj.content || '';
+                    const urlVal = commentObj.Url || commentObj.url || '';
+                    
+                    const isDcard = sourceVal.toUpperCase() === 'DCARD';
+                    detailSource.innerText = isDcard ? 'Dcard' : 'PTT';
+                    detailSource.className = isDcard 
+                        ? 'px-3 py-1 rounded-full text-xs font-bold shadow-sm bg-blue-100 text-blue-800' 
+                        : 'px-3 py-1 rounded-full text-xs font-bold shadow-sm bg-slate-800 text-white';
+                    
+                    detailIndex.innerText = `評論 #${pt.index}`;
+                    
+                    if (urlVal) {
+                        detailLink.href = urlVal;
+                        detailLink.classList.remove('hidden');
+                    } else {
+                        detailLink.classList.add('hidden');
+                    }
+                    
+                    detailText.innerText = contentVal;
+                    detailLength.innerText = `長度: ${contentVal.length} 字`;
+                    
+                    cardContainer.classList.remove('scale-[0.98]', 'opacity-80');
+                }, 100);
+            }
+            
+            // Render / Animation Loop
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                
+                // Decaying dragging velocities to restore auto rotation
+                if (!isDraggingSphere) {
+                    // Smoothly decay drag velocities back to cruise speed (0 when hovered for easy click)
+                    const targetSpeedX = isMouseOverCanvas ? 0 : 0.0008;
+                    const targetSpeedY = isMouseOverCanvas ? 0 : 0.0012;
+                    targetAngleX += (targetSpeedX - targetAngleX) * 0.05;
+                    targetAngleY += (targetSpeedY - targetAngleY) * 0.05;
+                }
+                
+                angleX = targetAngleX;
+                angleY = targetAngleY;
+                
+                // Apply rotation to all points
+                points.forEach(pt => {
+                    rotateX(pt, angleX);
+                    rotateY(pt, angleY);
+                });
+                
+                // Sort points by depth (Z axis) - Painter's Algorithm for rendering correctly
+                // z goes from deep insidescreen (-1) to near viewer (+1)
+                const sortedPoints = [...points].sort((a, b) => a.z - b.z);
+                
+                hoveredPoint = null;
+                let minDistance = 15; // Hover range in 2D pixels
+                
+                // First pass: project and calculate 2D coordinates for hover detection
+                sortedPoints.forEach(pt => {
+                    // Projection scaling based on 3D perspective
+                    const depthScale = D / (D - pt.z);
+                    pt.px = cx + pt.x * R * depthScale;
+                    pt.py = cy + pt.y * R * depthScale;
+                    pt.radius = 4.5 * depthScale;
+                    
+                    // Hover check (only points in the front half are hoverable)
+                    if (pt.z > -0.3 && !isDraggingSphere && mouseX >= 0 && mouseY >= 0) {
+                        const dist = Math.hypot(pt.px - mouseX, pt.py - mouseY);
+                        if (dist < minDistance) {
+                            minDistance = dist;
+                            hoveredPoint = pt;
+                        }
+                    }
+                });
+                
+                // Draw all elements in z-sorted order (back-to-front)
+                sortedPoints.forEach(pt => {
+                    const depthScale = D / (D - pt.z);
+                    const isHovered = (pt === hoveredPoint);
+                    pt.hovered = isHovered;
+                    
+                    // Alpha based on depth: back points are extremely faint, front points are vibrant
+                    const baseAlpha = 0.15 + ((pt.z + 1) / 2) * 0.75;
+                    const commentObj = pt.comment;
+                    const sourceVal = commentObj.Source || commentObj.source || 'Dcard';
+                    const isDcard = sourceVal.toUpperCase() === 'DCARD';
+                    
+                    // Set colors
+                    let r, g, b;
+                    if (isDcard) {
+                        r = 59; g = 130; b = 246; // cyan/blue `#3b82f6`
+                    } else {
+                        r = 239; g = 68; b = 68; // orange/red `#ef4444`
+                    }
+                    
+                    ctx.save();
+                    
+                    // Draw selection glow halo
+                    if (pt.selected) {
+                        ctx.beginPath();
+                        ctx.arc(pt.px, pt.py, pt.radius * 3.5, 0, Math.PI * 2);
+                        const glowGrad = ctx.createRadialGradient(pt.px, pt.py, 0, pt.px, pt.py, pt.radius * 3.5);
+                        glowGrad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${baseAlpha * 0.6})`);
+                        glowGrad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+                        ctx.fillStyle = glowGrad;
+                        ctx.fill();
+                    }
+                    
+                    // Draw outer hover halo
+                    if (isHovered) {
+                        ctx.beginPath();
+                        ctx.arc(pt.px, pt.py, pt.radius * 2.5, 0, Math.PI * 2);
+                        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${baseAlpha * 0.8})`;
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+                    }
+                    
+                    // Draw point dot
+                    ctx.beginPath();
+                    ctx.arc(pt.px, pt.py, pt.radius * (isHovered ? 1.5 : 1), 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isHovered ? 1.0 : baseAlpha})`;
+                    ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${isHovered ? 0.9 : baseAlpha * 0.5})`;
+                    ctx.shadowBlur = isHovered ? 10 : 3;
+                    ctx.fill();
+                    ctx.restore();
+                    
+                    // Draw a subtle, floating mini-label for hovered point
+                    if (isHovered) {
+                        ctx.save();
+                        ctx.font = "bold 11px 'Noto Sans TC', sans-serif";
+                        ctx.fillStyle = "#ffffff";
+                        ctx.shadowColor = "rgba(0,0,0,0.8)";
+                        ctx.shadowBlur = 4;
+                        
+                        const labelText = isDcard ? `Dcard #${pt.index}` : `PTT #${pt.index}`;
+                        const textWidth = ctx.measureText(labelText).width;
+                        
+                        // Draw label background pill
+                        ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
+                        ctx.beginPath();
+                        if (ctx.roundRect) {
+                            ctx.roundRect(pt.px - textWidth/2 - 6, pt.py - pt.radius - 22, textWidth + 12, 18, 9);
+                        } else {
+                            ctx.rect(pt.px - textWidth/2 - 6, pt.py - pt.radius - 22, textWidth + 12, 18);
+                        }
+                        ctx.fill();
+                        
+                        // Draw label text
+                        ctx.fillStyle = "#e2e8f0";
+                        ctx.textAlign = "center";
+                        ctx.fillText(labelText, pt.px, pt.py - pt.radius - 9);
+                        ctx.restore();
+                    }
+                });
+                
+                // Cursor visual indicator
+                canvas.style.cursor = isDraggingSphere 
+                    ? 'grabbing' 
+                    : (hoveredPoint ? 'pointer' : 'grab');
+                
+                requestAnimationFrame(animate);
+            }
+            
+            // Interaction Event Listeners
+            function handleStart(x, y) {
+                isDraggingSphere = true;
+                isMouseOverCanvas = true;
+                lastMouseX = x;
+                lastMouseY = y;
+            }
+            
+            function handleMove(x, y) {
+                const rect = canvas.getBoundingClientRect();
+                mouseX = x - rect.left;
+                mouseY = y - rect.top;
+                
+                if (isDraggingSphere) {
+                    const dx = x - lastMouseX;
+                    const dy = y - lastMouseY;
+                    
+                    // Velocity directly proportional to drag delta
+                    targetAngleY = dx * 0.007;
+                    targetAngleX = -dy * 0.007;
+                    
+                    lastMouseX = x;
+                    lastMouseY = y;
+                }
+            }
+            
+            // Hover Events to stop/resume auto rotation smoothly
+            canvas.addEventListener('mouseenter', () => {
+                isMouseOverCanvas = true;
+            });
+            
+            canvas.addEventListener('mouseleave', () => {
+                isMouseOverCanvas = false;
+                mouseX = -9999;
+                mouseY = -9999;
+            });
+            
+            // Mouse Events
+            canvas.addEventListener('mousedown', e => {
+                handleStart(e.clientX, e.clientY);
+            });
+            
+            window.addEventListener('mousemove', e => {
+                handleMove(e.clientX, e.clientY);
+            });
+            
+            window.addEventListener('mouseup', () => {
+                isDraggingSphere = false;
+            });
+            
+            // Robust Direct Click Hit-Testing (Works regardless of mouse move speed or hover state)
+            canvas.addEventListener('click', e => {
+                if (isDraggingSphere) return;
+                
+                const rect = canvas.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const clickY = e.clientY - rect.top;
+                
+                let clickedPt = null;
+                let minDist = 20; // 2D hit test box in pixels
+                
+                points.forEach(pt => {
+                    // Only clickable if on front face
+                    if (pt.z > -0.3) {
+                        const dist = Math.hypot(pt.px - clickX, pt.py - clickY);
+                        if (dist < minDist) {
+                            minDist = dist;
+                            clickedPt = pt;
+                        }
+                    }
+                });
+                
+                if (clickedPt) {
+                    selectComment(clickedPt);
+                }
+            });
+            
+            // Touch Events (Mobile support)
+            canvas.addEventListener('touchstart', e => {
+                if (e.touches.length === 1) {
+                    isMouseOverCanvas = true;
+                    const touch = e.touches[0];
+                    handleStart(touch.clientX, touch.clientY);
+                    
+                    const rect = canvas.getBoundingClientRect();
+                    mouseX = touch.clientX - rect.left;
+                    mouseY = touch.clientY - rect.top;
+                }
+            }, { passive: true });
+            
+            canvas.addEventListener('touchmove', e => {
+                if (e.touches.length === 1) {
+                    const touch = e.touches[0];
+                    handleMove(touch.clientX, touch.clientY);
+                }
+            }, { passive: true });
+            
+            canvas.addEventListener('touchend', e => {
+                isDraggingSphere = false;
+                isMouseOverCanvas = false;
+                
+                // Direct touch-end tap hit testing
+                if (e.changedTouches && e.changedTouches.length === 1) {
+                    const touch = e.changedTouches[0];
+                    const rect = canvas.getBoundingClientRect();
+                    const clickX = touch.clientX - rect.left;
+                    const clickY = touch.clientY - rect.top;
+                    
+                    let clickedPt = null;
+                    let minDist = 25; // Slightly larger tap-box for finger touch
+                    
+                    points.forEach(pt => {
+                        if (pt.z > -0.3) {
+                            const dist = Math.hypot(pt.px - clickX, pt.py - clickY);
+                            if (dist < minDist) {
+                                minDist = dist;
+                                clickedPt = pt;
+                            }
+                        }
+                    });
+                    
+                    if (clickedPt) {
+                        selectComment(clickedPt);
+                    }
+                }
+                
+                mouseX = -9999;
+                mouseY = -9999;
+            });
+            
+            // Auto-select the first point as initial view if points exist
+            if (points.length > 0) {
+                setTimeout(() => {
+                    selectComment(points[0]);
+                }, 500);
+            }
+            
+            // Start rendering loop!
+            animate();
+        }
+
         // --- 頁面初始化 ---
         window.onload = () => {
             renderJobs();
@@ -1311,6 +1758,7 @@ $news = searchNews($pdo, $company['Name'], 10);
             updateSafetyData();
             updateChart('median');  
             initEsgCharts();        
+            initComments3DSphere();
             
             // 延遲繪製以確保容器已經佈局完成
             setTimeout(() => {
