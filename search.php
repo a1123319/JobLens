@@ -1,4 +1,6 @@
 <?php
+require_once "search-component.php";
+
 $year = 2024;
 
 // 1. Database Connection
@@ -225,7 +227,7 @@ $news = searchNews($pdo, $company['Name'], 10);
     <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='/index.html'">
-                <img src="/assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
+                <img src="assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
                 <span class="text-xl font-bold tracking-wider">JobLens</span>
             </div>
             <div class="hidden md:flex items-center gap-6 text-sm font-medium">
@@ -246,11 +248,8 @@ $news = searchNews($pdo, $company['Name'], 10);
 
     <header class="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-10 px-4">
         <div class="container mx-auto text-center max-w-2xl">
-            <h1 class="text-2xl md:text-3xl font-bold mb-3">給求職者透視企業的放大鏡</h1>
-            <form action="search.php" method="GET" class="relative mt-6">
-                 <input type="text" name="id" placeholder="請輸入公司代號或名稱" class="w-full p-3 pl-6 rounded-full text-slate-900 shadow-xl focus:outline-none ring-4 ring-cyan-500/50 transition">
-                <button type="submit" class="absolute right-1.5 top-1.5 bg-cyan-600 hover:bg-cyan-700 text-white px-5 py-1.5 rounded-full transition font-medium text-sm">重新搜尋</button>
-            </form>
+            <h1 class="text-2xl md:text-3xl font-bold mb-6">給求職者透視企業的放大鏡</h1>
+            <?php renderSearch($pdo); ?>
         </div>
     </header>
 
@@ -267,7 +266,7 @@ $news = searchNews($pdo, $company['Name'], 10);
             
             <div class="mt-6 md:mt-0 flex flex-col md:flex-row items-end md:items-center gap-3">
                 <a href="/supply-chain/<?= $category_links[$company['Category']] ?>" class="bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm flex items-center gap-2 group border border-blue-200">
-                    <img src="/assets/value-chain.png" class="w-5 h-5 object-contain">
+                    <img src="assets/value-chain.png" class="w-5 h-5 object-contain">
                     查看所屬產業鏈
                 </a>
             </div>
@@ -285,7 +284,7 @@ $news = searchNews($pdo, $company['Name'], 10);
                         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md hover:border-cyan-300 transition-all">
                             <div class="flex items-center gap-4">
                                 <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center p-2.5 group-hover:scale-110 transition-transform">
-                                    <img src="/assets/work.png" class="w-full h-full object-contain">
+                                    <img src="assets/work.png" class="w-full h-full object-contain">
                                 </div>
                                 <div><h4 class="font-bold text-base text-slate-800">「<?= $company['Name'] ?>」招募網站</h4><p class="text-xs text-slate-500">瀏覽最完整的職缺列表</p></div>
                             </div>
@@ -377,7 +376,7 @@ $news = searchNews($pdo, $company['Name'], 10);
                 <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-6 border border-slate-100 flex flex-col">
                     <div class="flex justify-between items-center mb-4">
                         <h4 class="text-lg font-bold flex items-center gap-2 text-slate-700">
-                            <img src="/assets/money.png" class="w-6 h-6 object-contain">
+                            <img src="assets/money.png" class="w-6 h-6 object-contain">
                             近年薪資趨勢
                         </h4>
                     </div>
@@ -404,7 +403,7 @@ $news = searchNews($pdo, $company['Name'], 10);
                     </div>
                     <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100 flex-1 flex flex-col justify-center">
                         <h4 class="text-md font-bold flex items-center gap-2 mb-4 text-slate-700">
-                            <img src="/assets/people.png" class="w-5 h-5 object-contain"> 職場環境
+                            <img src="assets/people.png" class="w-5 h-5 object-contain"> 職場環境
                         </h4>
                         <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
                             <div class="flex items-center justify-between mb-2">
@@ -482,7 +481,7 @@ $news = searchNews($pdo, $company['Name'], 10);
                 <div class="flex flex-col md:flex-row gap-6 w-full">
                     <div class="flex-1 bg-orange-50 p-6 rounded-xl border border-orange-100 flex flex-col items-center justify-center text-center hover:shadow-md transition cursor-default">
                         <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mb-3 p-2.5">
-                            <img src="/assets/injury.png" class="w-full h-full object-contain">
+                            <img src="assets/injury.png" class="w-full h-full object-contain">
                         </div>
                         <h5 class="text-slate-500 text-xs font-bold mb-1 uppercase">職業災害人數</h5>
                         <p class="text-3xl font-bold text-slate-800" id="safety-count">-</p>
@@ -491,7 +490,7 @@ $news = searchNews($pdo, $company['Name'], 10);
 
                     <div class="flex-1 bg-blue-50 p-6 rounded-xl border border-blue-100 flex flex-col items-center justify-center text-center hover:shadow-md transition cursor-default">
                         <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-3 p-2.5">
-                            <img src="/assets/ratio.png" class="w-full h-full object-contain">
+                            <img src="assets/ratio.png" class="w-full h-full object-contain">
                         </div>
                         <h5 class="text-slate-500 text-xs font-bold mb-1 uppercase">職業災害比率</h5>
                         <p class="text-3xl font-bold text-slate-800" id="safety-rate">-</p>
@@ -500,7 +499,7 @@ $news = searchNews($pdo, $company['Name'], 10);
 
                     <div id="fire-section" class="flex-1 bg-red-50 p-6 rounded-xl border border-red-100 flex flex-col items-center justify-center text-center hover:shadow-md transition cursor-default">
                         <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-3 p-2.5">
-                            <img src="/assets/fire.png" class="w-full h-full object-contain">
+                            <img src="assets/fire.png" class="w-full h-full object-contain">
                         </div>
                         <h5 class="text-slate-500 text-xs font-bold mb-1 uppercase">火災件數</h5>
                         <p class="text-3xl font-bold text-slate-800" id="safety-fire">-</p>
@@ -594,7 +593,7 @@ $news = searchNews($pdo, $company['Name'], 10);
                     <div>
                         <div class="flex items-center gap-3 mb-6">
                             <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center p-2">
-                                <img src="/assets/air-pollution.png" class="w-full h-full object-contain">
+                                <img src="assets/air-pollution.png" class="w-full h-full object-contain">
                             </div>
                             <div>
                                 <h3 class="text-lg font-bold text-slate-800">溫室氣體排放量分析</h3>
@@ -662,7 +661,7 @@ $news = searchNews($pdo, $company['Name'], 10);
                     <div>
                         <div class="flex items-center gap-3 mb-6">
                             <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center p-2">
-                                <img src="/assets/renewable-energy.png" class="w-full h-full object-contain">
+                                <img src="assets/renewable-energy.png" class="w-full h-full object-contain">
                             </div>
                             <div>
                                 <h3 class="text-lg font-bold text-slate-800">再生能源使用概況</h3>
@@ -802,7 +801,7 @@ $news = searchNews($pdo, $company['Name'], 10);
                 <div class="lg:col-span-6 bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col lg:min-h-0">
                     <h4 class="text-lg font-bold text-slate-700 mb-4 flex items-center justify-between flex-shrink-0">
                         <span class="flex items-center gap-2">
-                            <img src="/assets/news.png" class="w-6 h-6 object-contain"> 相關新聞
+                            <img src="assets/news.png" class="w-6 h-6 object-contain"> 相關新聞
                         </span>
                     </h4>
                     <?php if ($news): ?>
@@ -996,7 +995,7 @@ $news = searchNews($pdo, $company['Name'], 10);
                         <h5 class="font-bold text-slate-800 text-lg mb-3 line-clamp-2 h-[3.5rem]">${job.Name}</h5>
                         <div class="flex items-center text-sm text-slate-500 font-medium">
                             <span class="bg-slate-50 border border-slate-100 px-3 py-1 rounded-full text-slate-600 flex items-center">
-                                <img src="/assets/money.png" class="w-4 h-4 mr-1 object-contain">
+                                <img src="assets/money.png" class="w-4 h-4 mr-1 object-contain">
                                 ${job.Salary}
                             </span>
                         </div>
