@@ -440,7 +440,7 @@ $news = searchNews($pdo, $company['Name'], 10);
                 </div>
             </div>
             <div class="bg-white border border-slate-100 rounded-xl shadow-lg p-6 relative overflow-hidden">
-                <p class="text-xs text-slate-400 mb-4 text-right">單位：仟元 / 年</p>
+                <p class="text-xs text-slate-400 mb-4 text-right">單位：萬元 / 年</p>
                 <div class="w-full h-[450px]">
                     <canvas id="salary-rank-chart" style="display: block; box-sizing: border-box; height: 450px; width: 941.6px;" width="1177" height="562"></canvas>
                 </div>
@@ -1178,8 +1178,8 @@ $news = searchNews($pdo, $company['Name'], 10);
             }
 
             // 7. Format the labels to display the rank number on the axis
-            const labels = displayData.map(d => `No.${d.rankPosition} ${d['Name']} (${d['Id']})`);
-            const data = displayData.map(d => d[sortKey] / 1000);
+            const labels = displayData.map(d => `No.${d.rankPosition} ${d['Name']}`);
+            const data = displayData.map(d => d[sortKey] / 10000);
 
             // 8. Visual styling mappings
             const bgColors = displayData.map(d => String(d['Id']) === String(targetId) ? 'rgba(8, 145, 178, 0.8)' : 'rgba(203, 213, 225, 0.6)');
@@ -1195,7 +1195,7 @@ $news = searchNews($pdo, $company['Name'], 10);
                 },
                 options: {
                     indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return c.raw.toLocaleString() + ' 仟元'; } } } },
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return c.raw.toLocaleString() + ' 萬'; } } } },
                     scales: {
                         y: { ticks: { color: function(c) { return tickColors[c.index]; }, font: function(c) { return { weight: tickColors[c.index]==='#0891b2'?'bold':'normal' }; } } },
                         x: { display: false, grid: { color: '#f1f5f9' } }
