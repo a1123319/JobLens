@@ -226,13 +226,13 @@ $news = searchNews($pdo, $company['Name'], 10);
 
     <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='/index.html'">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.php'">
                 <img src="assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
                 <span class="text-xl font-bold tracking-wider">JobLens</span>
             </div>
             <div class="hidden md:flex items-center gap-6 text-sm font-medium">
-                <a href="/supply-chain/<?= $category_links[$company['Category']] ?>" class="hover:text-cyan-400 transition">產業鏈</a>
-                <a href="/about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">關於我們</a>
+                <a href="supply-chain/<?= $category_links[$company['Category']] ?>" class="hover:text-cyan-400 transition">產業鏈</a>
+                <a href="about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">關於我們</a>
             </div>
         </div>
     </nav>
@@ -265,7 +265,7 @@ $news = searchNews($pdo, $company['Name'], 10);
             </div>
             
             <div class="mt-6 md:mt-0 flex flex-col md:flex-row items-end md:items-center gap-3">
-                <a href="/supply-chain/<?= $category_links[$company['Category']] ?>" class="bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm flex items-center gap-2 group border border-blue-200">
+                <a href="supply-chain/<?= $category_links[$company['Category']] ?>" class="bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm flex items-center gap-2 group border border-blue-200">
                     <img src="assets/value-chain.png" class="w-5 h-5 object-contain">
                     查看所屬產業鏈
                 </a>
@@ -434,7 +434,7 @@ $news = searchNews($pdo, $company['Name'], 10);
                         <button id="btn-median" onclick="updateChart('median')" class="px-4 py-1.5 text-sm font-bold rounded-md bg-white text-cyan-700 shadow-sm transition">中位數</button>
                         <button id="btn-average" onclick="updateChart('average')" class="px-4 py-1.5 text-sm font-bold rounded-md text-slate-500 hover:text-slate-700 transition">平均數</button>
                     </div>
-                    <a href="/leaderboard.html" class="bg-blue-600 text-white px-5 py-1.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition shadow-sm flex items-center gap-2 group">
+                    <a href="leaderboard.html" class="bg-blue-600 text-white px-5 py-1.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition shadow-sm flex items-center gap-2 group">
                         查看完整排行榜 <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                     </a>
                 </div>
