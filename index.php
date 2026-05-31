@@ -47,12 +47,12 @@ $companies = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='/index.html'">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.php'">
                 <img src="assets/magnifying-glass.png" alt="JobLens Logo" class="w-8 h-8 object-contain">
                 <span class="text-xl font-bold tracking-wider">JobLens</span>
             </div>
             <div class="hidden md:flex gap-6 text-sm font-medium">
-                <a href="/about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-full hover:bg-cyan-500 hover:text-white transition-all">
+                <a href="about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-full hover:bg-cyan-500 hover:text-white transition-all">
                     關於我們
                 </a>
             </div>
@@ -73,7 +73,7 @@ $companies = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </h3>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            <a href="/supply-chain/semiconductor.html" class="block group">
+            <a href="supply-chain/semiconductor.html" class="block group">
                 <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full flex flex-col items-center justify-center text-center">
                     <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors p-3">
                         <img src="assets/chip.png" alt="半導體" class="w-full h-full object-contain">
@@ -82,7 +82,7 @@ $companies = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </a>
 
-            <a href="/supply-chain/computer-peripherals.html" class="block group">
+            <a href="supply-chain/computer-peripherals.html" class="block group">
                 <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full flex flex-col items-center justify-center text-center">
                     <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors p-3">
                         <img src="assets/pc.png" alt="電腦周邊" class="w-full h-full object-contain">
@@ -91,7 +91,7 @@ $companies = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </a>
 
-            <a href="/supply-chain/leisure-entertainment.html" class="block group">
+            <a href="supply-chain/leisure-entertainment.html" class="block group">
                 <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full flex flex-col items-center justify-center text-center">
                     <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors p-3">
                         <img src="assets/ecommerce.png" alt="休閒娛樂" class="w-full h-full object-contain">
