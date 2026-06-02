@@ -13,18 +13,6 @@ try {
 } catch (PDOException $e) {
     die("Database connection failed: " . $e->getMessage());
 }
-
-$stmt = $pdo->prepare(
-    "SELECT c.Id, 
-        c.Name, 
-        cc.Category, 
-        GROUP_CONCAT(n.Name SEPARATOR ' ') AS Nickname 
-    FROM company c 
-    LEFT JOIN companycategory cc ON c.Id = cc.CompanyId
-    LEFT JOIN nickname n ON c.Id = n.CompanyId
-    GROUP BY c.Id, c.Name");
-$stmt->execute();
-$companies = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
