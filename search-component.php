@@ -20,7 +20,7 @@ function renderSearch(
             FROM company c 
             LEFT JOIN companycategory cc ON c.Id = cc.CompanyId
             LEFT JOIN nickname n ON c.Id = n.CompanyId
-            GROUP BY c.Id, c.Name
+            GROUP BY c.Id, c.Name, cc.Category
         ");
         $stmt->execute();
         $companies = $stmt->fetchAll(PDO::FETCH_ASSOC);
