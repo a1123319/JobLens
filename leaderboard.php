@@ -245,15 +245,22 @@ $jsonData = json_encode($rawData, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
             const startIndex = (currentPage - 1) * itemsPerPage;
             const pageSlicedData = filteredSortedList.slice(startIndex, startIndex + itemsPerPage);
 
+            // 1. Keep the canvas container height bound to 10 rows so bars don't stretch vertically
             const containerEl = document.getElementById('chart-container');
-            const fixedBarHeight = 36; 
+            const fixedBarAreaHeight = 45; 
             const baselinePadding = 50; 
-            const dynamicContainerHeight = (pageSlicedData.length * fixedBarHeight) + baselinePadding;
-            containerEl.style.height = `${dynamicContainerHeight}px`;
+            const strictContainerHeight = (itemsPerPage * fixedBarAreaHeight) + baselinePadding;
+            containerEl.style.height = `${strictContainerHeight}px`;
+
+            // NEW FIX: Find the absolute maximum salary value in the ENTIRE filtered group (across all pages)
+            // This forces the X-axis scale to remain identical no matter what page you click on.
+            const globalMaxVal = filteredSortedList.length > 0 
+                ? Math.max(...filteredSortedList.map(item => item[metricKey] / 10000)) 
+                : 100;
 
             const labels = pageSlicedData.map((d, index) => {
                 const absoluteRank = startIndex + index + 1;
-                return `${absoluteRank}. ${d['Name']}`;
+                return `${absoluteRank}. ${d['Name']} (${d['Id']})`;
             });
 
             const data = pageSlicedData.map(d => d[metricKey] / 10000);
@@ -276,7 +283,7 @@ $jsonData = json_encode($rawData, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
                         borderColor: borderColors,
                         borderWidth: 1,
                         borderRadius: 4,
-                        barThickness: 28, 
+                        barThickness: 28,
                     }]
                 },
                 options: {
@@ -293,13 +300,20 @@ $jsonData = json_encode($rawData, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
                     },
                     scales: {
                         y: { 
+                            min: 0,
+                            max: itemsPerPage - 1,
                             ticks: { 
-                                color: function(c) { return tickColors[c.index]; }, 
-                                font: function(c) { return { weight: tickColors[c.index] === '#0891b2' ? 'bold' : 'normal' }; } 
+                                autoSkip: false,
+                                color: function(c) { return tickColors[c.index] || '#64748b'; }, 
+                                font: function(c) { 
+                                    return { weight: (tickColors[c.index] === '#0891b2') ? 'bold' : 'normal' }; 
+                                } 
                             } 
                         },
                         x: { 
                             display: false, 
+                            min: 0,
+                            max: globalMaxVal,
                             grid: { color: '#f1f5f9' } 
                         }
                     }
