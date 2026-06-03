@@ -9,7 +9,7 @@ $db_name = 'joblens';
 $username = 'joblens';
 $password = 'joblens';
 $category_links = [
-    "半導體" => "semicondictor.html",
+    "半導體" => "semiconductor.html",
     "電腦周邊" => "computer-peripherals.html",
     "休閒娛樂" => "leisure-entertainment.html"
 ];
@@ -198,7 +198,12 @@ $stmt = $pdo->prepare("
     SELECT w.Content, c.Emotion, c.Confidence
     FROM wordcloud w
     JOIN comment c ON w.CommentSource = c.Id
-    WHERE c.CompanyId = ?
+    WHERE c.CompanyId = ? 
+    AND w.Pos IN (
+        'Na', 'Nb', 'Nc', 'Ncd', 
+        'VA', 'VAC', 'VB', 'VC', 'VE', 'VF', 'VG', 
+        'A', 'FW'
+    )
 ");
 $stmt->execute([$company['Id']]);
 $wordcloudData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -311,19 +316,42 @@ foreach ($aggregatedWords as $word => $data) {
     <main class="container mx-auto px-4 py-8 space-y-16 max-w-6xl">
         
         <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center border-l-8 border-cyan-600">
-            <div>
-                <div class="flex items-center gap-3 mb-1">
-                    <h2 class="text-3xl font-bold"><?= htmlspecialchars($company['Name']); ?> (<?= htmlspecialchars($company['Id']); ?>)</h2>
-                    <span class="bg-slate-200 text-slate-600 px-2 py-1 rounded text-xs font-bold"><?= htmlspecialchars($company['Category']); ?> - <?= htmlspecialchars($company['Subsector'] ?? $company['Sector']); ?></span>
+            <div class="w-full">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
+                    <h2 class="text-3xl font-bold text-slate-900">
+                        <?= htmlspecialchars($company['Name']); ?> (<?= htmlspecialchars($company['Id']); ?>)
+                    </h2>
+                    
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <?php 
+                        // 1. 撈取該公司所有關聯的產業類別
+                        $catStmt = $pdo->prepare("SELECT DISTINCT Category FROM companycategory WHERE CompanyId = ?");
+                        $catStmt->execute([$company['Id']]);
+                        $categories = $catStmt->fetchAll(PDO::FETCH_ASSOC);
+
+                        // 若防呆找不到資料，則拿原先 $company 帶出的主資料作為 fallback
+                        if (empty($categories) && !empty($company['Category'])) {
+                            $categories = [['Category' => $company['Category']]];
+                        }
+
+                        // 2. 迭代輸出每一個產業類別標籤
+                        foreach ($categories as $cat): 
+                            $categoryName = $cat['Category'];
+                            
+                            // 根據 mapping 陣列取得對應網址
+                            $linkSlug = isset($category_links[$categoryName]) ? $category_links[$categoryName] : '';
+                            $targetUrl = !empty($linkSlug) ? "supply-chain/" . $linkSlug : "#";
+                        ?>
+                            <a href="<?= $targetUrl ?>" 
+                            title="查看「<?= htmlspecialchars($categoryName) ?>」所屬產業鏈"
+                            class="bg-slate-100 hover:bg-cyan-600 text-slate-700 hover:text-white border border-slate-200 hover:border-cyan-600 px-2.5 py-1 rounded-md text-xs font-bold transition-all inline-flex items-center gap-1 shadow-sm group">
+                                <i class="fa-solid fa-link text-[10px] opacity-40 group-hover:opacity-100 group-hover:text-cyan-200 transition-opacity"></i>
+                                <span><?= htmlspecialchars($categoryName); ?></span>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
                 <p class="text-slate-500 text-sm">資料年度：<?= $year ?> | 資料來源：公開資訊觀測站</p>
-            </div>
-            
-            <div class="mt-6 md:mt-0 flex flex-col md:flex-row items-end md:items-center gap-3">
-                <a href="supply-chain/<?= $category_links[$company['Category']] ?>" class="bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm flex items-center gap-2 group border border-blue-200">
-                    <img src="assets/value-chain.png" class="w-5 h-5 object-contain">
-                    查看所屬產業鏈
-                </a>
             </div>
         </div>
 
@@ -849,8 +877,18 @@ foreach ($aggregatedWords as $word => $data) {
             <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2"><span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 職場輿情 AI 分析</h3>
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[500px]">
                 <div class="lg:col-span-6 bg-white rounded-xl shadow-lg border p-6 flex flex-col">
+                    <?php if ($comments): ?>
                     <canvas id="word-cloud-canvas" class="w-full h-full flex-1"></canvas>
+                    <?php else: ?>
+                    <div class="flex flex-col items-center justify-center w-full h-full flex-1 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl py-12">
+                        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                            <i class="fa-solid fa-cloud text-2xl"></i>
+                        </div>
+                        <p class="text-slate-500 font-bold">「<?= $company['Name'] ?>」尚無任何輿情評論資料可繪製文字雲</p>
+                    </div>
+                    <?php endif; ?>
                 </div>
+                
                 <div class="lg:col-span-6 bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col lg:min-h-0">
                     <h4 class="text-lg font-bold text-slate-700 mb-4 flex items-center justify-between flex-shrink-0">
                         <span class="flex items-center gap-2">
@@ -1372,10 +1410,13 @@ foreach ($aggregatedWords as $word => $data) {
             const maxSize = Math.max(...sizes); 
             const minSize = Math.min(...sizes);
 
+            const maxFontTarget = 60;
+            const dynamicWeightFactor = maxSize > 0 ? (maxFontTarget / maxSize) : 2;
+
             WordCloud(canvas, {
                 list: rawWordsData.map(item => [item.text, item.size]),
                 gridSize: 8, 
-                weightFactor: 2, // Adjust this factor if text overlaps or is too small
+                weightFactor: dynamicWeightFactor,
                 fontFamily: "'Noto Sans TC', sans-serif",
                 color: (word) => {
                     const d = rawWordsData.find(w => w.text === word);
