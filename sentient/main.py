@@ -9,7 +9,7 @@ import pymysql
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "ggyy1155",
+    "password": "",
     "database": "joblens",
     "charset": "utf8mb4",
     "autocommit": True
@@ -20,9 +20,9 @@ model_id = "IDEA-CCNL/Erlangshen-Roberta-110M-Sentiment"
 print("Initializing NLP models on GPU...")
 
 # Change device=0 to select other GPUs.
-ws_driver = CkipWordSegmenter(model="bert-base", device=0)
-pos_driver = CkipPosTagger(model="bert-base", device=0)
-sentiment_classifier = pipeline("sentiment-analysis", model=model_id, device=0)
+ws_driver = CkipWordSegmenter(model="bert-base", device=-1)
+pos_driver = CkipPosTagger(model="bert-base", device=-1)
+sentiment_classifier = pipeline("sentiment-analysis", model=model_id, device=-1)
 
 def get_db_connection():
     return pymysql.connect(**DB_CONFIG)
@@ -50,7 +50,7 @@ def process_and_save():
 
             # 1. Batch execution for Sentiment Analysis
             print("Running sentiment analysis on comments...")
-            sentiment_results = sentiment_classifier(contents)
+            sentiment_results = sentiment_classifier(contents, truncation=True, max_length=512)
 
             # 2. Batch execution for Word Segmentation and POS Tagging
             print("Segmenting comment text into words and tagging part of speech...")
