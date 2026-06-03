@@ -34,9 +34,9 @@ try {
         SELECT 
             c.Id,
             c.Name,
-            s.Average,
-            s.NonAdminstrativeAverage,
-            s.NonAdminstrativeMedian,
+            MAX(s.Average) Average,
+            MAX(s.NonAdminstrativeAverage) NonAdminstrativeAverage,
+            MAX(s.NonAdminstrativeMedian) NonAdminstrativeMedian,
             cc.Category,
             cc.Sector
         FROM company c
