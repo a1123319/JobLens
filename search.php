@@ -185,11 +185,6 @@ $stmt = $pdo->prepare("SELECT * FROM disaster WHERE BusinessUnitUniformId = ? OR
 $stmt->execute([$company['UniformId'], $company['UniformId']]);
 $disasters = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Wordcloud
-$stmt = $pdo->prepare("SELECT Emotion as sentiment, Content as text, Frequency as size FROM wordcloud WHERE CompanyId = ?");
-$stmt->execute([$company['Id']]);
-$wordcloudData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 // Comments
 $stmt = $pdo->prepare("SELECT * FROM comment WHERE CompanyId = ?");
 $stmt->execute([$company['Id']]);
@@ -197,6 +192,66 @@ $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // News
 $news = searchNews($pdo, $company['Name'], 10);
+
+// Wordcloud
+$stmt = $pdo->prepare("
+    SELECT w.Content, c.Emotion, c.Confidence
+    FROM wordcloud w
+    JOIN comment c ON w.CommentSource = c.Id
+    WHERE c.CompanyId = ?
+");
+$stmt->execute([$company['Id']]);
+$wordcloudData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$aggregatedWords = [];
+
+foreach ($wordcloudData as $row) {
+    $word = $row['Content'];
+    $isPositive = (bool)$row['Emotion'];
+    $confidence = (float)$row['Confidence'];
+
+    // Determine tone based on confidence threshold
+    if ($confidence < 0.7) {
+        $sentimentType = 'neutral';
+    } else {
+        $sentimentType = $isPositive ? 'positive' : 'negative';
+    }
+
+    if (!isset($aggregatedWords[$word])) {
+        $aggregatedWords[$word] = [
+            'text' => $word,
+            'size' => 0,
+            'counts' => ['positive' => 0, 'negative' => 0, 'neutral' => 0]
+        ];
+    }
+
+    // Increment frequency and specific emotion counter
+    $aggregatedWords[$word]['size'] += 1;
+    $aggregatedWords[$word]['counts'][$sentimentType] += 1;
+}
+
+$finalWordsList = [];
+foreach ($aggregatedWords as $word => $data) {
+    $posCount = $data['counts']['positive'];
+    $negCount = $data['counts']['negative'];
+    $neuCount = $data['counts']['neutral'];
+
+    // Default to neutral
+    $finalSentiment = 'neutral'; 
+
+    // If positive or negative counts dominate, assign sentiment value (-1, 0, or 1)
+    if ($posCount > $negCount && $posCount > $neuCount) {
+        $finalSentiment = 'positive';  // Positive
+    } elseif ($negCount > $posCount && $negCount > $neuCount) {
+        $finalSentiment = 'negative'; // Negative
+    }
+
+    $finalWordsList[] = [
+        'text' => $data['text'],
+        'size' => $data['size'],
+        'sentiment' => $finalSentiment
+    ];
+}
 ?>
 
 <!DOCTYPE html>
@@ -761,13 +816,11 @@ $news = searchNews($pdo, $company['Name'], 10);
                                         <span>查看原始貼文</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                     </a>
                                 </div>
-                                
-                                <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar my-2 text-slate-700 leading-relaxed text-sm whitespace-pre-wrap font-medium">
+                                <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar my-2 text-slate-700 leading-relaxed text-sm font-medium">
                                     <p id="comment-detail-text">評論內容</p>
                                 </div>
-                                
                                 <div class="pt-4 border-t border-slate-200 mt-auto flex-shrink-0 flex items-center justify-between text-xs text-slate-400">
-                                    <span><i class="fa-regular fa-face-smile text-emerald-500 mr-1"></i>社群輿情觀測</span>
+                                    <span id="comment-emotion"><i class="fa-regular fa-face-smile text-emerald-500 mr-1"></i>社群輿情觀測</span>
                                     <span id="comment-detail-length">長度: 0 字</span>
                                 </div>
                             </div>
@@ -1307,39 +1360,48 @@ $news = searchNews($pdo, $company['Name'], 10);
         }
 
         // --- 6. 文字雲渲染 ---
-        const rawWordsData = [
-            { text: "分紅大方", size: 60, sentiment: 0.9 },
-            { text: "常態加班", size: 55, sentiment: -0.8 },
-            { text: "年薪300萬", size: 45, sentiment: 0.95 },
-            { text: "壓力山大", size: 42, sentiment: -0.7 },
-            { text: "學到很多", size: 38, sentiment: 0.6 },
-            { text: "輪班星人", size: 35, sentiment: -0.5 },
-            { text: "福利佳", size: 28, sentiment: 0.8 },
-            { text: "午餐好吃", size: 22, sentiment: 0.3 }
-        ];
-
+        const rawWordsData = <?php echo json_encode($finalWordsList); ?>;
         function renderWordCloud() {
             const canvas = document.getElementById('word-cloud-canvas');
-            if(!canvas) return;
+            if (!canvas || !rawWordsData || rawWordsData.length === 0) return;
+            
             canvas.width = canvas.offsetWidth;
             canvas.height = canvas.offsetHeight;
             
             const sizes = rawWordsData.map(item => item.size);
-            const maxSize = Math.max(...sizes); const minSize = Math.min(...sizes);
+            const maxSize = Math.max(...sizes); 
+            const minSize = Math.min(...sizes);
 
             WordCloud(canvas, {
                 list: rawWordsData.map(item => [item.text, item.size]),
-                gridSize: 8, weightFactor: 1.5, fontFamily: "'Noto Sans TC', sans-serif",
+                gridSize: 8, 
+                weightFactor: 2, // Adjust this factor if text overlaps or is too small
+                fontFamily: "'Noto Sans TC', sans-serif",
                 color: (word) => {
                     const d = rawWordsData.find(w => w.text === word);
+                    if (!d) return `hsl(215, 5%, 75%)`;
+
                     let ratio = 1;
-                    if (maxSize !== minSize) ratio = (d.size - minSize) / (maxSize - minSize);
+                    if (maxSize !== minSize) {
+                        ratio = (d.size - minSize) / (maxSize - minSize);
+                    }
                     
-                    if (d.sentiment > 0.1) return `hsl(155, ${40 + ratio * 50}%, ${65 - ratio * 25}%)`;
-                    else if (d.sentiment < -0.1) return `hsl(350, ${50 + ratio * 40}%, ${70 - ratio * 25}%)`;
-                    else return `hsl(215, ${5 + ratio * 15}%, ${75 - ratio * 35}%)`;
+                    // 1 = Positive (Greenish)
+                    if (d.sentiment === 'positive') {
+                        return `hsl(155, ${40 + ratio * 50}%, ${65 - ratio * 25}%)`;
+                    } 
+                    // -1 = Negative (Reddish)
+                    else if (d.sentiment === 'negative') {
+                        return `hsl(350, ${50 + ratio * 40}%, ${70 - ratio * 25}%)`;
+                    } 
+                    // 0 = Neutral (Grey/Blue)
+                    else {
+                        return `hsl(215, ${5 + ratio * 15}%, ${75 - ratio * 35}%)`;
+                    }
                 },
-                rotateRatio: 0, shape: 'circle', shrinkToFit: true
+                rotateRatio: 0, 
+                shape: 'circle', 
+                shrinkToFit: true
             });
         }
 
@@ -1347,331 +1409,365 @@ $news = searchNews($pdo, $company['Name'], 10);
         const rawCommentsData = <?= json_encode($comments) ?>;
         
         function initComments3DSphere() {
-            const canvas = document.getElementById('comments-sphere-canvas');
-            if (!canvas || !rawCommentsData || rawCommentsData.length === 0) return;
+        const canvas = document.getElementById('comments-sphere-canvas');
+        if (!canvas || !rawCommentsData || rawCommentsData.length === 0) return;
+        
+        const ctx = canvas.getContext('2d');
+        let width = 0, height = 0, cx = 0, cy = 0;
+        const R = 150; // Sphere radius
+        const D = 2.5; // Camera distance
+        
+        // Adjust canvas resolution for high-DPI displays
+        function resizeCanvas() {
+            const rect = canvas.parentNode.getBoundingClientRect();
+            width = rect.width;
+            height = rect.height;
+            canvas.width = width * window.devicePixelRatio;
+            canvas.height = height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            cx = width / 2;
+            cy = height / 2;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Distribute points on a sphere using Fibonacci Sphere distribution
+        const points = [];
+        const phi = Math.PI * (3 - Math.sqrt(5)); // Golden angle
+        const n = rawCommentsData.length;
+        
+        for (let i = 0; i < n; i++) {
+            const y = 1 - (i / (n - 1)) * 2; // goes from 1 to -1
+            const radiusAtY = Math.sqrt(1 - y * y);
+            const theta = phi * i;
+            const x = Math.cos(theta) * radiusAtY;
+            const z = Math.sin(theta) * radiusAtY;
             
-            const ctx = canvas.getContext('2d');
-            let width = 0, height = 0, cx = 0, cy = 0;
-            const R = 150; // Sphere radius
-            const D = 2.5; // Camera distance
+            const commentObj = rawCommentsData[i];
             
-            // Adjust canvas resolution for high-DPI displays
-            function resizeCanvas() {
-                const rect = canvas.parentNode.getBoundingClientRect();
-                width = rect.width;
-                height = rect.height;
-                canvas.width = width * window.devicePixelRatio;
-                canvas.height = height * window.devicePixelRatio;
-                ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-                cx = width / 2;
-                cy = height / 2;
+            // --- 1. DETERMINE TONE AND BASE RGB COLORS ---
+            const isPositive = commentObj.Emotion === true || commentObj.Emotion === 1 || commentObj.Emotion === "1";
+            const confidence = parseFloat(commentObj.Confidence || 0);
+            
+            let rgb = { r: 148, g: 163, b: 184 }; // Default Neutral: Slate-400 `#94a3b8`
+            let sentimentType = 'neutral';
+
+            if (confidence >= 0.7) {
+                if (isPositive) {
+                    rgb = { r: 16, g: 185, b: 129 };    // Positive: Emerald-500 `#10b981`
+                    sentimentType = 'positive';
+                } else {
+                    rgb = { r: 239, g: 68, b: 68 };     // Negative: Red-500 `#ef4444`
+                    sentimentType = 'negative';
+                }
             }
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
             
-            // Distribute points on a sphere using Fibonacci Sphere distribution
-            const points = [];
-            const phi = Math.PI * (3 - Math.sqrt(5)); // Golden angle
-            const n = rawCommentsData.length;
+            points.push({
+                x: x, y: y, z: z,
+                comment: commentObj,
+                index: i + 1,
+                rgb: rgb,                       // Store color settings directly inside node
+                sentimentType: sentimentType,   // Cached helper for details tab mapping
+                hovered: false,
+                selected: false
+            });
+        }
+        
+        // Physics / Rotation speeds
+        let angleX = 0.001; 
+        let angleY = 0.0015; 
+        let targetAngleX = angleX;
+        let targetAngleY = angleY;
+        
+        // Drag and Hover interaction states
+        let isDraggingSphere = false;
+        let isMouseOverCanvas = false;
+        let lastMouseX = 0, lastMouseY = 0;
+        let mouseX = -9999, mouseY = -9999;
+        let hoveredPoint = null;
+        
+        // 3D rotation math
+        function rotateX(point, radians) {
+            const cos = Math.cos(radians);
+            const sin = Math.sin(radians);
+            const y1 = point.y * cos - point.z * sin;
+            const z1 = point.y * sin + point.z * cos;
+            point.y = y1; point.z = z1;
+        }
+        
+        function rotateY(point, radians) {
+            const cos = Math.cos(radians);
+            const sin = Math.sin(radians);
+            const x1 = point.x * cos + point.z * sin;
+            const z1 = -point.x * sin + point.z * cos;
+            point.x = x1; point.z = z1;
+        }
+        
+        // Details Panel elements
+        const placeholder = document.getElementById('comment-detail-placeholder');
+        const detailContent = document.getElementById('comment-detail-content');
+        const detailSource = document.getElementById('comment-detail-source');
+        const detailIndex = document.getElementById('comment-detail-index');
+        const detailLink = document.getElementById('comment-detail-link');
+        const detailText = document.getElementById('comment-detail-text');
+        const detailLength = document.getElementById('comment-detail-length');
+        const detailEmotion = document.getElementById('comment-emotion');
+        const cardContainer = document.getElementById('comment-detail-card');
+        
+        function selectComment(pt) {
+            if (!pt || !pt.comment) return;
             
-            for (let i = 0; i < n; i++) {
-                const y = 1 - (i / (n - 1)) * 2; // goes from 1 to -1
-                const radiusAtY = Math.sqrt(1 - y * y);
-                const theta = phi * i;
-                const x = Math.cos(theta) * radiusAtY;
-                const z = Math.sin(theta) * radiusAtY;
+            points.forEach(p => p.selected = (p === pt));
+            
+            cardContainer.classList.add('scale-[0.98]', 'opacity-80');
+            setTimeout(() => {
+                placeholder.classList.add('hidden');
+                detailContent.classList.remove('hidden');
+                detailContent.classList.add('flex');
                 
-                points.push({
-                    x: x, y: y, z: z, // current 3D coordinates
-                    comment: rawCommentsData[i],
-                    index: i + 1,
-                    // Interactive states
-                    hovered: false,
-                    selected: false
-                });
-            }
-            
-            // Physics / Rotation speeds
-            let angleX = 0.001; // auto rotation X
-            let angleY = 0.0015; // auto rotation Y
-            let targetAngleX = angleX;
-            let targetAngleY = angleY;
-            
-            // Drag and Hover interaction states
-            let isDraggingSphere = false;
-            let isMouseOverCanvas = false;
-            let lastMouseX = 0, lastMouseY = 0;
-            let mouseX = -9999, mouseY = -9999;
-            let hoveredPoint = null;
-            
-            // 3D rotation math
-            function rotateX(point, radians) {
-                const cos = Math.cos(radians);
-                const sin = Math.sin(radians);
-                const y1 = point.y * cos - point.z * sin;
-                const z1 = point.y * sin + point.z * cos;
-                point.y = y1;
-                point.z = z1;
-            }
-            
-            function rotateY(point, radians) {
-                const cos = Math.cos(radians);
-                const sin = Math.sin(radians);
-                const x1 = point.x * cos + point.z * sin;
-                const z1 = -point.x * sin + point.z * cos;
-                point.x = x1;
-                point.z = z1;
-            }
-            
-            // Details Panel elements
-            const placeholder = document.getElementById('comment-detail-placeholder');
-            const detailContent = document.getElementById('comment-detail-content');
-            const detailSource = document.getElementById('comment-detail-source');
-            const detailIndex = document.getElementById('comment-detail-index');
-            const detailLink = document.getElementById('comment-detail-link');
-            const detailText = document.getElementById('comment-detail-text');
-            const detailLength = document.getElementById('comment-detail-length');
-            const cardContainer = document.getElementById('comment-detail-card');
-            
-            function selectComment(pt) {
-                if (!pt || !pt.comment) return;
+                const commentObj = pt.comment;
+                const sourceVal = commentObj.Source || commentObj.source || 'Dcard';
+                const contentVal = commentObj.Content || commentObj.content || '';
+                const urlVal = commentObj.Url || commentObj.url || '';
                 
-                // Set active states in model
-                points.forEach(p => p.selected = (p === pt));
+                const isDcard = sourceVal.toUpperCase() === 'DCARD';
+                detailSource.innerText = isDcard ? 'Dcard' : 'PTT';
+                detailSource.className = isDcard 
+                    ? 'px-3 py-1 rounded-full text-xs font-bold shadow-sm bg-blue-100 text-blue-800' 
+                    : 'px-3 py-1 rounded-full text-xs font-bold shadow-sm bg-slate-800 text-white';
                 
-                // Show detail card with smooth content change animation
-                cardContainer.classList.add('scale-[0.98]', 'opacity-80');
-                setTimeout(() => {
-                    placeholder.classList.add('hidden');
-                    detailContent.classList.remove('hidden');
-                    detailContent.classList.add('flex');
-                    
-                    // Case-insensitive/fallback safe data extraction
-                    const commentObj = pt.comment;
-                    const sourceVal = commentObj.Source || commentObj.source || 'Dcard';
-                    const contentVal = commentObj.Content || commentObj.content || '';
-                    const urlVal = commentObj.Url || commentObj.url || '';
-                    
-                    const isDcard = sourceVal.toUpperCase() === 'DCARD';
-                    detailSource.innerText = isDcard ? 'Dcard' : 'PTT';
-                    detailSource.className = isDcard 
-                        ? 'px-3 py-1 rounded-full text-xs font-bold shadow-sm bg-blue-100 text-blue-800' 
-                        : 'px-3 py-1 rounded-full text-xs font-bold shadow-sm bg-slate-800 text-white';
-                    
-                    detailIndex.innerText = `評論 #${pt.index}`;
-                    
-                    if (urlVal) {
-                        detailLink.href = urlVal;
-                        detailLink.classList.remove('hidden');
-                    } else {
-                        detailLink.classList.add('hidden');
-                    }
-                    
-                    detailText.innerText = contentVal;
-                    detailLength.innerText = `長度: ${contentVal.length} 字`;
-                    
-                    cardContainer.classList.remove('scale-[0.98]', 'opacity-80');
-                }, 100);
-            }
-            
-            // Render / Animation Loop
-            function animate() {
-                ctx.clearRect(0, 0, width, height);
+                detailIndex.innerText = `評論 #${pt.index}`;
                 
-                // Decaying dragging velocities to restore auto rotation
-                if (!isDraggingSphere) {
-                    // Smoothly decay drag velocities back to cruise speed (0 when hovered for easy click)
-                    const targetSpeedX = isMouseOverCanvas ? 0 : 0.0008;
-                    const targetSpeedY = isMouseOverCanvas ? 0 : 0.0012;
-                    targetAngleX += (targetSpeedX - targetAngleX) * 0.05;
-                    targetAngleY += (targetSpeedY - targetAngleY) * 0.05;
+                if (urlVal) {
+                    detailLink.href = urlVal;
+                    detailLink.classList.remove('hidden');
+                } else {
+                    detailLink.classList.add('hidden');
                 }
                 
-                angleX = targetAngleX;
-                angleY = targetAngleY;
+                detailText.textContent = contentVal;
+                detailLength.innerText = `長度: ${contentVal.length} 字`;
                 
-                // Apply rotation to all points
-                points.forEach(pt => {
-                    rotateX(pt, angleX);
-                    rotateY(pt, angleY);
-                });
+                // --- 2. UPDATE SIDE PANEL EMOTION INDICATOR DYNAMICALLY ---
+                if (pt.sentimentType === 'positive') {
+                    detailEmotion.innerHTML = `<i class="fa-regular fa-face-smile text-emerald-500 mr-1"></i> 情緒觀測結果: 正面`;
+                } else if (pt.sentimentType === 'negative') {
+                    detailEmotion.innerHTML = `<i class="fa-regular fa-face-frown text-rose-500 mr-1"></i> 情緒觀測結果: 負面`;
+                } else {
+                    detailEmotion.innerHTML = `<i class="fa-regular fa-face-meh text-slate-400 mr-1"></i> 情緒觀測結果: 中立`;
+                }
                 
-                // Sort points by depth (Z axis) - Painter's Algorithm for rendering correctly
-                // z goes from deep insidescreen (-1) to near viewer (+1)
-                const sortedPoints = [...points].sort((a, b) => a.z - b.z);
+                cardContainer.classList.remove('scale-[0.98]', 'opacity-80');
+            }, 100);
+        }
+        
+        // Render / Animation Loop
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            if (!isDraggingSphere) {
+                const targetSpeedX = isMouseOverCanvas ? 0 : 0.0008;
+                const targetSpeedY = isMouseOverCanvas ? 0 : 0.0012;
+                targetAngleX += (targetSpeedX - targetAngleX) * 0.05;
+                targetAngleY += (targetSpeedY - targetAngleY) * 0.05;
+            }
+            
+            angleX = targetAngleX;
+            angleY = targetAngleY;
+            
+            points.forEach(pt => {
+                rotateX(pt, angleX);
+                rotateY(pt, angleY);
+            });
+            
+            const sortedPoints = [...points].sort((a, b) => a.z - b.z);
+            hoveredPoint = null;
+            let minDistance = 15;
+            
+            sortedPoints.forEach(pt => {
+                const depthScale = D / (D - pt.z);
+                pt.px = cx + pt.x * R * depthScale;
+                pt.py = cy + pt.y * R * depthScale;
+                pt.radius = 4.5 * depthScale;
                 
-                hoveredPoint = null;
-                let minDistance = 15; // Hover range in 2D pixels
-                
-                // First pass: project and calculate 2D coordinates for hover detection
-                sortedPoints.forEach(pt => {
-                    // Projection scaling based on 3D perspective
-                    const depthScale = D / (D - pt.z);
-                    pt.px = cx + pt.x * R * depthScale;
-                    pt.py = cy + pt.y * R * depthScale;
-                    pt.radius = 4.5 * depthScale;
-                    
-                    // Hover check (only points in the front half are hoverable)
-                    if (pt.z > -0.3 && !isDraggingSphere && mouseX >= 0 && mouseY >= 0) {
-                        const dist = Math.hypot(pt.px - mouseX, pt.py - mouseY);
-                        if (dist < minDistance) {
-                            minDistance = dist;
-                            hoveredPoint = pt;
-                        }
+                if (pt.z > -0.3 && !isDraggingSphere && mouseX >= 0 && mouseY >= 0) {
+                    const dist = Math.hypot(pt.px - mouseX, pt.py - mouseY);
+                    if (dist < minDistance) {
+                        minDistance = dist;
+                        hoveredPoint = pt;
                     }
-                });
+                }
+            });
+            
+            // Draw all elements in z-sorted order (back-to-front)
+            sortedPoints.forEach(pt => {
+                const depthScale = D / (D - pt.z);
+                const isHovered = (pt === hoveredPoint);
+                pt.hovered = isHovered;
                 
-                // Draw all elements in z-sorted order (back-to-front)
-                sortedPoints.forEach(pt => {
-                    const depthScale = D / (D - pt.z);
-                    const isHovered = (pt === hoveredPoint);
-                    pt.hovered = isHovered;
+                const baseAlpha = 0.15 + ((pt.z + 1) / 2) * 0.75;
+                
+                // --- 3. HARVEST EXTRACTED EMOTION RGB STRINGS FOR SPHERE RENDER ---
+                const r = pt.rgb.r;
+                const g = pt.rgb.g;
+                const b = pt.rgb.b;
+                
+                ctx.save();
+                
+                // Draw selection glow halo
+                if (pt.selected) {
+                    ctx.beginPath();
+                    ctx.arc(pt.px, pt.py, pt.radius * 3.5, 0, Math.PI * 2);
+                    const glowGrad = ctx.createRadialGradient(pt.px, pt.py, 0, pt.px, pt.py, pt.radius * 3.5);
+                    glowGrad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${baseAlpha * 0.6})`);
+                    glowGrad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+                    ctx.fillStyle = glowGrad;
+                    ctx.fill();
+                }
+                
+                // Draw outer hover halo
+                if (isHovered) {
+                    ctx.beginPath();
+                    ctx.arc(pt.px, pt.py, pt.radius * 2.5, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${baseAlpha * 0.8})`;
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                }
+                
+                // Draw point dot
+                ctx.beginPath();
+                ctx.arc(pt.px, pt.py, pt.radius * (isHovered ? 1.5 : 1), 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isHovered ? 1.0 : baseAlpha})`;
+                ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${isHovered ? 0.9 : baseAlpha * 0.5})`;
+                ctx.shadowBlur = isHovered ? 10 : 3;
+                ctx.fill();
+                ctx.restore();
+                
+                // Draw floating mini-label for hovered point
+                if (isHovered) {
+                    ctx.save();
+                    ctx.font = "bold 11px 'Noto Sans TC', sans-serif";
+                    ctx.fillStyle = "#ffffff";
+                    ctx.shadowColor = "rgba(0,0,0,0.8)";
+                    ctx.shadowBlur = 4;
                     
-                    // Alpha based on depth: back points are extremely faint, front points are vibrant
-                    const baseAlpha = 0.15 + ((pt.z + 1) / 2) * 0.75;
                     const commentObj = pt.comment;
                     const sourceVal = commentObj.Source || commentObj.source || 'Dcard';
                     const isDcard = sourceVal.toUpperCase() === 'DCARD';
+                    const labelText = isDcard ? `Dcard #${pt.index}` : `PTT #${pt.index}`;
+                    const textWidth = ctx.measureText(labelText).width;
                     
-                    // Set colors
-                    let r, g, b;
-                    if (isDcard) {
-                        r = 59; g = 130; b = 246; // cyan/blue `#3b82f6`
-                    } else {
-                        r = 239; g = 68; b = 68; // orange/red `#ef4444`
-                    }
-                    
-                    ctx.save();
-                    
-                    // Draw selection glow halo
-                    if (pt.selected) {
-                        ctx.beginPath();
-                        ctx.arc(pt.px, pt.py, pt.radius * 3.5, 0, Math.PI * 2);
-                        const glowGrad = ctx.createRadialGradient(pt.px, pt.py, 0, pt.px, pt.py, pt.radius * 3.5);
-                        glowGrad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${baseAlpha * 0.6})`);
-                        glowGrad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-                        ctx.fillStyle = glowGrad;
-                        ctx.fill();
-                    }
-                    
-                    // Draw outer hover halo
-                    if (isHovered) {
-                        ctx.beginPath();
-                        ctx.arc(pt.px, pt.py, pt.radius * 2.5, 0, Math.PI * 2);
-                        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${baseAlpha * 0.8})`;
-                        ctx.lineWidth = 1.5;
-                        ctx.stroke();
-                    }
-                    
-                    // Draw point dot
+                    ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
                     ctx.beginPath();
-                    ctx.arc(pt.px, pt.py, pt.radius * (isHovered ? 1.5 : 1), 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isHovered ? 1.0 : baseAlpha})`;
-                    ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${isHovered ? 0.9 : baseAlpha * 0.5})`;
-                    ctx.shadowBlur = isHovered ? 10 : 3;
-                    ctx.fill();
-                    ctx.restore();
-                    
-                    // Draw a subtle, floating mini-label for hovered point
-                    if (isHovered) {
-                        ctx.save();
-                        ctx.font = "bold 11px 'Noto Sans TC', sans-serif";
-                        ctx.fillStyle = "#ffffff";
-                        ctx.shadowColor = "rgba(0,0,0,0.8)";
-                        ctx.shadowBlur = 4;
-                        
-                        const labelText = isDcard ? `Dcard #${pt.index}` : `PTT #${pt.index}`;
-                        const textWidth = ctx.measureText(labelText).width;
-                        
-                        // Draw label background pill
-                        ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
-                        ctx.beginPath();
-                        if (ctx.roundRect) {
-                            ctx.roundRect(pt.px - textWidth/2 - 6, pt.py - pt.radius - 22, textWidth + 12, 18, 9);
-                        } else {
-                            ctx.rect(pt.px - textWidth/2 - 6, pt.py - pt.radius - 22, textWidth + 12, 18);
-                        }
-                        ctx.fill();
-                        
-                        // Draw label text
-                        ctx.fillStyle = "#e2e8f0";
-                        ctx.textAlign = "center";
-                        ctx.fillText(labelText, pt.px, pt.py - pt.radius - 9);
-                        ctx.restore();
+                    if (ctx.roundRect) {
+                        ctx.roundRect(pt.px - textWidth/2 - 6, pt.py - pt.radius - 22, textWidth + 12, 18, 9);
+                    } else {
+                        ctx.rect(pt.px - textWidth/2 - 6, pt.py - pt.radius - 22, textWidth + 12, 18);
                     }
-                });
-                
-                // Cursor visual indicator
-                canvas.style.cursor = isDraggingSphere 
-                    ? 'grabbing' 
-                    : (hoveredPoint ? 'pointer' : 'grab');
-                
-                requestAnimationFrame(animate);
-            }
+                    ctx.fill();
+                    
+                    ctx.fillStyle = "#e2e8f0";
+                    ctx.textAlign = "center";
+                    ctx.fillText(labelText, pt.px, pt.py - pt.radius - 9);
+                    ctx.restore();
+                }
+            });
             
-            // Interaction Event Listeners
-            function handleStart(x, y) {
-                isDraggingSphere = true;
-                isMouseOverCanvas = true;
+            canvas.style.cursor = isDraggingSphere 
+                ? 'grabbing' 
+                : (hoveredPoint ? 'pointer' : 'grab');
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // Interaction Event Listeners
+        function handleStart(x, y) {
+            isDraggingSphere = true;
+            isMouseOverCanvas = true;
+            lastMouseX = x;
+            lastMouseY = y;
+        }
+        
+        function handleMove(x, y) {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = x - rect.left;
+            mouseX = x - rect.left;
+            mouseY = y - rect.top;
+            
+            if (isDraggingSphere) {
+                const dx = x - lastMouseX;
+                const dy = y - lastMouseY;
+                targetAngleY = dx * 0.007;
+                targetAngleX = -dy * 0.007;
                 lastMouseX = x;
                 lastMouseY = y;
             }
+        }
+        
+        canvas.addEventListener('mouseenter', () => { isMouseOverCanvas = true; });
+        canvas.addEventListener('mouseleave', () => {
+            isMouseOverCanvas = false;
+            mouseX = -9999; mouseY = -9999;
+        });
+        
+        canvas.addEventListener('mousedown', e => { handleStart(e.clientX, e.clientY); });
+        window.addEventListener('mousemove', e => { handleMove(e.clientX, e.clientY); });
+        window.addEventListener('mouseup', () => { isDraggingSphere = false; });
+        
+        canvas.addEventListener('click', e => {
+            if (isDraggingSphere) return;
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
             
-            function handleMove(x, y) {
-                const rect = canvas.getBoundingClientRect();
-                mouseX = x - rect.left;
-                mouseY = y - rect.top;
-                
-                if (isDraggingSphere) {
-                    const dx = x - lastMouseX;
-                    const dy = y - lastMouseY;
-                    
-                    // Velocity directly proportional to drag delta
-                    targetAngleY = dx * 0.007;
-                    targetAngleX = -dy * 0.007;
-                    
-                    lastMouseX = x;
-                    lastMouseY = y;
+            let clickedPt = null;
+            let minDist = 20;
+            
+            points.forEach(pt => {
+                if (pt.z > -0.3) {
+                    const dist = Math.hypot(pt.px - clickX, pt.py - clickY);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        clickedPt = pt;
+                    }
                 }
-            }
+            });
             
-            // Hover Events to stop/resume auto rotation smoothly
-            canvas.addEventListener('mouseenter', () => {
+            if (clickedPt) selectComment(clickedPt);
+        });
+        
+        // Mobile Touch support
+        canvas.addEventListener('touchstart', e => {
+            if (e.touches.length === 1) {
                 isMouseOverCanvas = true;
-            });
-            
-            canvas.addEventListener('mouseleave', () => {
-                isMouseOverCanvas = false;
-                mouseX = -9999;
-                mouseY = -9999;
-            });
-            
-            // Mouse Events
-            canvas.addEventListener('mousedown', e => {
-                handleStart(e.clientX, e.clientY);
-            });
-            
-            window.addEventListener('mousemove', e => {
-                handleMove(e.clientX, e.clientY);
-            });
-            
-            window.addEventListener('mouseup', () => {
-                isDraggingSphere = false;
-            });
-            
-            // Robust Direct Click Hit-Testing (Works regardless of mouse move speed or hover state)
-            canvas.addEventListener('click', e => {
-                if (isDraggingSphere) return;
-                
+                const touch = e.touches[0];
+                handleStart(touch.clientX, touch.clientY);
                 const rect = canvas.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                const clickY = e.clientY - rect.top;
+                mouseX = touch.clientX - rect.left;
+                mouseY = touch.clientY - rect.top;
+            }
+        }, { passive: true });
+        
+        canvas.addEventListener('touchmove', e => {
+            if (e.touches.length === 1) {
+                const touch = e.touches[0];
+                handleMove(touch.clientX, touch.clientY);
+            }
+        }, { passive: true });
+        
+        canvas.addEventListener('touchend', e => {
+            isDraggingSphere = false;
+            isMouseOverCanvas = false;
+            if (e.changedTouches && e.changedTouches.length === 1) {
+                const touch = e.changedTouches[0];
+                const rect = canvas.getBoundingClientRect();
+                const clickX = touch.clientX - rect.left;
+                const clickY = touch.clientY - rect.top;
                 
                 let clickedPt = null;
-                let minDist = 20; // 2D hit test box in pixels
+                let minDist = 25;
                 
                 points.forEach(pt => {
-                    // Only clickable if on front face
                     if (pt.z > -0.3) {
                         const dist = Math.hypot(pt.px - clickX, pt.py - clickY);
                         if (dist < minDist) {
@@ -1680,75 +1776,17 @@ $news = searchNews($pdo, $company['Name'], 10);
                         }
                     }
                 });
-                
-                if (clickedPt) {
-                    selectComment(clickedPt);
-                }
-            });
-            
-            // Touch Events (Mobile support)
-            canvas.addEventListener('touchstart', e => {
-                if (e.touches.length === 1) {
-                    isMouseOverCanvas = true;
-                    const touch = e.touches[0];
-                    handleStart(touch.clientX, touch.clientY);
-                    
-                    const rect = canvas.getBoundingClientRect();
-                    mouseX = touch.clientX - rect.left;
-                    mouseY = touch.clientY - rect.top;
-                }
-            }, { passive: true });
-            
-            canvas.addEventListener('touchmove', e => {
-                if (e.touches.length === 1) {
-                    const touch = e.touches[0];
-                    handleMove(touch.clientX, touch.clientY);
-                }
-            }, { passive: true });
-            
-            canvas.addEventListener('touchend', e => {
-                isDraggingSphere = false;
-                isMouseOverCanvas = false;
-                
-                // Direct touch-end tap hit testing
-                if (e.changedTouches && e.changedTouches.length === 1) {
-                    const touch = e.changedTouches[0];
-                    const rect = canvas.getBoundingClientRect();
-                    const clickX = touch.clientX - rect.left;
-                    const clickY = touch.clientY - rect.top;
-                    
-                    let clickedPt = null;
-                    let minDist = 25; // Slightly larger tap-box for finger touch
-                    
-                    points.forEach(pt => {
-                        if (pt.z > -0.3) {
-                            const dist = Math.hypot(pt.px - clickX, pt.py - clickY);
-                            if (dist < minDist) {
-                                minDist = dist;
-                                clickedPt = pt;
-                            }
-                        }
-                    });
-                    
-                    if (clickedPt) {
-                        selectComment(clickedPt);
-                    }
-                }
-                
-                mouseX = -9999;
-                mouseY = -9999;
-            });
-            
-            // Auto-select the first point as initial view if points exist
-            if (points.length > 0) {
-                setTimeout(() => {
-                    selectComment(points[0]);
-                }, 500);
+                if (clickedPt) selectComment(clickedPt);
             }
-            
-            // Start rendering loop!
-            animate();
+            mouseX = -9999; mouseY = -9999;
+        });
+        
+        if (points.length > 0) {
+            setTimeout(() => { selectComment(points[0]); }, 500);
         }
+        
+        animate();
+    }
 
         // --- 頁面初始化 ---
         window.onload = () => {

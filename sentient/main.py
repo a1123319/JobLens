@@ -36,7 +36,6 @@ def process_and_save():
                 SELECT Id, CompanyId, Content 
                 FROM comment 
                 WHERE Content IS NOT NULL AND Content != ''
-                AND CompanyId = 2330
             """)
             rows = cursor.fetchall()
             
