@@ -1191,7 +1191,7 @@ $news = searchNews($pdo, $company['Name'], 10);
                 type: 'bar',
                 data: {
                     labels: labels,
-                    datasets: [{ data: data, backgroundColor: bgColors, borderColor: borderColors, borderWidth: 1, borderRadius: 4 }]
+                    datasets: [{ data: data, backgroundColor: bgColors, borderColor: borderColors, borderWidth: 1, borderRadius: 4, barThickness: 28 }]
                 },
                 options: {
                     indexAxis: 'y', responsive: true, maintainAspectRatio: false,
