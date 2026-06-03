@@ -434,7 +434,7 @@ $news = searchNews($pdo, $company['Name'], 10);
                         <button id="btn-median" onclick="updateChart('median')" class="px-4 py-1.5 text-sm font-bold rounded-md bg-white text-cyan-700 shadow-sm transition">中位數</button>
                         <button id="btn-average" onclick="updateChart('average')" class="px-4 py-1.5 text-sm font-bold rounded-md text-slate-500 hover:text-slate-700 transition">平均數</button>
                     </div>
-                    <a href="leaderboard.html" class="bg-blue-600 text-white px-5 py-1.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition shadow-sm flex items-center gap-2 group">
+                    <a href="leaderboard.php?id=<?= $company['Id'] ?>" class="bg-blue-600 text-white px-5 py-1.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition shadow-sm flex items-center gap-2 group">
                         查看完整排行榜 <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                     </a>
                 </div>
