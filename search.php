@@ -817,8 +817,8 @@ foreach ($aggregatedWords as $word => $data) {
                     <div class="w-full lg:w-1/2 h-[380px] bg-slate-50 rounded-2xl overflow-hidden border border-slate-200 shadow-inner flex items-center justify-center relative group">
                         <canvas id="comments-sphere-canvas" class="w-full h-full cursor-grab active:cursor-grabbing z-10"></canvas>
                         <!-- Control Overlay Guide -->
-                        <div class="absolute bottom-4 left-4 text-xs text-slate-500 bg-white/95 px-3 py-1.5 rounded-full pointer-events-none flex items-center gap-1.5 border border-slate-200/80 shadow-md backdrop-blur-sm z-20 transition group-hover:opacity-100 opacity-75">
-                            <i class="fa-solid fa-arrows-rotate animate-spin text-cyan-600" style="animation-duration: 6s;"></i>
+                        <div class="absolute bottom-2 left-2 text-[10px] text-slate-500 bg-white/90 px-2 py-1 rounded-full pointer-events-none flex items-center gap-1 border border-slate-200/80 shadow-md backdrop-blur-sm z-20 transition group-hover:opacity-90 opacity-40">
+                            <i class="fa-solid fa-arrows-rotate animate-spin text-cyan-600 text-[9px]" style="animation-duration: 6s;"></i>
                             <span>拖曳以旋轉球體，點擊小點查看評論</span>
                         </div>
                     </div>
