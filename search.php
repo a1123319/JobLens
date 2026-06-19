@@ -1390,8 +1390,11 @@ foreach ($aggregatedWords as $word => $data) {
             const canvas = document.getElementById('word-cloud-canvas');
             if (!canvas || !rawWordsData || rawWordsData.length === 0) return;
             
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
+            const rect = canvas.parentNode.getBoundingClientRect();
+    
+            // Set the canvas rendering dimensions to match the container size
+            canvas.width = rect.width;
+            canvas.height = rect.height;
             
             const sizes = rawWordsData.map(item => item.size);
             const maxSize = Math.max(...sizes); 
@@ -1402,7 +1405,7 @@ foreach ($aggregatedWords as $word => $data) {
 
             WordCloud(canvas, {
                 list: rawWordsData.map(item => [item.text, item.size]),
-                gridSize: 8, 
+                gridSize: Math.round(16 * canvas.width / 1024), 
                 weightFactor: dynamicWeightFactor,
                 fontFamily: "'Noto Sans TC', sans-serif",
                 color: (word) => {
