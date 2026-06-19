@@ -811,9 +811,10 @@ foreach ($aggregatedWords as $word => $data) {
                 <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 互動輿情
             </h3>
             <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-6">
-                <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 items-stretch justify-center max-w-5xl mx-auto">
-                    <!-- Left side: 3D Canvas Sphere (No grid, solid bg-slate-50 background!) -->
-                    <div class="w-full lg:w-[450px] shrink-0 aspect-square bg-slate-50 rounded-2xl overflow-hidden border border-slate-200 shadow-inner flex items-center justify-center relative group">
+                <!-- Top Row: 3D Canvas Sphere & Word Cloud Side-by-Side -->
+                <div class="flex flex-col lg:flex-row gap-6 items-stretch justify-center max-w-5xl mx-auto mb-6">
+                    <!-- Left side: 3D Canvas Sphere -->
+                    <div class="w-full lg:w-1/2 h-[380px] bg-slate-50 rounded-2xl overflow-hidden border border-slate-200 shadow-inner flex items-center justify-center relative group">
                         <canvas id="comments-sphere-canvas" class="w-full h-full cursor-grab active:cursor-grabbing z-10"></canvas>
                         <!-- Control Overlay Guide -->
                         <div class="absolute bottom-4 left-4 text-xs text-slate-500 bg-white/95 px-3 py-1.5 rounded-full pointer-events-none flex items-center gap-1.5 border border-slate-200/80 shadow-md backdrop-blur-sm z-20 transition group-hover:opacity-100 opacity-75">
@@ -821,36 +822,40 @@ foreach ($aggregatedWords as $word => $data) {
                             <span>拖曳以旋轉球體，點擊小點查看評論</span>
                         </div>
                     </div>
-                    <!-- Right side: Selected Comment details panel -->
-                    <div class="flex-1 min-w-[320px] h-[450px] flex flex-col">
-                        <div id="comment-detail-card" class="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col h-full shadow-inner transition-all duration-300">
-                            <!-- Default State -->
-                            <div id="comment-detail-placeholder" class="flex-1 flex flex-col items-center justify-center text-center py-12">
-                                <div class="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center text-cyan-600 mb-4 animate-bounce">
-                                    <i class="fa-solid fa-cube text-2xl"></i>
-                                </div>
-                                <h4 class="font-bold text-slate-700 text-lg mb-2">點擊 3D 球體上的亮點</h4>
-                                <p class="text-slate-400 text-sm max-w-[280px]">我們已將所有社群評論投影至 3D 空間中。點擊任一發光節點，即可在此展開詳細的匿名員工評論。</p>
+                    <!-- Right side: Word Cloud -->
+                    <div class="w-full lg:w-1/2 h-[380px] bg-slate-50 rounded-2xl border border-slate-200 shadow-inner flex items-center justify-center relative p-6">
+                        <canvas id="word-cloud-canvas" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+                <!-- Bottom Row: Selected Comment details panel -->
+                <div class="max-w-5xl mx-auto w-full h-[220px] flex flex-col">
+                    <div id="comment-detail-card" class="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col h-full shadow-inner transition-all duration-300">
+                        <!-- Default State -->
+                        <div id="comment-detail-placeholder" class="flex-1 flex flex-col items-center justify-center text-center py-6">
+                            <div class="w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center text-cyan-600 mb-2 animate-bounce">
+                                <i class="fa-solid fa-cube text-xl"></i>
                             </div>
-                            
-                            <!-- Content State -->
-                            <div id="comment-detail-content" class="hidden flex-col h-full">
-                                <div class="flex justify-between items-center mb-4 flex-shrink-0">
-                                    <div class="flex items-center gap-2">
-                                        <span id="comment-detail-source" class="px-3 py-1 rounded-full text-xs font-bold shadow-sm">Dcard</span>
-                                        <span id="comment-detail-index" class="text-xs text-slate-400 font-mono">Comment #1</span>
-                                    </div>
-                                    <a id="comment-detail-link" href="#" target="_blank" class="text-xs text-cyan-600 hover:text-cyan-800 font-bold flex items-center gap-1 bg-cyan-50 px-2.5 py-1 rounded hover:bg-cyan-100 transition-colors">
-                                        <span>查看原始貼文</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                                    </a>
+                            <h4 class="font-bold text-slate-700 text-lg mb-1">點擊 3D 球體上的亮點</h4>
+                            <p class="text-slate-400 text-sm max-w-[320px]">我們已將所有社群評論投影至 3D 空間中。點擊任一發光節點，即可在此展開詳細的匿名員工評論。</p>
+                        </div>
+                        
+                        <!-- Content State -->
+                        <div id="comment-detail-content" class="hidden flex-col h-full">
+                            <div class="flex justify-between items-center mb-2 flex-shrink-0">
+                                <div class="flex items-center gap-2">
+                                    <span id="comment-detail-source" class="px-3 py-1 rounded-full text-xs font-bold shadow-sm">Dcard</span>
+                                    <span id="comment-detail-index" class="text-xs text-slate-400 font-mono">Comment #1</span>
                                 </div>
-                                <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar my-2 text-slate-700 leading-relaxed text-sm font-medium">
-                                    <p id="comment-detail-text">評論內容</p>
-                                </div>
-                                <div class="pt-4 border-t border-slate-200 mt-auto flex-shrink-0 flex items-center justify-between text-xs text-slate-400">
-                                    <span id="comment-emotion"><i class="fa-regular fa-face-smile text-emerald-500 mr-1"></i>社群輿情觀測</span>
-                                    <span id="comment-detail-length">長度: 0 字</span>
-                                </div>
+                                <a id="comment-detail-link" href="#" target="_blank" class="text-xs text-cyan-600 hover:text-cyan-800 font-bold flex items-center gap-1 bg-cyan-50 px-2.5 py-1 rounded hover:bg-cyan-100 transition-colors">
+                                    <span>查看原始貼文</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                </a>
+                            </div>
+                            <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar my-1 text-slate-700 leading-relaxed text-sm font-medium">
+                                <p id="comment-detail-text">評論內容</p>
+                            </div>
+                            <div class="pt-2 border-t border-slate-200 mt-auto flex-shrink-0 flex items-center justify-between text-xs text-slate-400">
+                                <span id="comment-emotion"><i class="fa-regular fa-comments text-cyan-600 mr-1"></i>社群輿情觀測</span>
+                                <span id="comment-detail-length">長度: 0 字</span>
                             </div>
                         </div>
                     </div>
@@ -860,7 +865,7 @@ foreach ($aggregatedWords as $word => $data) {
         <?php else: ?>
         <section id="section-comments-sphere" class="scroll-mt-24 relative">
             <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 互動輿情 3D 探索
+                <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 互動輿情
             </h3>
             <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-8">
                 <div class="flex flex-col items-center justify-center py-12 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
@@ -873,61 +878,43 @@ foreach ($aggregatedWords as $word => $data) {
         </section>
         <?php endif ?>
 
-        <section id="section-reviews" class="scroll-mt-24 relative">
-            <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2"><span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 職場輿情 AI 分析</h3>
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[500px]">
-                <div class="lg:col-span-6 bg-white rounded-xl shadow-lg border p-6 flex flex-col">
-                    <?php if ($comments): ?>
-                    <canvas id="word-cloud-canvas" class="w-full h-full flex-1"></canvas>
-                    <?php else: ?>
-                    <div class="flex flex-col items-center justify-center w-full h-full flex-1 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl py-12">
-                        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
-                            <i class="fa-solid fa-cloud text-2xl"></i>
+        <section id="section-news" class="scroll-mt-24 relative">
+            <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 相關新聞
+            </h3>
+            <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-6">
+                <?php if ($news): ?>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <?php foreach($news as $n): ?>
+                    <div class="flex gap-4 group cursor-pointer border-b border-slate-100 pb-4 last:border-b-0 hover:bg-slate-50 p-3 rounded-xl transition-all duration-300">
+                        <div class="w-20 h-20 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center text-slate-300 shadow-sm">
+                            <?php if (isset($n["ThumbnailUrl"]) && $n["ThumbnailUrl"] !== ''): ?>
+                            <img src="<?= htmlspecialchars($n["ThumbnailUrl"]) ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            <?php else: ?>
+                            <span class="fa-solid fa-image text-xl"></span>
+                            <?php endif ?>
                         </div>
-                        <p class="text-slate-500 font-bold">「<?= $company['Name'] ?>」尚無任何輿情評論資料可繪製文字雲</p>
+                        <div class="flex flex-col justify-between flex-1">
+                            <a class="text-sm font-bold text-slate-800 group-hover:text-cyan-700 transition-colors line-clamp-2 leading-snug" href="<?= htmlspecialchars($n["Url"]) ?>" target="_blank">
+                                <?= htmlspecialchars($n["Title"]) ?>
+                            </a>
+                            <p class="text-[10px] text-slate-400 mt-2">上傳於 <?= formatDate($n['PublishedTime']) ?>
+                            <?php if (!empty($n['UpdatedTime']) && $n['UpdatedTime'] !== $n['PublishedTime']):
+                                echo " | 更新於 " . formatDate($n['UpdatedTime']);
+                            endif; ?>
+                            | 公視新聞</p>
+                        </div>
                     </div>
-                    <?php endif; ?>
+                    <?php endforeach ?>
                 </div>
-                
-                <div class="lg:col-span-6 bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col lg:min-h-0">
-                    <h4 class="text-lg font-bold text-slate-700 mb-4 flex items-center justify-between flex-shrink-0">
-                        <span class="flex items-center gap-2">
-                            <img src="assets/news.png" class="w-6 h-6 object-contain"> 相關新聞
-                        </span>
-                    </h4>
-                    <?php if ($news): ?>
-                    <div class="lg:overflow-y-auto h-full space-y-4 pr-2">
-                        <?php foreach($news as $n): ?>
-                        <div class="flex gap-3 group cursor-pointer border-b border-slate-50 pb-3 hover:bg-slate-50 p-2 rounded transition-all">
-                            <div class="w-16 h-16 bg-slate-100 rounded flex-shrink-0 flex items-center justify-center text-slate-300">
-                                <?php if (isset($n["ThumbnailUrl"])): ?>
-                                <img src="<?= $n["ThumbnailUrl"] ?>" style="height: 100%; object-fit: cover;">
-                                <?php else: ?>
-                                <span class="fa-solid fa-image"></span>
-                                <?php endif ?>
-                            </div>
-                            <div>
-                                <a class="text-sm font-bold text-slate-800 group-hover:text-cyan-700 transition-colors line-clamp-2" href="<?= htmlspecialchars($n["Url"]) ?>" target="_blank">
-                                    <?= htmlspecialchars($n["Title"]) ?>
-                                </a>
-                                <p class="text-[10px] text-slate-400 mt-1">上傳於 <?= formatDate($n['PublishedTime']) ?>
-                                <?php if (!empty($n['UpdatedTime']) && $n['UpdatedTime'] !== $n['PublishedTime']):
-                                    echo "| 更新於 " . formatDate($n['UpdatedTime']);
-                                endif; ?>
-                                | 公視新聞</p>
-                            </div>
-                        </div>
-                        <?php endforeach ?>
+                <?php else: ?>
+                <div class="flex flex-col items-center justify-center py-12 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
+                    <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                        <i class="fa-solid fa-newspaper text-2xl"></i>
                     </div>
-                    <?php else: ?>
-                    <div class="flex flex-1 flex-col items-center justify-center py-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
-                        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
-                            <i class="fa-solid fa-newspaper text-2xl"></i>
-                        </div>
-                        <p class="text-slate-500 font-bold">最近無相關新聞</p>
-                    </div>
-                    <?php endif ?>
+                    <p class="text-slate-500 font-bold">最近無相關新聞</p>
                 </div>
+                <?php endif ?>
             </div>
         </section>
     </main>
@@ -937,8 +924,8 @@ foreach ($aggregatedWords as $word => $data) {
         Chart.defaults.color = '#64748b';
 
         // --- 0. 懸浮拖拉滑桿 (ScrollSpy Navigation) ---
-        const sectionsList = ['section-jobs', 'section-salary', 'section-rank', 'section-safety', 'section-esg', 'section-comments-sphere', 'section-reviews'];
-        const sectionNames = ['徵才職缺', '薪資福利', '同業排名', '工安指標', '環境永續', '互動輿情', '新聞字雲'];
+        const sectionsList = ['section-jobs', 'section-salary', 'section-rank', 'section-safety', 'section-esg', 'section-comments-sphere', 'section-news'];
+        const sectionNames = ['徵才職缺', '薪資福利', '同業排名', '工安指標', '環境永續', '互動輿情', '相關新聞'];
         let isDragging = false;
         const track = document.getElementById('vertical-track');
         const thumb = document.getElementById('vertical-thumb');
@@ -1487,21 +1474,9 @@ foreach ($aggregatedWords as $word => $data) {
             const commentObj = rawCommentsData[i];
             
             // --- 1. DETERMINE TONE AND BASE RGB COLORS ---
-            const isPositive = commentObj.Emotion === true || commentObj.Emotion === 1 || commentObj.Emotion === "1";
-            const confidence = parseFloat(commentObj.Confidence || 0);
-            
-            let rgb = { r: 148, g: 163, b: 184 }; // Default Neutral: Slate-400 `#94a3b8`
+            // 統一為系統主色 Cyan 藍色
+            let rgb = { r: 8, g: 145, b: 178 };
             let sentimentType = 'neutral';
-
-            if (confidence >= 0.7) {
-                if (isPositive) {
-                    rgb = { r: 16, g: 185, b: 129 };    // Positive: Emerald-500 `#10b981`
-                    sentimentType = 'positive';
-                } else {
-                    rgb = { r: 239, g: 68, b: 68 };     // Negative: Red-500 `#ef4444`
-                    sentimentType = 'negative';
-                }
-            }
             
             points.push({
                 x: x, y: y, z: z,
@@ -1589,14 +1564,8 @@ foreach ($aggregatedWords as $word => $data) {
                 detailText.textContent = contentVal;
                 detailLength.innerText = `長度: ${contentVal.length} 字`;
                 
-                // --- 2. UPDATE SIDE PANEL EMOTION INDICATOR DYNAMICALLY ---
-                if (pt.sentimentType === 'positive') {
-                    detailEmotion.innerHTML = `<i class="fa-regular fa-face-smile text-emerald-500 mr-1"></i> 情緒觀測結果: 正面`;
-                } else if (pt.sentimentType === 'negative') {
-                    detailEmotion.innerHTML = `<i class="fa-regular fa-face-frown text-rose-500 mr-1"></i> 情緒觀測結果: 負面`;
-                } else {
-                    detailEmotion.innerHTML = `<i class="fa-regular fa-face-meh text-slate-400 mr-1"></i> 情緒觀測結果: 中立`;
-                }
+                // --- 2. UPDATE BOTTOM PANEL EMOTION INDICATOR DYNAMICALLY ---
+                detailEmotion.innerHTML = `<i class="fa-regular fa-comments text-cyan-600 mr-1"></i> 社群輿情觀測`;
                 
                 cardContainer.classList.remove('scale-[0.98]', 'opacity-80');
             }, 100);
