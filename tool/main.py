@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import pymysql
 # 匯入你的爬蟲函式
-from dcard.dcard_crawler import crawl_dcard_passive_content
+from dcard.dcard_crawler import crawl_dcard_passive_content, crawl_dcard_single_post
 from job104.job_104 import get_jobs_page_one
 
 app = FastAPI(title="JobLens Internal API")
@@ -73,6 +73,12 @@ def import_recruitment(req: ImportRequest):
 def crawl_dcard(company_name: str, forum: str = "tech_job"):
     data = crawl_dcard_passive_content(company_name, forum=forum)
     return {"status": "success", "data": data}
+
+@app.get("/api/crawl/dcard/url")
+def crawl_dcard_url(url: str):
+    data = crawl_dcard_single_post(url)
+    return {"status": "success", "data": data}
+
 
 @app.get("/api/crawl/104")
 def crawl_104(company_code: str):
