@@ -42,7 +42,10 @@
     <div class="section">
         <h3>Dcard / PTT 評論 (Comment)</h3>
         <div style="margin-bottom: 12px; font-size: 14px;">
-            <label><strong>選擇要爬取的看板：</strong></label><br>
+            <label><strong>貼上 Dcard 文章網址直接爬取全部留言（非必填，填寫後將忽略看板選擇）：</strong></label><br>
+            <input type="text" id="dcardPostUrl" placeholder="請貼上 Dcard 文章網址，例如 https://www.dcard.tw/f/tech_job/p/..." style="width: 100%; max-width: 500px; margin-top: 5px; margin-bottom: 15px;"><br>
+            
+            <label><strong>選擇要爬取的看板（僅在上方網址留空時生效）：</strong></label><br>
             <label style="cursor:pointer;"><input type="checkbox" id="chkTechJob" value="tech_job" checked> 科技業板 (tech_job)</label>&nbsp;&nbsp;&nbsp;&nbsp;
             <label style="cursor:pointer;"><input type="checkbox" id="chkJob" value="job"> 工作板 (job)</label>
         </div>
@@ -223,33 +226,45 @@
             const statusText = document.getElementById('dcardStatus');
             const previewArea = document.getElementById('dcardPreview');
             const btnImport = document.getElementById('btnImportDcard');
+            const postUrl = document.getElementById('dcardPostUrl').value.trim();
             
             if (!currentSelectedCompany) return alert("請先在上方選擇目標公司！");
-
-            // 取得勾選的看板
-            const selectedForums = [];
-            if (document.getElementById('chkTechJob').checked) selectedForums.push("tech_job");
-            if (document.getElementById('chkJob').checked) selectedForums.push("job");
-
-            if (selectedForums.length === 0) {
-                return alert("請至少勾選一個要爬取的看板！");
-            }
 
             statusText.innerText = "狀態：正在啟動爬蟲，請稍候...";
             previewArea.innerHTML = "";
             btnImport.style.display = "none";
 
             let combinedData = [];
+            
             try {
-                for (const forum of selectedForums) {
-                    const boardName = forum === "tech_job" ? "科技業板" : "工作板";
-                    statusText.innerText = `狀態：正在爬取 Dcard ${boardName} 資料，請稍候...`;
-                    
-                    const response = await fetch(`http://127.0.0.1:8000/api/crawl/dcard?company_name=${encodeURIComponent(currentSelectedCompany.Name)}&forum=${forum}`);
+                if (postUrl) {
+                    // 若有輸入特定文章網址，則直接爬取該網址
+                    statusText.innerText = "狀態：正在爬取指定 Dcard 網址留言，請稍候...";
+                    const response = await fetch(`http://127.0.0.1:8000/api/crawl/dcard/url?url=${encodeURIComponent(postUrl)}`);
                     const result = await response.json();
-                    
                     if (result.status === "success" && result.data && result.data.length > 0) {
-                        combinedData = combinedData.concat(result.data);
+                        combinedData = result.data;
+                    }
+                } else {
+                    // 否則依勾選看板做關鍵字搜尋爬取
+                    const selectedForums = [];
+                    if (document.getElementById('chkTechJob').checked) selectedForums.push("tech_job");
+                    if (document.getElementById('chkJob').checked) selectedForums.push("job");
+
+                    if (selectedForums.length === 0) {
+                        return alert("請至少勾選一個要爬取的看板！");
+                    }
+
+                    for (const forum of selectedForums) {
+                        const boardName = forum === "tech_job" ? "科技業板" : "工作板";
+                        statusText.innerText = `狀態：正在爬取 Dcard ${boardName} 資料，請稍候...`;
+                        
+                        const response = await fetch(`http://127.0.0.1:8000/api/crawl/dcard?company_name=${encodeURIComponent(currentSelectedCompany.Name)}&forum=${forum}`);
+                        const result = await response.json();
+                        
+                        if (result.status === "success" && result.data && result.data.length > 0) {
+                            combinedData = combinedData.concat(result.data);
+                        }
                     }
                 }
 
@@ -257,15 +272,39 @@
                     currentScrapedData = combinedData;
                     statusText.innerText = `狀態：成功抓取到共 ${combinedData.length} 筆資料！請確認下方預覽。`;
                     
-                    let html = "<ul>";
-                    combinedData.forEach(item => {
-                        html += `<li><strong>[${item.評論來源}] ${item.標題}</strong><br><small>${item.內容 ? item.內容.substring(0, 60) : "無內容"}...</small></li>`;
+                    let html = `
+                        <div style="margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 8px;">
+                            <label style="cursor:pointer; font-weight:bold;">
+                                <input type="checkbox" id="selectAllComments" checked> [全選 / 取消全選]
+                            </label>
+                        </div>
+                        <ul style="list-style-type: none; padding-left: 0;">
+                    `;
+                    combinedData.forEach((item, idx) => {
+                        html += `
+                            <li style="margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 6px;">
+                                <label style="cursor:pointer; display: flex; align-items: flex-start; gap: 8px;">
+                                    <input type="checkbox" class="comment-item-checkbox" data-index="${idx}" checked>
+                                    <div>
+                                        <strong>[${item.評論來源}] ${item.標題}</strong><br>
+                                        <small>${item.內容 ? item.內容 : "無內容"}</small>
+                                    </div>
+                                </label>
+                            </li>
+                        `;
                     });
                     html += "</ul>";
                     previewArea.innerHTML = html;
                     btnImport.style.display = "inline-block";
+
+                    // 綁定全選 Checkbox 事件
+                    document.getElementById('selectAllComments').addEventListener('change', (e) => {
+                        const checked = e.target.checked;
+                        const itemCbs = document.querySelectorAll('.comment-item-checkbox');
+                        itemCbs.forEach(cb => cb.checked = checked);
+                    });
                 } else {
-                    statusText.innerText = "狀態：爬取完畢，但沒有在勾選的看板中找到相關留言。";
+                    statusText.innerText = "狀態：爬取完畢，但沒有找到相關留言。";
                 }
             } catch (e) {
                 statusText.innerText = "狀態：爬蟲執行失敗，請確認後端終端機。";
@@ -278,6 +317,22 @@
             
             const btnImport = document.getElementById('btnImportDcard');
             const statusText = document.getElementById('dcardStatus');
+
+            // 篩選被勾選的留言
+            const itemCbs = document.querySelectorAll('.comment-item-checkbox');
+            const selectedData = [];
+            itemCbs.forEach(cb => {
+                if (cb.checked) {
+                    const idx = parseInt(cb.getAttribute('data-index'));
+                    selectedData.push(currentScrapedData[idx]);
+                }
+            });
+
+            if (selectedData.length === 0) {
+                alert("請至少選擇一條留言進行匯入！");
+                return;
+            }
+
             btnImport.innerText = "匯入中...";
             btnImport.disabled = true;
 
@@ -287,14 +342,14 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ 
                         company_id: currentSelectedCompany.Id, 
-                        data: currentScrapedData 
+                        data: selectedData 
                     })
                 });
                 
                 const result = await response.json();
                 if (response.ok) {
                     alert("匯入成功！");
-                    statusText.innerText = `✅ 匯入成功！`;
+                    statusText.innerText = `✅ 匯入成功！已匯入 ${selectedData.length} 條留言。`;
                     btnImport.style.display = "none";
                     currentScrapedData = []; // 匯入成功後也清除，防止重複點擊
                 } else {
