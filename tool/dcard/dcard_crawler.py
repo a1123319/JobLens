@@ -62,8 +62,17 @@ def crawl_dcard_passive_content(company_name, forum="tech_job"):
     # Phase 1: 搜尋列表 (已驗證成功)
     # ==========================================
     print("running Phase 1...")
-    page.listen.start('search/all')
+
+    page.get("https://www.dcard.tw/")
+    if (page.title == "Just a moment..."):
+        time.sleep(1)
+        print("你似乎被認定是機器人了！別慌張，你手動完成驗證，爬蟲就會自動繼續（應該吧）")
+        while page.ele('tag:h1@text():Dcard 需要確認您的連線是安全的'):
+            time.sleep(0.1)
     
+    print("Passed Cloudflare")
+
+    page.listen.start('search/all')
     target_url = f"https://www.dcard.tw/search?query={urllib.parse.quote(company_name)}&forum={forum}"
     page.get(target_url)
 
