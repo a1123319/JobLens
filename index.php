@@ -61,7 +61,7 @@ try {
         </h3>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            <a href="supply-chain/semiconductor.html" class="block group">
+            <a href="supply-chain/semiconductor.php" class="block group">
                 <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full flex flex-col items-center justify-center text-center">
                     <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors p-3">
                         <img src="assets/chip.png" alt="半導體" class="w-full h-full object-contain">
@@ -70,7 +70,7 @@ try {
                 </div>
             </a>
 
-            <a href="supply-chain/computer-peripherals.html" class="block group">
+            <a href="supply-chain/computer-peripherals.php" class="block group">
                 <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full flex flex-col items-center justify-center text-center">
                     <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors p-3">
                         <img src="assets/pc.png" alt="電腦周邊" class="w-full h-full object-contain">
@@ -79,7 +79,7 @@ try {
                 </div>
             </a>
 
-            <a href="supply-chain/leisure-entertainment.html" class="block group">
+            <a href="supply-chain/leisure-entertainment.php" class="block group">
                 <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full flex flex-col items-center justify-center text-center">
                     <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors p-3">
                         <img src="assets/ecommerce.png" alt="休閒娛樂" class="w-full h-full object-contain">
@@ -91,7 +91,7 @@ try {
     </section>
 
     <footer class="border-t border-slate-200 mt-12 py-8 text-center text-xs text-slate-400">
-        <p>JobLens 2026 Beta | 本系統使用政府資料開放平臺數據</p>
+        <p>JobLens 2026 | 本系統使用政府資料開放平臺數據</p>
         <p>Icons created by Freepik, Smashicons, Vectorslab - Flaticon</p>
     </footer>
 </body>
