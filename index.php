@@ -66,7 +66,7 @@ try {
                     <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors p-3">
                         <img src="assets/chip.png" alt="半導體" class="w-full h-full object-contain">
                     </div>
-                    <h4 class="text-xl font-bold group-hover:text-blue-600">半導體產業</h4>
+                    <h4 class="text-xl font-bold group-hover:text-blue-600">半導體</h4>
                 </div>
             </a>
 
@@ -84,7 +84,7 @@ try {
                     <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors p-3">
                         <img src="assets/ecommerce.png" alt="休閒娛樂" class="w-full h-full object-contain">
                     </div>
-                    <h4 class="text-xl font-bold group-hover:text-blue-600">休閒娛樂產業</h4>
+                    <h4 class="text-xl font-bold group-hover:text-blue-600">休閒娛樂</h4>
                 </div>
             </a>
         </div>
