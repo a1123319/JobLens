@@ -60,39 +60,43 @@ try {
             <i class="fa-solid fa-layer-group text-blue-500"></i> 或者，從產業開始探索
         </h3>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            <a href="supply-chain/semiconductor.php" class="block group">
-                <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full flex flex-col items-center justify-center text-center">
-                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors p-3">
-                        <img src="assets/chip.png" alt="半導體" class="w-full h-full object-contain">
-                    </div>
-                    <h4 class="text-xl font-bold group-hover:text-blue-600">半導體產業</h4>
-                </div>
-            </a>
-
-            <a href="supply-chain/computer-peripherals.php" class="block group">
-                <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full flex flex-col items-center justify-center text-center">
-                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors p-3">
-                        <img src="assets/pc.png" alt="電腦周邊" class="w-full h-full object-contain">
-                    </div>
-                    <h4 class="text-xl font-bold group-hover:text-blue-600">電腦周邊</h4>
-                </div>
-            </a>
-
-            <a href="supply-chain/leisure-entertainment.php" class="block group">
-                <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full flex flex-col items-center justify-center text-center">
-                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors p-3">
-                        <img src="assets/ecommerce.png" alt="休閒娛樂" class="w-full h-full object-contain">
-                    </div>
-                    <h4 class="text-xl font-bold group-hover:text-blue-600">休閒娛樂產業</h4>
-                </div>
-            </a>
-        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto" id="button-group"></div>
     </section>
 
-    <footer class="border-t border-slate-200 mt-12 py-8 text-center text-xs text-slate-400">
+    <footer class="border-t border-slate-200 mt-12 py-8 text-center text-xs text-slate-400 [&_a]:underline">
         <p>JobLens 2026 | 本系統使用政府資料開放平臺數據</p>
-        <p>Icons created by Freepik, Smashicons, Vectorslab - Flaticon</p>
+        <p>Icons by <a href="https://www.flaticon.com">Flaticon</a> and <a href="https://www.iconpacks.net">Iconpacks</a></p>
     </footer>
+    <script>
+        const supplyChains = [
+            {
+                href: "supply-chain/semiconductor.php",
+                name: "半導體",
+                icon: "assets/chip.png",
+            },{
+                href: "supply-chain/computer-peripherals.php",
+                name: "電腦周邊",
+                icon: "assets/pc.png",
+            },{
+                href: "supply-chain/leisure-entertainment.php",
+                name: "休閒娛樂",
+                icon: "assets/ecommerce.png",
+            }
+        ]
+
+        const buttonGroup = document.getElementById("button-group");
+
+        buttonGroup.innerHTML = supplyChains.map(s => {
+            return `
+            <a href="${s.href}" class="block group">
+                <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full flex flex-col items-center justify-center text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors p-3">
+                        <img src="${s.icon}" alt="${s.name}" class="w-full h-full object-contain">
+                    </div>
+                    <h4 class="text-xl font-bold group-hover:text-blue-600">${s.name}</h4>
+                </div>
+            </a>`;
+        }).join("");
+    </script>
 </body>
 </html>
