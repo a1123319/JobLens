@@ -51,7 +51,7 @@ $category = "水泥";
                             <div class="hidden lg:block absolute top-1/2 -right-12 w-3 h-3 bg-slate-300 rounded-full transform translate-x-1/2 -translate-y-1/2 z-10 border-2 border-white"></div>
                             
                             <div class="flex flex-col gap-4 relative z-10">
-                                <div onclick="toggleCompanyList(companySectors, '石灰石', 'amber')" class="cursor-pointer bg-white border border-slate-200 hover:border-amber-400 rounded-lg p-4 shadow-sm hover:shadow-md transition-all text-center hover:-translate-y-1 flex items-center gap-4">
+                                <div onclick="toggleCompanyList(companySectors, '石灰石', 'amber')" class="cursor-pointer bg-white border border-slate-200 hover:border-amber-400 rounded-lg p-4 shadow-sm hover:shadow-md hover:bg-amber-50 transition-all text-center hover:-translate-y-1 flex items-center gap-4">
                                     <div class="text-slate-500 w-8 text-center"><i class="fa-solid fa-mountain text-xl"></i></div>
                                     <h5 class="font-bold text-slate-700">石灰石</h5>
                                 </div>
@@ -85,7 +85,7 @@ $category = "水泥";
 								<div class="grid grid-cols-2 gap-4 items-center">
 
 									<div class="flex flex-col gap-3">
-										<div onclick="toggleCompanyList(companySectors, '水泥生料', 'orange')" class="cursor-pointer bg-white border border-slate-200 hover:border-orange-400 rounded-lg p-3 transition-all flex items-center gap-4 hover:-translate-y-1 shadow-sm">
+										<div onclick="toggleCompanyList(companySectors, '水泥生料', 'orange')" class="cursor-pointer bg-white border border-slate-200 hover:border-orange-400 hover:bg-orange-50 rounded-lg p-3 transition-all flex items-center gap-4 hover:-translate-y-1 shadow-sm">
 											<div class="w-10 h-10 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center text-lg flex-shrink-0">
 												<i class="fa-solid fa-blender"></i>
 											</div>
@@ -96,7 +96,7 @@ $category = "水泥";
 											<i class="fa-solid fa-arrow-down text-slate-400"></i>
 										</div>
 										
-										<div onclick="toggleCompanyList(companySectors, '水泥熟料', 'orange')" class="cursor-pointer bg-white border border-slate-200 hover:border-orange-400 rounded-lg p-3 transition-all flex items-center gap-4 hover:-translate-y-1 shadow-sm">
+										<div onclick="toggleCompanyList(companySectors, '水泥熟料', 'orange')" class="cursor-pointer bg-white border border-slate-200 hover:border-orange-400 rounded-lg hover:bg-amber-50 p-3 transition-all flex items-center gap-4 hover:-translate-y-1 shadow-sm">
 											<div class="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center text-lg flex-shrink-0">
 												<i class="fa-solid fa-fire"></i>
 											</div>
