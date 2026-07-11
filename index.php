@@ -81,6 +81,18 @@ try {
                 href: "supply-chain/leisure-entertainment.php",
                 name: "休閒娛樂",
                 icon: "assets/ecommerce.png",
+            },{
+                href: "supply-chain/blockchain.php",
+                name: "區塊鏈",
+                icon: "assets/bitcoin.svg",
+            },{
+                href: "supply-chain/cement.php",
+                name: "水泥",
+                icon: "assets/cement.png",
+            },{
+                href: "supply-chain/cybersecurity.php",
+                name: "資通訊安全",
+                icon: "assets/cybersecurity.svg",
             }
         ]
 
