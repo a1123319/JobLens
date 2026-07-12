@@ -90,6 +90,18 @@ try {
                 name: "水泥",
                 icon: "assets/cement.png",
             },{
+                href: "supply-chain/papermaking.php",
+                name: "造紙",
+                icon: "assets/pencil.png",
+            },{
+                href: "supply-chain/oil-gas-electricity.php",
+                name: "油電燃氣",
+                icon: "assets/renewable-energy.png",
+            },{
+                href: "supply-chain/touch-panel.php",
+                name: "觸控面板",
+                icon: "assets/resistor.png",
+            },{
                 href: "supply-chain/cybersecurity.php",
                 name: "資通訊安全",
                 icon: "assets/cybersecurity.svg",
