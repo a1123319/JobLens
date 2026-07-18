@@ -105,6 +105,10 @@ try {
                 href: "supply-chain/cybersecurity.php",
                 name: "資通訊安全",
                 icon: "assets/cybersecurity.svg",
+            },{
+                href: "supply-chain/cloud-computation.php",
+                name: "雲端運算",
+                icon: "assets/cloud-compute.svg",
             }
         ]
 
