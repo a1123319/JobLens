@@ -85,23 +85,86 @@ def crawl_104(company_code: str):
     data = get_jobs_page_one(company_code)
     return {"status": "success", "data": data}
 
-# --- 3. 確認後匯入資料庫 API ---
-class ImportRequest(BaseModel):
+# --- 3. 確認後匯入／驗證 Dcard 評論 API ---
+class CommentImportRequest(BaseModel):
     company_id: int
     data: list
 
-@app.post("/api/import/comment")
-def import_comments(req: ImportRequest):
+
+@app.get("/api/comments/count")
+def get_comment_count(company_id: int, source: str = "Dcard"):
+    """Return a read-only cumulative comment count for post-import verification."""
     connection = pymysql.connect(**DB_CONFIG)
     try:
         with connection.cursor() as cursor:
-            for item in req.data:
-                sql = "INSERT INTO comment (CompanyId, Content, Url, Source) VALUES (%s, %s, %s, %s)"
-                cursor.execute(sql, (req.company_id, item['內容'], item['連結'],item['評論來源']))
-        connection.commit()
-    except Exception as e:
-        connection.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
+            cursor.execute(
+                "SELECT COUNT(*) AS count FROM comment WHERE CompanyId = %s AND Source = %s",
+                (company_id, source),
+            )
+            result = cursor.fetchone()
+        return {"company_id": company_id, "source": source, "count": result["count"]}
     finally:
         connection.close()
-    return {"status": "success", "message": "成功匯入評論資料庫"}
+
+
+@app.post("/api/import/comment")
+def import_comments(req: CommentImportRequest):
+    connection = pymysql.connect(**DB_CONFIG)
+    inserted = 0
+    duplicate_skipped = 0
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1 FROM company WHERE Id = %s LIMIT 1", (req.company_id,))
+            if cursor.fetchone() is None:
+                raise HTTPException(status_code=404, detail="company_id not found")
+
+            for item in req.data:
+                try:
+                    content = item["內容"].strip()
+                    url = item["連結"].strip()
+                except (AttributeError, KeyError):
+                    raise HTTPException(
+                        status_code=422,
+                        detail="each comment requires non-empty 內容 and 連結",
+                    )
+
+                if not content or not url:
+                    raise HTTPException(
+                        status_code=422,
+                        detail="each comment requires non-empty 內容 and 連結",
+                    )
+
+                cursor.execute(
+                    "SELECT 1 FROM comment WHERE CompanyId = %s AND Url = %s AND Content = %s LIMIT 1",
+                    (req.company_id, url, content),
+                )
+                if cursor.fetchone() is not None:
+                    duplicate_skipped += 1
+                    continue
+
+                cursor.execute(
+                    "INSERT INTO comment (CompanyId, Content, Url, Source) VALUES (%s, %s, %s, %s)",
+                    (req.company_id, content, url, "Dcard"),
+                )
+                inserted += 1
+        connection.commit()
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT COUNT(*) AS count FROM comment WHERE CompanyId = %s AND Source = %s",
+                (req.company_id, "Dcard"),
+            )
+            cumulative_count = cursor.fetchone()["count"]
+    except HTTPException:
+        connection.rollback()
+        raise
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=500, detail="comment import failed") from e
+    finally:
+        connection.close()
+    return {
+        "status": "success",
+        "inserted": inserted,
+        "duplicate_skipped": duplicate_skipped,
+        "cumulative_dcard_count": cumulative_count,
+    }
