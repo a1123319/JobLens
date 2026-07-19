@@ -109,6 +109,10 @@ try {
                 href: "supply-chain/cloud-computation.php",
                 name: "雲端運算",
                 icon: "assets/cloud-compute.svg",
+            },{
+                href: "supply-chain/software-service.php",
+                name: "軟體服務",
+                icon: "assets/automation.png",
             }
         ]
 

@@ -41,9 +41,52 @@ def clean_comment_text(container_text):
         return " ".join(clean_lines)
 
 
+def expand_all_comment_threads(page, max_rounds=20):
+    """Expand Dcard's collapsed comment/reply groups before extraction."""
+    expand_pattern = re.compile(r"(?:查看|顯示|查看更多).*(?:留言|回覆)")
+    expanded_count = 0
+    idle_rounds = 0
+
+    for _ in range(max_rounds):
+        page.scroll.to_bottom()
+        time.sleep(random.uniform(0.6, 1.0))
+
+        clicked_this_round = 0
+        for button in page.eles('tag:button'):
+            try:
+                button_text = (button.text or "").strip()
+                if not expand_pattern.search(button_text):
+                    continue
+                button.scroll.to_see()
+                button.click(by_js=True)
+                clicked_this_round += 1
+                expanded_count += 1
+                time.sleep(random.uniform(1.5, 3.0))
+            except Exception:
+                # The page may re-render after a previous expansion. Re-discover
+                # the controls in the next round rather than failing the post.
+                continue
+
+        if clicked_this_round == 0:
+            idle_rounds += 1
+            if idle_rounds >= 2:
+                break
+        else:
+            idle_rounds = 0
+
+    return expanded_count
+
+
+def configure_visible_browser(co):
+    """Use a stable desktop viewport for Dcard's lazy-loaded comments."""
+    co.set_argument('--window-size=1280,900')
+    co.set_argument('--window-position=80,80')
+
+
 def crawl_dcard_passive_content(company_name, forum="tech_job"):
     # --- 1. 設定瀏覽器 ---
     co = ChromiumOptions()
+    configure_visible_browser(co)
     possible_paths = [
         r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
         r"C:\Program Files\Microsoft\Edge\Application\msedge.exe"
@@ -153,7 +196,8 @@ def crawl_dcard_passive_content(company_name, forum="tech_job"):
             
             page.get(post['連結'])
             # 滾動到頁面底部以確保觸發留言載入
-            page.scroll.to_bottom()
+            # Expand collapsed replies before collecting comment floor links.
+            expand_all_comment_threads(page)
             time.sleep(random.uniform(2.5, 4)) # 給予穩定等待時間
             
             # 定位所有的樓層超連結
@@ -206,6 +250,7 @@ def crawl_dcard_single_post(post_url):
     post_id = match.group(1) if match else "unknown"
 
     co = ChromiumOptions()
+    configure_visible_browser(co)
     possible_paths = [
         r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
         r"C:\Program Files\Microsoft\Edge\Application\msedge.exe"
@@ -224,7 +269,9 @@ def crawl_dcard_single_post(post_url):
     all_comments_data = []
     try:
         page.get(post_url)
-        page.scroll.to_bottom()
+        # Dcard keeps reply groups out of the DOM until their expand buttons
+        # are clicked, so expand them before collecting floor links.
+        expand_all_comment_threads(page)
         time.sleep(random.uniform(2.5, 4))
 
         # 抓取標題
