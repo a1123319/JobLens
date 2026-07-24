@@ -24,7 +24,7 @@ function getCompanies($category) {
     $host = 'localhost';
     $db_name = 'joblens';
     $username = 'joblens';
-    $password = 'joblens';
+    $password = '123456';
 
     try {
         $pdo = new PDO("mysql:host=$host;dbname=$db_name;charset=utf8mb4", $username, $password);

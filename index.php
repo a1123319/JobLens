@@ -5,7 +5,7 @@ require_once "search-component.php";
 $host = 'localhost';
 $db_name = 'joblens';
 $username = 'joblens';
-$password = 'joblens';
+$password = '123456';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$db_name;charset=utf8mb4", $username, $password);
@@ -113,6 +113,18 @@ try {
                 href: "supply-chain/software-service.php",
                 name: "軟體服務",
                 icon: "assets/automation.png",
+            },{
+                href: "supply-chain/automation.php",
+                name: "自動化",
+                icon: "assets/auto.png",
+            },{
+                href: "supply-chain/experience-technology.php", // 指向你剛剛建立的 PHP 檔名
+                name: "體驗科技",
+                icon: "assets/experience-technology.png",
+            },{
+                href: "supply-chain/food-biotech.php", // 指向你剛剛建立的 PHP 檔名
+                name: "食品生技",
+                icon: "assets/food-biotech.png",
             }
         ]
 

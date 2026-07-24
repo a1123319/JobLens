@@ -8,8 +8,8 @@ import pymysql
 # --- Configuration ---
 DB_CONFIG = {
     "host": "localhost",
-    "user": "root",
-    "password": "",
+    "user": "joblens",
+    "password": "123456",
     "database": "joblens",
     "charset": "utf8mb4",
     "autocommit": True
