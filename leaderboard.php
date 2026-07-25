@@ -6,7 +6,7 @@ require_once "search-component.php";
 $host = 'localhost';
 $db_name = 'joblens';
 $username = 'joblens';
-$password = '123456';
+$password = 'joblens';
 
 $companyId = $_GET['id'];
 if (empty($companyId)) {
