@@ -125,6 +125,30 @@ try {
                 href: "supply-chain/food-biotech.php",
                 name: "食品生技",
                 icon: "assets/food-biotech.png",
+            },{
+                href: "supply-chain/fintech.php",
+                name: "金融科技",
+                icon: "assets/fintech.png",
+            },{
+                href: "supply-chain/ecommerce.php",
+                name: "電子商務",
+                icon: "assets/ecommerce.png",
+            },{
+                href: "supply-chain/energy-component.php",
+                name: "能源元件",
+                icon: "assets/energy-component.png",
+            },{
+                href: "supply-chain/cogeneration.php",
+                name: "汽電共生",
+                icon: "assets/cogeneration.png",
+            },{
+                href: "supply-chain/regenerative-medicine.php",
+                name: "再生醫療",
+                icon: "assets/regenerative-medicine.png",
+            },{
+                href: "supply-chain/sports-technology.php",
+                name: "運動科技",
+                icon: "assets/sports-technology.png",
             }
         ]
 
