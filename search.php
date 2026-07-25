@@ -193,67 +193,52 @@ $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // News
 $news = searchNews($pdo, $company['Name'], 10);
 
-// Wordcloud
+// Word cloud: use the per-term sentiment produced during comment review.
+// Change this version only after a complete re-analysis has been imported.
+// Terms with tied sentiment counts intentionally remain neutral.
+$wordcloudAnalysisVersion = 'codex-core-v2';
 $stmt = $pdo->prepare("
-    SELECT w.Content, c.Emotion, c.Confidence
-    FROM wordcloud w
-    JOIN comment c ON w.CommentSource = c.Id
-    WHERE c.CompanyId = ? 
-    AND w.Pos IN (
-        'Na', 'Nb', 'Nc', 'Ncd', 
-        'VA', 'VAC', 'VB', 'VC', 'VE', 'VF', 'VG', 
-        'A', 'FW'
-    )
+    SELECT
+        cts.Term AS text,
+        COUNT(*) AS size,
+        SUM(cts.Sentiment = 'positive') AS positive_count,
+        SUM(cts.Sentiment = 'negative') AS negative_count,
+        SUM(cts.Sentiment = 'neutral') AS neutral_count
+    FROM comment_term_sentiment cts
+    JOIN comment c ON c.Id = cts.CommentId
+    WHERE c.CompanyId = ?
+      AND cts.AnalysisVersion = ?
+      AND CHAR_LENGTH(cts.Term) BETWEEN 2 AND 10
+    GROUP BY cts.Term
+    ORDER BY size DESC, CHAR_LENGTH(text) ASC, text ASC
+    LIMIT 45
 ");
-$stmt->execute([$company['Id']]);
+$stmt->execute([$company['Id'], $wordcloudAnalysisVersion]);
 $wordcloudData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$aggregatedWords = [];
-
-foreach ($wordcloudData as $row) {
-    $word = $row['Content'];
-    $isPositive = (bool)$row['Emotion'];
-    $confidence = (float)$row['Confidence'];
-
-    // Determine tone based on confidence threshold
-    if ($confidence < 0.7) {
-        $sentimentType = 'neutral';
-    } else {
-        $sentimentType = $isPositive ? 'positive' : 'negative';
-    }
-
-    if (!isset($aggregatedWords[$word])) {
-        $aggregatedWords[$word] = [
-            'text' => $word,
-            'size' => 0,
-            'counts' => ['positive' => 0, 'negative' => 0, 'neutral' => 0]
-        ];
-    }
-
-    // Increment frequency and specific emotion counter
-    $aggregatedWords[$word]['size'] += 1;
-    $aggregatedWords[$word]['counts'][$sentimentType] += 1;
-}
-
 $finalWordsList = [];
-foreach ($aggregatedWords as $word => $data) {
-    $posCount = $data['counts']['positive'];
-    $negCount = $data['counts']['negative'];
-    $neuCount = $data['counts']['neutral'];
+foreach ($wordcloudData as $row) {
+    $positiveCount = (int)$row['positive_count'];
+    $negativeCount = (int)$row['negative_count'];
+    $neutralCount = (int)$row['neutral_count'];
+    $largestCount = max($positiveCount, $negativeCount, $neutralCount);
+    $leaders = 0;
+    $finalSentiment = 'neutral';
 
-    // Default to neutral
-    $finalSentiment = 'neutral'; 
+    foreach ([$positiveCount, $negativeCount, $neutralCount] as $count) {
+        if ($count === $largestCount) {
+            $leaders++;
+        }
+    }
 
-    // If positive or negative counts dominate, assign sentiment value (-1, 0, or 1)
-    if ($posCount > $negCount && $posCount > $neuCount) {
-        $finalSentiment = 'positive';  // Positive
-    } elseif ($negCount > $posCount && $negCount > $neuCount) {
-        $finalSentiment = 'negative'; // Negative
+    if ($leaders === 1) {
+        $finalSentiment = $positiveCount === $largestCount ? 'positive'
+            : ($negativeCount === $largestCount ? 'negative' : 'neutral');
     }
 
     $finalWordsList[] = [
-        'text' => $data['text'],
-        'size' => $data['size'],
+        'text' => $row['text'],
+        'size' => (int)$row['size'],
         'sentiment' => $finalSentiment
     ];
 }
@@ -1385,31 +1370,49 @@ foreach ($aggregatedWords as $word => $data) {
         }
 
         // --- 6. 文字雲渲染 ---
-        const rawWordsData = <?php echo json_encode($finalWordsList); ?>;
+        const rawWordsData = <?php echo json_encode($finalWordsList, JSON_UNESCAPED_UNICODE); ?>;
         function renderWordCloud() {
             const canvas = document.getElementById('word-cloud-canvas');
             if (!canvas || !rawWordsData || rawWordsData.length === 0) return;
             
-            const rect = canvas.parentNode.getBoundingClientRect();
-    
-            // Set the canvas rendering dimensions to match the container size
-            canvas.width = rect.width;
-            canvas.height = rect.height;
+            const parent = canvas.parentNode;
+            const parentStyle = window.getComputedStyle(parent);
+            const horizontalPadding = parseFloat(parentStyle.paddingLeft) + parseFloat(parentStyle.paddingRight);
+            const verticalPadding = parseFloat(parentStyle.paddingTop) + parseFloat(parentStyle.paddingBottom);
+            const cloudWidth = Math.max(1, Math.floor(parent.clientWidth - horizontalPadding));
+            const cloudHeight = Math.max(1, Math.floor(parent.clientHeight - verticalPadding));
+            canvas.style.width = `${cloudWidth}px`;
+            canvas.style.height = `${cloudHeight}px`;
+            canvas.width = cloudWidth;
+            canvas.height = cloudHeight;
             
-            const sizes = rawWordsData.map(item => item.size);
+            const visibleWords = rawWordsData.slice(0, 45);
+            const sizes = visibleWords.map(item => item.size);
             const maxSize = Math.max(...sizes); 
             const minSize = Math.min(...sizes);
+            const maxFontTarget = Math.min(64, Math.max(48, canvas.width * 0.11));
+            const minFontTarget = visibleWords.length <= 30 ? 18 : 15;
+            const frequencyRange = maxSize - minSize;
+            const visualWords = visibleWords.map(item => {
+                const frequencyRatio = frequencyRange === 0
+                    ? 0.5
+                    : Math.log1p(item.size - minSize) / Math.log1p(frequencyRange);
 
-            const maxFontTarget = 60;
-            const dynamicWeightFactor = maxSize > 0 ? (maxFontTarget / maxSize) : 2;
+                return {
+                    ...item,
+                    fontSize: minFontTarget + (maxFontTarget - minFontTarget) * frequencyRatio
+                };
+            });
 
             WordCloud(canvas, {
-                list: rawWordsData.map(item => [item.text, item.size]),
-                gridSize: Math.round(16 * canvas.width / 1024), 
-                weightFactor: dynamicWeightFactor,
+                list: visualWords.map(item => [item.text, item.fontSize]),
+                gridSize: Math.max(6, Math.round(8 * canvas.width / 1024)),
+                weightFactor: 1,
                 fontFamily: "'Noto Sans TC', sans-serif",
+                fontWeight: 500,
+                padding: Math.max(2, Math.round(canvas.width / 180)),
                 color: (word) => {
-                    const d = rawWordsData.find(w => w.text === word);
+                    const d = rawWordsData.find(item => item.text === word);
                     if (!d) return `hsl(215, 5%, 75%)`;
 
                     let ratio = 1;
@@ -1430,8 +1433,14 @@ foreach ($aggregatedWords as $word => $data) {
                         return `hsl(215, ${5 + ratio * 15}%, ${75 - ratio * 35}%)`;
                     }
                 },
-                rotateRatio: 0, 
-                shape: 'circle', 
+                // Put frequent words in the middle instead of randomising
+                // their starting positions, then use a gentle oval cluster.
+                shuffle: false,
+                rotateRatio: 0,
+                shape: 'ellipse',
+                ellipticity: 0.55,
+                origin: [canvas.width / 2, canvas.height / 2],
+                drawOutOfBound: false,
                 shrinkToFit: true
             });
         }
