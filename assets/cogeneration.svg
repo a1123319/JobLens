@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">汽電共生</title>
+  <path fill="#52677d" d="M12 28h22v25H12zM17 19h12v9H17z"/>
+  <path fill="#8fa3b5" d="M17 34h5v5h-5zm8 0h5v5h-5zm-8 9h5v5h-5zm8 0h5v5h-5z"/>
+  <path fill="#f8b64c" d="M42.5 9.5c3.2 4.3 1.8 8.1-.6 10.6 3.8-.1 7.2 2.8 7.2 7.2 0 4.3-3.4 7.7-7.7 7.7-4.8 0-8.2-4.4-7.5-9 1-6.2 6.1-8.9 8.6-16.5Z"/>
+  <path fill="#35a9db" d="M39 40h14v14H39z"/>
+  <path fill="#fff" d="m46 42-4 7h3v4l4-7h-3z"/>
+  <path fill="#55b970" d="M10 55h45v4H10z"/>
+</svg>
