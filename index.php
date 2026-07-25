@@ -113,6 +113,18 @@ try {
                 href: "supply-chain/software-service.php",
                 name: "軟體服務",
                 icon: "assets/automation.png",
+            },{
+                href: "supply-chain/automation.php",
+                name: "自動化",
+                icon: "assets/auto.png",
+            },{
+                href: "supply-chain/experience-technology.php",
+                name: "體驗科技",
+                icon: "assets/experience-technology.png",
+            },{
+                href: "supply-chain/food-biotech.php",
+                name: "食品生技",
+                icon: "assets/food-biotech.png",
             }
         ]
 
