@@ -121,10 +121,22 @@ try {
                 href: "supply-chain/experience-technology.php",
                 name: "體驗科技",
                 icon: "assets/experience-technology.png",
-            },{
+            },            {
                 href: "supply-chain/food-biotech.php",
                 name: "食品生技",
                 icon: "assets/food-biotech.png",
+            },{
+                href: "supply-chain/cultural-creative.php",
+                name: "文化創意",
+                icon: "assets/news.png",
+            },{
+                href: "supply-chain/space_satellite_tech.php",
+                name: "太空衛星科技",
+                icon: "assets/satellite.svg",
+            },{
+                href: "supply-chain/big_data.php",
+                name: "大數據",
+                icon: "assets/big-data.svg",
             }
         ]
 
