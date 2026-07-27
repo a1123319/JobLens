@@ -9,9 +9,29 @@ $db_name = 'joblens';
 $username = 'joblens';
 $password = 'joblens';
 $category_links = [
-    "半導體" => "semiconductor.html",
-    "電腦周邊" => "computer-peripherals.html",
-    "休閒娛樂" => "leisure-entertainment.html"
+    "半導體" => "supply-chain/semiconductor.php",
+    "電腦周邊" => "supply-chain/computer-peripherals.php",
+    "休閒娛樂" => "supply-chain/leisure-entertainment.php",
+    "區塊鏈" => "supply-chain/blockchain.php",
+    "水泥" => "supply-chain/cement.php",
+    "造紙" => "supply-chain/papermaking.php",
+    "油電燃氣" => "supply-chain/oil-gas-electricity.php",
+    "觸控面板" => "supply-chain/touch-panel.php",
+    "資通訊安全" => "supply-chain/cybersecurity.php",
+    "雲端運算" => "supply-chain/cloud-computation.php",
+    "軟體服務" => "supply-chain/software-service.php",
+    "自動化" => "supply-chain/automation.php",
+    "體驗科技" => "supply-chain/experience-technology.php",
+    "食品生技" => "supply-chain/food-biotech.php",
+    "文化創意" => "supply-chain/cultural-creative.php",
+    "太空衛星科技" => "supply-chain/space_satellite_tech.php",
+    "大數據" => "supply-chain/big_data.php",
+    "金融科技" => "supply-chain/fintech.php",
+    "電子商務" => "supply-chain/ecommerce.php",
+    "能源元件" => "supply-chain/energy-component.php",
+    "汽電共生" => "supply-chain/cogeneration.php",
+    "再生醫療" => "supply-chain/stemcell.php",
+    "運動科技" => "supply-chain/sports-technology.php",
 ];
 
 try {
@@ -102,8 +122,8 @@ function searchNews(PDO $pdo, string $raw, int $limit = 20, bool $use_ngram = tr
 }
 
 // 2. Validate ID and Redirect if missing
-$idInput = isset($_GET['id']) ? trim($_GET['id']) : '';
-if (empty($idInput)) {
+$companyId = isset($_GET['id']) ? trim($_GET['id']) : '';
+if (empty($companyId)) {
     header("Location: not-found.html");
     exit;
 }
@@ -126,7 +146,7 @@ $stmt = $pdo->prepare("
     LEFT JOIN manager m ON c.Id = m.CompanyId
     WHERE c.Id = ? OR c.UniformId = ?
 ");
-$stmt->execute([$idInput, $idInput]);
+$stmt->execute([$companyId, $companyId]);
 $company = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$company) {
@@ -276,7 +296,6 @@ foreach ($wordcloudData as $row) {
                 <span class="text-xl font-bold tracking-wider">JobLens</span>
             </div>
             <div class="hidden md:flex items-center gap-6 text-sm font-medium">
-                <a href="supply-chain/<?= $category_links[$company['Category']] ?>" class="hover:text-cyan-400 transition">產業鏈</a>
                 <a href="about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">關於我們</a>
             </div>
         </div>
@@ -325,7 +344,7 @@ foreach ($wordcloudData as $row) {
                             
                             // 根據 mapping 陣列取得對應網址
                             $linkSlug = isset($category_links[$categoryName]) ? $category_links[$categoryName] : '';
-                            $targetUrl = !empty($linkSlug) ? "supply-chain/" . $linkSlug : "#";
+                            $targetUrl = !empty($linkSlug) ? $linkSlug . "?id=$companyId" : "#";
                         ?>
                             <a href="<?= $targetUrl ?>" 
                             title="查看「<?= htmlspecialchars($categoryName) ?>」所屬產業鏈"
