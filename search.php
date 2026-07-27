@@ -65,23 +65,28 @@ function searchNews(PDO $pdo, string $raw, int $limit = 20, bool $use_ngram = tr
     if ($q === '') return [];
 
     $tok = $use_ngram ? $q : tokenize($q);
+    $rows = [];
 
-    $sql = "
-        SELECT Id, Title, PublishedTime, UpdatedTime, NULL AS ThumbnailUrl, Url,
-               MATCH(Title, Text) AGAINST (:tok IN BOOLEAN MODE) AS score
-        FROM   pnn
-        WHERE  MATCH(Title, Text) AGAINST (:tok2 IN BOOLEAN MODE)
-        ORDER  BY score DESC
-        LIMIT  :lim
-    ";
-    $st = $pdo->prepare($sql);
-    $st->bindValue(':tok',  $tok);
-    $st->bindValue(':tok2', $tok);
-    $st->bindValue(':lim',  $limit, PDO::PARAM_INT);
-    $st->execute();
-    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+    try {
+        $sql = "
+            SELECT Id, Title, PublishedTime, UpdatedTime, NULL AS ThumbnailUrl, Url,
+                   MATCH(Title, Text) AGAINST (:tok IN BOOLEAN MODE) AS score
+            FROM   pnn
+            WHERE  MATCH(Title, Text) AGAINST (:tok2 IN BOOLEAN MODE)
+            ORDER  BY score DESC
+            LIMIT  :lim
+        ";
+        $st = $pdo->prepare($sql);
+        $st->bindValue(':tok',  $tok);
+        $st->bindValue(':tok2', $tok);
+        $st->bindValue(':lim',  $limit, PDO::PARAM_INT);
+        $st->execute();
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        $rows = [];
+    }
 
-    // Fallback: LIKE search if fulltext returns nothing
+    // Fallback: LIKE search if fulltext returns nothing or fails
     if (empty($rows)) {
         $like = '%' . $q . '%';
         $st2 = $pdo->prepare("
