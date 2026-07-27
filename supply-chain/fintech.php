@@ -3,6 +3,15 @@ require "util.php";
 
 $id = $_GET["id"] ?? null;
 $category = "金融科技";
+
+function safeGetCompanies($cat) {
+    try {
+        return getCompanies($cat);
+    } catch (Throwable $e) {
+        return [];
+    }
+}
+$companyData = safeGetCompanies($category);
 ?>
 <!DOCTYPE html>
 <html lang="zh-TW" class="scroll-smooth">
@@ -15,6 +24,7 @@ $category = "金融科技";
     <script>
         function buildCompanySectors(entities) {
             const sectors = new Map();
+            if (!Array.isArray(entities)) return sectors;
             for (const entity of entities) {
                 if (entity.Sector) {
                     if (!sectors.has(entity.Sector)) sectors.set(entity.Sector, []);
@@ -28,7 +38,7 @@ $category = "金融科技";
             }
             return sectors;
         }
-        const companySectors = buildCompanySectors(<?= json_encode(getCompanies($category), JSON_UNESCAPED_UNICODE) ?>);
+        const companySectors = buildCompanySectors(<?= json_encode($companyData, JSON_UNESCAPED_UNICODE) ?>);
         function showCompanyList(sector, color) {
             if (companySectors.has(sector)) {
                 toggleCompanyList(companySectors, sector, color);
