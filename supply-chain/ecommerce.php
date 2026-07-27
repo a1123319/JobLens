@@ -11,9 +11,24 @@ $category = "電子商務";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JobLens - <?= $category ?>產業鏈分析</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="script.js"></script>
+    <script src="script.js?v=<?= time() ?>"></script>
     <script>
-        const companySectors = fromCompanyDatabase(<?= json_encode(getCompanies($category), JSON_UNESCAPED_UNICODE) ?>);
+        function buildCompanySectors(entities) {
+            const sectors = new Map();
+            for (const entity of entities) {
+                if (entity.Sector) {
+                    if (!sectors.has(entity.Sector)) sectors.set(entity.Sector, []);
+                    sectors.get(entity.Sector).push(entity);
+                }
+                const sub = entity.Subsector || entity.SubSector;
+                if (sub && sub !== entity.Sector) {
+                    if (!sectors.has(sub)) sectors.set(sub, []);
+                    sectors.get(sub).push(entity);
+                }
+            }
+            return sectors;
+        }
+        const companySectors = buildCompanySectors(<?= json_encode(getCompanies($category), JSON_UNESCAPED_UNICODE) ?>);
         function showCompanyList(sector, color) {
             if (companySectors.has(sector)) {
                 toggleCompanyList(companySectors, sector, color);

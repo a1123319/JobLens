@@ -67,7 +67,7 @@ function searchNews(PDO $pdo, string $raw, int $limit = 20, bool $use_ngram = tr
     $tok = $use_ngram ? $q : tokenize($q);
 
     $sql = "
-        SELECT Id, Title, PublishedTime, UpdatedTime, ThumbnailUrl, Url,
+        SELECT Id, Title, PublishedTime, UpdatedTime, NULL AS ThumbnailUrl, Url,
                MATCH(Title, Text) AGAINST (:tok IN BOOLEAN MODE) AS score
         FROM   pnn
         WHERE  MATCH(Title, Text) AGAINST (:tok2 IN BOOLEAN MODE)
@@ -85,7 +85,7 @@ function searchNews(PDO $pdo, string $raw, int $limit = 20, bool $use_ngram = tr
     if (empty($rows)) {
         $like = '%' . $q . '%';
         $st2 = $pdo->prepare("
-            SELECT Id, Title, PublishedTime, UpdatedTime, ThumbnailUrl, Url,
+            SELECT Id, Title, PublishedTime, UpdatedTime, NULL AS ThumbnailUrl, Url,
                    0 AS score
             FROM   pnn
             WHERE  Title LIKE :l OR Text LIKE :l2

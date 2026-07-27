@@ -5,6 +5,14 @@ import random
 import json
 import urllib.parse
 import re
+import sys
+
+if hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
 
 def normalize_text(text):
     if not text:
