@@ -152,15 +152,15 @@ try {
             },{
                 href: "supply-chain/cogeneration.php",
                 name: "汽電共生",
-                icon: "assets/cogeneration.png",
+                icon: "assets/cogeneration.svg",
             },{
-                href: "supply-chain/regenerative-medicine.php",
+                href: "supply-chain/stemcell.php",
                 name: "再生醫療",
-                icon: "assets/regenerative-medicine.png",
+                icon: "assets/regenerative-medicine.svg",
             },{
                 href: "supply-chain/sports-technology.php",
                 name: "運動科技",
-                icon: "assets/sports-technology.png",
+                icon: "assets/sports-technology.svg",
             }
         ]
 
