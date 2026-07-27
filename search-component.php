@@ -15,12 +15,12 @@ function renderSearch(
             SELECT 
                 c.Id, 
                 c.Name,
-                cc.Category,
-                GROUP_CONCAT(n.Name SEPARATOR ' ') AS Nickname
+                GROUP_CONCAT(DISTINCT cc.Category SEPARATOR ',') AS Category,
+                GROUP_CONCAT(DISTINCT n.Name SEPARATOR ' ') AS Nickname
             FROM company c 
-            LEFT JOIN companycategory cc ON c.Id = cc.CompanyId
-            LEFT JOIN nickname n ON c.Id = n.CompanyId
-            GROUP BY c.Id, c.Name, cc.Category
+            JOIN companycategory cc ON c.Id = cc.CompanyId
+            JOIN nickname n ON c.Id = n.CompanyId
+            GROUP BY c.Id, c.Name
         ");
         $stmt->execute();
         $companies = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -46,12 +46,15 @@ function renderSearch(
     </div>
 
     <script type="module" >
-    import Fuse from 'https://cdn.jsdelivr.net/npm/fuse.js@7.3.0';
+        import Fuse from 'https://cdn.jsdelivr.net/npm/fuse.js@7.3.0';
 
-    (function() {
-        // Safely map PHP array structure to local JavaScript runtime scope
-        const companyData = <?php echo json_encode($companies, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+        const companyData = <?php echo json_encode($companies); ?>;
         
+        for (const company of companyData)
+        {
+            company.Category = company.Category.split(',');
+        }
+
         const searchInput = document.getElementById('<?php echo $inputId; ?>');
         const searchButton = document.getElementById('<?php echo $buttonId; ?>');
         const suggestionBox = document.getElementById('<?php echo $boxId; ?>');
@@ -129,7 +132,7 @@ function renderSearch(
                             ${item.Nickname ? `<span class="text-xs text-slate-400">${item.Nickname}</span>` : ''}
                         </div>
                         <div class="flex items-center gap-3 text-right">
-                            ${item.Category ? `<span class="text-xs text-slate-400 border border-slate-200 px-2 py-0.5 rounded-full group-hover:border-emerald-200 group-hover:text-cyan-600">${item.Category}</span>` : ''}
+                            ${item.Category ? item.Category.reduce((acc, cur) => acc += `<span class="text-xs text-slate-400 border border-slate-200 px-2 py-0.5 rounded-full group-hover:border-emerald-200 group-hover:text-cyan-600">${cur}</span>`, '') : ''}
                             <span class="font-mono font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded text-sm">${item.Id}</span>
                         </div>
                     </div>`;
@@ -165,7 +168,6 @@ function renderSearch(
                 suggestionBox.classList.add('hidden');
             }
         });
-    })();
     </script>
     <?php
 }
