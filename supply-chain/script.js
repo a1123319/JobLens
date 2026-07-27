@@ -25,20 +25,12 @@ function fromCompanyDatabase(entities) {
 	const sectors = new Map();
 
 	for (const entity of entities) {
-		if (entity.Sector) {
-			if (!sectors.has(entity.Sector)) {
-				sectors.set(entity.Sector, []);
-			}
-			sectors.get(entity.Sector).push(entity);
+		if (!sectors.has(entity.Sector)) {
+			sectors.set(entity.Sector, []);
 		}
-
-		const sub = entity.Subsector || entity.SubSector;
-		if (sub && sub !== entity.Sector) {
-			if (!sectors.has(sub)) {
-				sectors.set(sub, []);
-			}
-			sectors.get(sub).push(entity);
-		}
+		
+		const sector = sectors.get(entity.Sector);
+		sector.push(entity);
 	}
 
 	return sectors;
