@@ -65,32 +65,27 @@ function searchNews(PDO $pdo, string $raw, int $limit = 20, bool $use_ngram = tr
     if ($q === '') return [];
 
     $tok = $use_ngram ? $q : tokenize($q);
-    $rows = [];
 
-    try {
-        $sql = "
-            SELECT Id, Title, PublishedTime, UpdatedTime, NULL AS ThumbnailUrl, Url,
-                   MATCH(Title, Text) AGAINST (:tok IN BOOLEAN MODE) AS score
-            FROM   pnn
-            WHERE  MATCH(Title, Text) AGAINST (:tok2 IN BOOLEAN MODE)
-            ORDER  BY score DESC
-            LIMIT  :lim
-        ";
-        $st = $pdo->prepare($sql);
-        $st->bindValue(':tok',  $tok);
-        $st->bindValue(':tok2', $tok);
-        $st->bindValue(':lim',  $limit, PDO::PARAM_INT);
-        $st->execute();
-        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        $rows = [];
-    }
+    $sql = "
+        SELECT Id, Title, PublishedTime, UpdatedTime, ThumbnailUrl, Url,
+               MATCH(Title, Text) AGAINST (:tok IN BOOLEAN MODE) AS score
+        FROM   pnn
+        WHERE  MATCH(Title, Text) AGAINST (:tok2 IN BOOLEAN MODE)
+        ORDER  BY score DESC
+        LIMIT  :lim
+    ";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(':tok',  $tok);
+    $st->bindValue(':tok2', $tok);
+    $st->bindValue(':lim',  $limit, PDO::PARAM_INT);
+    $st->execute();
+    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 
-    // Fallback: LIKE search if fulltext returns nothing or fails
+    // Fallback: LIKE search if fulltext returns nothing
     if (empty($rows)) {
         $like = '%' . $q . '%';
         $st2 = $pdo->prepare("
-            SELECT Id, Title, PublishedTime, UpdatedTime, NULL AS ThumbnailUrl, Url,
+            SELECT Id, Title, PublishedTime, UpdatedTime, ThumbnailUrl, Url,
                    0 AS score
             FROM   pnn
             WHERE  Title LIKE :l OR Text LIKE :l2
@@ -140,90 +135,60 @@ if (!$company) {
 }
 
 // 4. Fetch Sub-data for JavaScript Arrays
-// Safety records
-try {
-    $stmt = $pdo->prepare("SELECT * FROM safetyrisk WHERE CompanyId = ?");
-    $stmt->execute([$company['Id']]);
-    $safetyRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $safetyRecords = [];
-}
-
 // Recruitment Jobs
-try {
-    $stmt = $pdo->prepare("SELECT Name, Url, Salary FROM recruitment WHERE CompanyId = ?");
-    $stmt->execute([$company['Id']]);
-    $jobsList = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $jobsList = [];
-}
+$stmt = $pdo->prepare("SELECT * FROM safetyrisk WHERE CompanyId = ?");
+$stmt->execute([$company['Id']]);
+$safetyRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// 4. Fetch Sub-data for JavaScript Arrays
+// Recruitment Jobs
+$stmt = $pdo->prepare("SELECT Name, Url, Salary FROM recruitment WHERE CompanyId = ?");
+$stmt->execute([$company['Id']]);
+$jobsList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Salary histories
-try {
-    $stmt = $pdo->prepare("SELECT * FROM company c LEFT JOIN salary s ON c.Id = s.CompanyId WHERE c.Id = ? ORDER BY s.Year ASC");
-    $stmt->execute([$company['Id']]);
-    $salaries = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $salaries = [];
-}
+$stmt = $pdo->prepare("SELECT * FROM company c LEFT JOIN salary s ON c.Id = s.CompanyId WHERE c.Id = ? ORDER BY s.Year ASC");
+$stmt->execute([$company['Id']]);
+$salaries = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Company list
-try {
-    $stmt = $pdo->prepare("SELECT * FROM company");
-    $stmt->execute();
-    $companies = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $companies = [];
-}
+$stmt = $pdo->prepare("SELECT * FROM company");
+$stmt->execute();
+$companies = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Industry Rankings (Top 10 in same Sector)
-try {
-    $stmt = $pdo->prepare("
-        SELECT DISTINCT c.Name, c.Id, s.NonAdminstrativeMedian
-        FROM company c
-        JOIN salary s ON c.Id = s.CompanyId AND s.Year = 2024
-        JOIN companycategory cc ON c.Id = cc.CompanyId
-        WHERE cc.Sector = ?
-        ORDER BY s.NonAdminstrativeMedian DESC
-    ");
-    $stmt->execute([$company['Sector']]);
-    $medians = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $medians = [];
-}
+$stmt = $pdo->prepare("
+    SELECT DISTINCT c.Name, c.Id, s.NonAdminstrativeMedian
+    FROM company c
+    JOIN salary s ON c.Id = s.CompanyId AND s.Year = 2024
+    JOIN companycategory cc ON c.Id = cc.CompanyId
+    WHERE cc.Sector = ?
+    ORDER BY s.NonAdminstrativeMedian DESC
+");
+$stmt->execute([$company['Sector']]);
+$medians = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-try {
-    $stmt = $pdo->prepare("
-        SELECT DISTINCT c.Name, c.Id, s.NonAdminstrativeAverage
-        FROM company c
-        JOIN salary s ON c.Id = s.CompanyId AND s.Year = 2024
-        JOIN companycategory cc ON c.Id = cc.CompanyId
-        WHERE cc.Sector = ?
-        ORDER BY s.NonAdminstrativeAverage DESC
-    ");
-    $stmt->execute([$company['Sector']]);
-    $averages = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $averages = [];
-}
+// Industry Rankings (Top 10 in same Sector)
+$stmt = $pdo->prepare("
+    SELECT DISTINCT c.Name, c.Id, s.NonAdminstrativeAverage
+    FROM company c
+    JOIN salary s ON c.Id = s.CompanyId AND s.Year = 2024
+    JOIN companycategory cc ON c.Id = cc.CompanyId
+    WHERE cc.Sector = ?
+    ORDER BY s.NonAdminstrativeAverage DESC
+");
+$stmt->execute([$company['Sector']]);
+$averages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Disasters
-try {
-    $stmt = $pdo->prepare("SELECT * FROM disaster WHERE BusinessUnitUniformId = ? OR ProjectOwnerUniformId  = ?");
-    $stmt->execute([$company['UniformId'], $company['UniformId']]);
-    $disasters = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $disasters = [];
-}
+$stmt = $pdo->prepare("SELECT * FROM disaster WHERE BusinessUnitUniformId = ? OR ProjectOwnerUniformId  = ?");
+$stmt->execute([$company['UniformId'], $company['UniformId']]);
+$disasters = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Comments
-try {
-    $stmt = $pdo->prepare("SELECT * FROM comment WHERE CompanyId = ?");
-    $stmt->execute([$company['Id']]);
-    $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $comments = [];
-}
+$stmt = $pdo->prepare("SELECT * FROM comment WHERE CompanyId = ?");
+$stmt->execute([$company['Id']]);
+$comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // News
 $news = searchNews($pdo, $company['Name'], 10);
@@ -232,29 +197,24 @@ $news = searchNews($pdo, $company['Name'], 10);
 // Change this version only after a complete re-analysis has been imported.
 // Terms with tied sentiment counts intentionally remain neutral.
 $wordcloudAnalysisVersion = 'codex-core-v2';
-$wordcloudData = [];
-try {
-    $stmt = $pdo->prepare("
-        SELECT
-            cts.Term AS text,
-            COUNT(*) AS size,
-            SUM(cts.Sentiment = 'positive') AS positive_count,
-            SUM(cts.Sentiment = 'negative') AS negative_count,
-            SUM(cts.Sentiment = 'neutral') AS neutral_count
-        FROM comment_term_sentiment cts
-        JOIN comment c ON c.Id = cts.CommentId
-        WHERE c.CompanyId = ?
-          AND cts.AnalysisVersion = ?
-          AND CHAR_LENGTH(cts.Term) BETWEEN 2 AND 10
-        GROUP BY cts.Term
-        ORDER BY size DESC, CHAR_LENGTH(text) ASC, text ASC
-        LIMIT 45
-    ");
-    $stmt->execute([$company['Id'], $wordcloudAnalysisVersion]);
-    $wordcloudData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $wordcloudData = [];
-}
+$stmt = $pdo->prepare("
+    SELECT
+        cts.Term AS text,
+        COUNT(*) AS size,
+        SUM(cts.Sentiment = 'positive') AS positive_count,
+        SUM(cts.Sentiment = 'negative') AS negative_count,
+        SUM(cts.Sentiment = 'neutral') AS neutral_count
+    FROM comment_term_sentiment cts
+    JOIN comment c ON c.Id = cts.CommentId
+    WHERE c.CompanyId = ?
+      AND cts.AnalysisVersion = ?
+      AND CHAR_LENGTH(cts.Term) BETWEEN 2 AND 10
+    GROUP BY cts.Term
+    ORDER BY size DESC, CHAR_LENGTH(text) ASC, text ASC
+    LIMIT 45
+");
+$stmt->execute([$company['Id'], $wordcloudAnalysisVersion]);
+$wordcloudData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $finalWordsList = [];
 foreach ($wordcloudData as $row) {
