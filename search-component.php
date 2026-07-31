@@ -19,7 +19,7 @@ function renderSearch(
                 GROUP_CONCAT(DISTINCT n.Name SEPARATOR ' ') AS Nickname
             FROM company c 
             JOIN companycategory cc ON c.Id = cc.CompanyId
-            JOIN nickname n ON c.Id = n.CompanyId
+            LEFT JOIN nickname n ON c.Id = n.CompanyId
             GROUP BY c.Id, c.Name
         ");
         $stmt->execute();
@@ -124,6 +124,19 @@ function renderSearch(
 
             suggestionBox.innerHTML = currentResults.slice(0, 10).map(res => {
                 const item = res.item;
+                let categoryHtml = "";
+                if (item.Category)
+                {
+                    categoryHtml = item.Category.slice(0, 3).map(cat => 
+                        `<span class="text-xs text-slate-400 border border-slate-200 px-2 py-0.5 rounded-full group-hover:border-emerald-200 group-hover:text-cyan-600">${cat}</span>`
+                    ).join('');
+                    const remaining = item.Category.length - 3;
+                    if (remaining > 0) 
+                    {
+                        categoryHtml += `<span class="text-xs text-slate-400">...以及其他${remaining}個產業</span>`;
+                    }
+                }
+
                 return `
                     <div data-id="${item.Id}" data-name="${item.Name}"
                          class="joblens-item p-4 hover:bg-slate-50 border-b border-slate-100 last:border-none cursor-pointer flex items-center justify-between transition-colors group">
@@ -132,7 +145,7 @@ function renderSearch(
                             ${item.Nickname ? `<span class="text-xs text-slate-400">${item.Nickname}</span>` : ''}
                         </div>
                         <div class="flex items-center gap-3 text-right">
-                            ${item.Category ? item.Category.reduce((acc, cur) => acc += `<span class="text-xs text-slate-400 border border-slate-200 px-2 py-0.5 rounded-full group-hover:border-emerald-200 group-hover:text-cyan-600">${cur}</span>`, '') : ''}
+                            ${categoryHtml}
                             <span class="font-mono font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded text-sm">${item.Id}</span>
                         </div>
                     </div>`;
