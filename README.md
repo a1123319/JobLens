@@ -2,13 +2,13 @@
 
 給求職者的透視企業的放大鏡。
 
-# 需求
+## 需求
 
-PHP, Apache2, MySQL
+PHP, Apache2, MySQL (或 MariaDB)
 
 你也可以使用Xampp。
 
-# 執行
+## 執行
 
 git clone至Apache2的htdocs。
 
@@ -26,21 +26,20 @@ sudo apt install php7.4-intl
 > 若出現password policy錯誤，請執行以下SQL指令:
 > `SET GLOBAL validate_password.policy = LOW;`
 
+在`my.ini`新增以下設置，並重啟MySQL以啟用變更。注意MySQL和MariaDB設置不同:
 
-在`my.ini`新增以下設置。注意MySQL和MariaDB設置不同。須在XAMPP重啟MySQL以啟用變更:
-
-## MySQL
+MySQL:
 
 ```
 [mysqld]
 ngram_token_size=2
 ```
 
-## MariaDB
+MariaDB:
 
 ```
 [mysqld]
 innodb_ft_min_token_size=1
 ```
 
-在瀏覽器網址列輸入 `localhost`。
+在瀏覽器網址列輸入 `http://localhost`。
