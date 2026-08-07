@@ -126,6 +126,10 @@ try {
                 name: "食品生技",
                 icon: "assets/food-biotech.png",
             },{
+                href: "supply-chain/food.php",
+                name: "食品",
+                icon: "assets/food-biotech.png",
+            },{
                 href: "supply-chain/cultural-creative.php",
                 name: "文化創意",
                 icon: "assets/news.png",
