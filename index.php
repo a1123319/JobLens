@@ -161,6 +161,10 @@ try {
                 href: "supply-chain/sports-technology.php",
                 name: "運動科技",
                 icon: "assets/sports-technology.svg",
+            },{
+                href: "supply-chain/wind-power.php",
+                name: "風力發電",
+                icon: "assets/wind-turbine.png",
             }
         ]
 
