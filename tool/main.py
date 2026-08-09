@@ -18,9 +18,9 @@ app.add_middleware(
 )
 
 DB_CONFIG = {
-    "host": "140.127.220.103",
-    "user": "a1121713",
-    "password": "a1121713",
+    "host": "localhost",
+    "user": "root",
+    "password": "",
     "database": "joblens",
     "charset": "utf8mb4",
     "cursorclass": pymysql.cursors.DictCursor
