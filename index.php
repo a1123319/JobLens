@@ -169,6 +169,10 @@ try {
                 href: "supply-chain/wind-power.php",
                 name: "風力發電",
                 icon: "assets/wind-turbine.png",
+            },{
+                href: "supply-chain/artificial-intelligence.php",
+                name: "人工智慧",
+                icon: "assets/ai.png",
             }
         ]
 
