@@ -173,6 +173,10 @@ try {
                 href: "supply-chain/artificial-intelligence.php",
                 name: "人工智慧",
                 icon: "assets/ai.png",
+            },{
+                href: "supply-chain/connector.php",
+                name: "連接器",
+                icon: "assets/connector.png",
             }
         ]
 
