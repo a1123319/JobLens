@@ -154,6 +154,10 @@ try {
                 name: "能源元件",
                 icon: "assets/energy-component.png",
             },{
+                href: "supply-chain/pharma.php",
+                name: "製藥",
+                icon: "assets/pharma.png",
+            },{
                 href: "supply-chain/cogeneration.php",
                 name: "汽電共生",
                 icon: "assets/cogeneration.svg",
