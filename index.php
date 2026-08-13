@@ -181,6 +181,14 @@ try {
                 href: "supply-chain/connector.php",
                 name: "連接器",
                 icon: "assets/connector.png",
+            },{
+                href: "supply-chain/passive-components.php",
+                name: "被動元件",
+                icon: "assets/passive-components.svg",
+            },{
+                href: "supply-chain/smart-grid.php",
+                name: "智慧電網",
+                icon: "assets/smart-grid.svg",
             }
         ]
 
