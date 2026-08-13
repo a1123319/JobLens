@@ -30,7 +30,7 @@ $companyData = safeGetCompanies($category);
                     if (!sectors.has(entity.Sector)) sectors.set(entity.Sector, []);
                     sectors.get(entity.Sector).push(entity);
                 }
-                const sub = entity.Subsector || entity.SubSector;
+                const sub = entity.Subsector || entity.SubSector || entity.subsector;
                 if (sub && sub !== entity.Sector) {
                     if (!sectors.has(sub)) sectors.set(sub, []);
                     sectors.get(sub).push(entity);
