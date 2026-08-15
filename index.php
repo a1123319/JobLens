@@ -80,7 +80,7 @@ try {
             },{
                 href: "supply-chain/leisure-entertainment.php",
                 name: "休閒娛樂",
-                icon: "assets/ecommerce.png",
+                icon: "assets/leisure-entertainment.png",
             },{
                 href: "supply-chain/blockchain.php",
                 name: "區塊鏈",
