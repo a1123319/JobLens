@@ -189,6 +189,10 @@ try {
                 href: "supply-chain/smart-grid.php",
                 name: "智慧電網",
                 icon: "assets/smart-grid.svg",
+            },{
+                href: "supply-chain/transportation-shipping.php",
+                name: "交通運輸及航運",
+                icon: "assets/transportation-shipping.svg",
             }
         ]
 
