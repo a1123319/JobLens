@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">交通運輸及航運</title>
+  <path fill="#35a9db" d="M11 17h29l6 8H17z"/>
+  <path fill="#277fc0" d="M18 25h29l7 11H11z"/>
+  <path fill="#eaf7ff" d="M22 28h7v5h-7zm10 0h7v5h-7zm10 0h6l3 5h-9z"/>
+  <path fill="#52677d" d="M9 36h47v5H9z"/>
+  <path fill="#35a9db" d="M12 41h43l-7 11H19z"/>
+  <path fill="#277fc0" d="M19 52h29l-4 5H23z"/>
+  <path fill="#f8b64c" d="M47 12h6v12h-6z"/>
+  <path fill="#fff" d="M10 57h44v3H10z"/>
+</svg>
