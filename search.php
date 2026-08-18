@@ -547,14 +547,20 @@ foreach ($wordcloudData as $row) {
                 <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
                     <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 職業安全
                 </h3>
-                <?php if (!empty($safetyRecords)): ?>
+                <?php
+                $safetyYears = [];
+                foreach ($safetyRecords as $s) {
+                    if (isset($s["OccupationalInjuryRate"]) || isset($s["OccupationInjuryCount"]) || isset($s["FireIncidentCount"])) {
+                        $safetyYears[] = $s["Year"];
+                    }
+                }
+                ?>
+                <?php if (!empty($safetyYears)): ?>
                 <div class="relative">
                     <select id="safety-year-select" onchange="updateSafetyData()" class="bg-white text-slate-700 text-sm font-bold py-2 pl-3 pr-8 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-600 cursor-pointer shadow-sm hover:bg-slate-50">
-                        <?php foreach ($safetyRecords as $s):
-                        if (isset($s["OccupationalInjuryRate"]) || isset($s["OccupationInjuryCount"]) || isset($s["FireIncident"])): ?>
-                        <option value="<?= $s["Year"] ?>"><?= $s["Year"] ?> 年 (民國<?= $s["Year"] - 1911 ?>年)</option>
-                        <?php endif;
-                        endforeach; ?>
+                        <?php foreach ($safetyYears as $safetyYear): ?>
+                        <option value="<?= $safetyYear ?>"><?= $safetyYear ?> 年 (民國<?= $safetyYear - 1911 ?>年)</option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
                 <?php endif ?>
@@ -1186,8 +1192,11 @@ foreach ($wordcloudData as $row) {
         const safetyData = <?= $safetyJsonData ?>;
         
         function updateSafetyData() {
-            const year = document.getElementById('safety-year-select').value;
+            const select = document.getElementById('safety-year-select');
+            if (!select) return;
+            const year = select.value;
             const data = safetyData[year];
+            if (!data) return;
 
             if (year <= 2022) {
                 document.getElementById('fire-section').classList.add('hidden');
@@ -1321,7 +1330,7 @@ foreach ($wordcloudData as $row) {
                             tooltip: {
                                 callbacks: {
                                     label: (context) => {
-                                        if (co2eIsNull(labels.indexOf(context.label))) {
+                                        if (!co2eIsNull[labels.indexOf(context.label)]) {
                                             return '未揭露'
                                         }
 
