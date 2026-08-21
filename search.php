@@ -1505,7 +1505,9 @@ foreach ($wordcloudData as $row) {
         const n = rawCommentsData.length;
         
         for (let i = 0; i < n; i++) {
-            const y = 1 - (i / (n - 1)) * 2; // goes from 1 to -1
+            // Guard divide-by-zero when there is only one comment (n === 1):
+            // place the single point at the sphere's equator (y = 0).
+            const y = n > 1 ? 1 - (i / (n - 1)) * 2 : 0; // goes from 1 to -1
             const radiusAtY = Math.sqrt(1 - y * y);
             const theta = phi * i;
             const x = Math.cos(theta) * radiusAtY;
