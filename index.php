@@ -174,6 +174,10 @@ try {
                 name: "風力發電",
                 icon: "assets/wind-turbine.png",
             },{
+                href: "supply-chain/solar-energy.php",
+                name: "太陽能",
+                icon: "assets/solar-energy-panel.svg",
+            },{
                 href: "supply-chain/artificial-intelligence.php",
                 name: "人工智慧",
                 icon: "assets/ai.png",
