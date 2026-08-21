@@ -146,6 +146,10 @@ try {
                 name: "金融科技",
                 icon: "assets/fintech.png",
             },{
+                href: "supply-chain/financial.php",
+                name: "金融",
+                icon: "assets/financial.png",
+            },{
                 href: "supply-chain/ecommerce.php",
                 name: "電子商務",
                 icon: "assets/ecommerce.png",
