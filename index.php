@@ -90,6 +90,10 @@ try {
                 name: "水泥",
                 icon: "assets/cement.png",
             },{
+                href: "supply-chain/steel.php",
+                name: "鋼鐵",
+                icon: "assets/value-chain.png",
+            },{
                 href: "supply-chain/papermaking.php",
                 name: "造紙",
                 icon: "assets/pencil.png",
