@@ -14,6 +14,7 @@ $category_links = [
     "休閒娛樂" => "supply-chain/leisure-entertainment.php",
     "區塊鏈" => "supply-chain/blockchain.php",
     "水泥" => "supply-chain/cement.php",
+    "鋼鐵" => "supply-chain/steel.php",
     "造紙" => "supply-chain/papermaking.php",
     "油電燃氣" => "supply-chain/oil-gas-electricity.php",
     "觸控面板" => "supply-chain/touch-panel.php",
