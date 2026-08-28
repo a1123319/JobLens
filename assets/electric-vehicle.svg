@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">電動車</title>
+  <defs>
+    <linearGradient id="body" x1="8" y1="22" x2="52" y2="51" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#body)" d="M8 40.5V34a6 6 0 0 1 6-6h4.2l5.1-8.2A5.8 5.8 0 0 1 28.2 17h11.6a5.8 5.8 0 0 1 4.9 2.8l5.1 8.2H52a6 6 0 0 1 6 6v6.5A5.5 5.5 0 0 1 52.5 46h-39A5.5 5.5 0 0 1 8 40.5Z"/>
+  <path fill="#dbeafe" d="M23.8 27.5 27 22h10l3.2 5.5H23.8Z"/>
+  <path fill="#0f172a" d="M14 42h36v4H14z" opacity=".45"/>
+  <circle cx="20" cy="46" r="6" fill="#1e293b"/>
+  <circle cx="20" cy="46" r="2.4" fill="#bfdbfe"/>
+  <circle cx="46" cy="46" r="6" fill="#1e293b"/>
+  <circle cx="46" cy="46" r="2.4" fill="#bfdbfe"/>
+  <path fill="#fff" d="m34.2 28.5-6.1 9h4.7l-1 7.5 6.1-9h-4.7l1-7.5Z"/>
+  <path fill="#2dd4bf" d="M53 24h3.7v-3h-3z"/>
+  <circle cx="54.5" cy="24" r="2.5" fill="#2dd4bf"/>
+</svg>
