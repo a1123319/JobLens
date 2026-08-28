@@ -78,6 +78,10 @@ try {
                 name: "電腦周邊",
                 icon: "assets/pc.png",
             },{
+                href: "supply-chain/electric-vehicle.php",
+                name: "電動車",
+                icon: "assets/electric-vehicle.svg",
+            },{
                 href: "supply-chain/leisure-entertainment.php",
                 name: "休閒娛樂",
                 icon: "assets/leisure-entertainment.png",
