@@ -205,6 +205,10 @@ try {
                 href: "supply-chain/transportation-shipping.php",
                 name: "交通運輸及航運",
                 icon: "assets/transportation-shipping.svg",
+            },{
+                href: "supply-chain/medical-device.php",
+                name: "醫療器材",
+                icon: "assets/medical-device.png",
             }
         ]
 
