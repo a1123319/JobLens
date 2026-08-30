@@ -213,6 +213,10 @@ try {
                 href: "supply-chain/medical-device.php",
                 name: "醫療器材",
                 icon: "assets/medical-device.png",
+            },{
+                href: "supply-chain/department-store.php",
+                name: "貿易百貨",
+                icon: "assets/department-store.svg",
             }
         ]
 
