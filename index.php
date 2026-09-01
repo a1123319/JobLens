@@ -217,6 +217,10 @@ try {
                 href: "supply-chain/department-store.php",
                 name: "貿易百貨",
                 icon: "assets/department-store.svg",
+            },{
+                href: "supply-chain/vehicle.php",
+                name: "汽車",
+                icon: "assets/vehicle.png",
             }
         ]
 
