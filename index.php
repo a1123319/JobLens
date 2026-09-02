@@ -35,10 +35,10 @@ try {
 
     <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.php'">
-                <img src="assets/magnifying-glass.png" alt="JobLens Logo" class="w-8 h-8 object-contain">
+            <a class="flex items-center gap-3 cursor-pointer" href="index.php">
+                <img src="assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
                 <span class="text-xl font-bold tracking-wider">JobLens</span>
-            </div>
+            </a>
             <div class="hidden md:flex gap-6 text-sm font-medium">
                 <a href="about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-full hover:bg-cyan-500 hover:text-white transition-all">
                     關於我們
