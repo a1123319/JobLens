@@ -272,10 +272,10 @@ foreach ($wordcloudData as $row) {
 
     <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.php'">
+            <a class="flex items-center gap-3 cursor-pointer" href="index.php">
                 <img src="assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
                 <span class="text-xl font-bold tracking-wider">JobLens</span>
-            </div>
+            </a>
             <div class="hidden md:flex items-center gap-6 text-sm font-medium">
                 <a href="about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">關於我們</a>
             </div>
@@ -930,8 +930,7 @@ foreach ($wordcloudData as $row) {
         const thumb = document.getElementById('vertical-thumb');
 
         // 點擊平滑滾動至區塊
-        function scrollToSection(id) {
-            const el = document.getElementById(id);
+        function scrollToSection(el) {
             if(el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
         }
 
@@ -944,9 +943,8 @@ foreach ($wordcloudData as $row) {
             
             const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
             if (maxScroll <= 0) return;
-
-            sectionsList.forEach((sec, idx) => {
-                const el = document.getElementById(sec);
+            
+            function initializeDot(el, name) {
                 if (el) {
                     let percent = (el.offsetTop / maxScroll) * 100;
                     percent = Math.max(0, Math.min(100, percent));
@@ -956,18 +954,25 @@ foreach ($wordcloudData as $row) {
                     lbl.className = "absolute right-0 text-xs font-bold text-slate-400 transition-colors cursor-pointer whitespace-nowrap text-right px-2 hover:text-cyan-600 slider-text-label";
                     lbl.style.top = percent + '%';
                     lbl.style.transform = 'translateY(-50%)';
-                    lbl.innerText = sectionNames[idx];
-                    lbl.onclick = () => scrollToSection(sec);
+                    lbl.innerText = name;
+                    lbl.onclick = () => scrollToSection(el);
                     labelsContainer.appendChild(lbl);
 
                     // 建立小刻度點
-                const dot = document.createElement('div');
-                // 加上 pointer-events-auto 突破父層限制，加 z-30 確保在上層，並放大範圍為 w-2.5 h-2.5
-                dot.className = "absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-slate-300 rounded-full cursor-pointer hover:bg-cyan-500 transition-all pointer-events-auto z-30 hover:scale-150 shadow-sm";
-                dot.style.top = percent + '%';
-                dot.onclick = () => scrollToSection(sec);
-                dotsContainer.appendChild(dot);
+                    const dot = document.createElement('div');
+                    // 加上 pointer-events-auto 突破父層限制，加 z-30 確保在上層，並放大範圍為 w-2.5 h-2.5
+                    dot.className = "absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-slate-300 rounded-full cursor-pointer hover:bg-cyan-500 transition-all pointer-events-auto z-30 hover:scale-150 shadow-sm";
+                    dot.style.top = percent + '%';
+                    dot.onclick = () => scrollToSection(el);
+                    dotsContainer.appendChild(dot);
                 }
+            }
+
+            initializeDot(document.body, '');
+
+            sectionsList.forEach((sec, idx) => {
+                const el = document.getElementById(sec);
+                initializeDot(el, sectionNames[idx]);
             });
         }
 
