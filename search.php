@@ -85,6 +85,24 @@ function searchNews(PDO $pdo, string $raw, int $limit = 10, bool $use_ngram = tr
     $q = trim($raw);
     if ($q === '') return [];
 
+    // Cache result: "Title LIKE '%...%'" can't use an index and does a full
+    // table scan over `pnn` (100k+ rows) on every page view (~1s each time).
+    // A FULLTEXT MATCH() was tried instead, but MariaDB's default parser
+    // doesn't segment CJK text and drops short (2-char) words entirely, so
+    // it silently returns far fewer/zero results for names like "鴻海" or
+    // "上銀". Caching keeps the exact same LIKE results but skips the scan
+    // on repeat views within the TTL.
+    $cacheDir = __DIR__ . '/cache/news';
+    $cacheFile = $cacheDir . '/' . md5($q) . '.json';
+    $ttl = 3600; // 1 hour; news doesn't need to be second-fresh
+
+    if (is_file($cacheFile) && (time() - filemtime($cacheFile) < $ttl)) {
+        $cached = json_decode(file_get_contents($cacheFile), true);
+        if (is_array($cached)) {
+            return $cached;
+        }
+    }
+
     $tok = $use_ngram ? $q : tokenize($q);
     $sql = "
         SELECT Id, Title, PublishedTime, UpdatedTime, ThumbnailUrl, Url
@@ -99,6 +117,11 @@ function searchNews(PDO $pdo, string $raw, int $limit = 10, bool $use_ngram = tr
     $st->bindValue(':lim',  $limit, PDO::PARAM_INT);
     $st->execute();
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
+    if (!is_dir($cacheDir)) {
+        @mkdir($cacheDir, 0777, true);
+    }
+    @file_put_contents($cacheFile, json_encode($rows, JSON_UNESCAPED_UNICODE));
 
     return $rows;
 }
@@ -1836,21 +1859,25 @@ foreach ($wordcloudData as $row) {
     }
 
         // --- 頁面初始化 ---
-        window.onload = () => {
+        // 改用 DOMContentLoaded 而非 window.onload：
+        // window.onload 要等頁面上「每一張圖片」(新聞縮圖、公司頭像等) 都下載完成才會觸發，
+        // 圖表資料其實在 PHP render 時就已經內嵌好了，不需要等圖片，
+        // 用 DOMContentLoaded 可以讓圖表在 DOM 準備好後立刻繪製，不必被慢圖片卡住。
+        document.addEventListener('DOMContentLoaded', () => {
             renderJobs();
-            initSalaryTrendChart(); 
+            initSalaryTrendChart();
             updateSafetyData();
-            updateChart('median');  
-            initEsgCharts();        
+            updateChart('median');
+            initEsgCharts();
             initComments3DSphere();
-            
+
             // 延遲繪製以確保容器已經佈局完成
             setTimeout(() => {
                 renderWordCloud();
                 initSliderDotsAndLabels();
                 window.dispatchEvent(new Event('scroll'));
-            }, 150); 
-        };
+            }, 150);
+        });
 
         window.addEventListener('resize', () => {
             renderWordCloud();
