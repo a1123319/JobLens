@@ -197,6 +197,10 @@ try {
                 href: "supply-chain/transportation-shipping.php",
                 name: "交通運輸及航運",
                 icon: "assets/transportation-shipping.svg",
+            },{
+                href: "supply-chain/textile.php",
+                name: "紡織",
+                icon: "assets/textile.svg",
             }
         ]
 

@@ -32,6 +32,8 @@ $category_links = [
     "汽電共生" => "supply-chain/cogeneration.php",
     "再生醫療" => "supply-chain/stemcell.php",
     "運動科技" => "supply-chain/sports-technology.php",
+    "製藥" => "supply-chain/pharma.php",
+    "紡織" => "supply-chain/textile.php",
 ];
 
 try {
