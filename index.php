@@ -221,6 +221,10 @@ try {
                 href: "supply-chain/vehicle.php",
                 name: "汽車",
                 icon: "assets/vehicle.png",
+            },{
+                href: "supply-chain/petrochemical-plastic-rubber.php",
+                name: "石化及塑橡膠",
+                icon: "assets/petrochemical-plastic-rubber.svg",
             }
         ]
 
