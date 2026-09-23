@@ -81,7 +81,7 @@ $downstreamSectors = [
                                 <?php else: ?>
                                 <div aria-disabled="true" class="relative z-10 flex w-full items-center gap-3 rounded-lg border border-slate-200 bg-slate-100 p-4 opacity-60 shadow-sm cursor-not-allowed">
                                     <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-slate-200 text-slate-400"><i class="<?= $icon ?>" aria-hidden="true"></i></span>
-                                    <span class="text-base font-bold text-slate-400"><?= $sector ?></span>
+                                    <span class="text-base font-bold text-slate-400"><?= $sector ?> (無上市公司)</span>
                                 </div>
                                 <?php endif; ?>
                             <?php endforeach; ?>
@@ -108,7 +108,7 @@ $downstreamSectors = [
                                 <div aria-disabled="true" class="flex w-full items-center gap-4 rounded-lg border border-slate-200 bg-slate-100 p-4 opacity-60 shadow-sm cursor-not-allowed">
                                     <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-slate-200 text-slate-400"><i class="<?= $icon ?>" aria-hidden="true"></i></span>
                                     <span class="flex flex-col">
-                                        <span class="text-base font-bold text-slate-400"><?= $sector ?></span>
+                                        <span class="text-base font-bold text-slate-400"><?= $sector ?> (無上市公司)</span>
                                         <span class="text-xs text-slate-400"><?= $desc ?></span>
                                     </span>
                                 </div>
