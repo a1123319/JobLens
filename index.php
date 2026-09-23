@@ -225,6 +225,10 @@ try {
                 href: "supply-chain/petrochemical-plastic-rubber.php",
                 name: "石化及塑橡膠",
                 icon: "assets/petrochemical-plastic-rubber.svg",
+            },{
+                href: "supply-chain/communication-network.php",
+                name: "通信網路",
+                icon: "assets/communication-network.svg",
             }
         ]
 
