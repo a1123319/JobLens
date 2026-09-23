@@ -74,7 +74,7 @@ $category = "連接器";
 
                                 <!-- 屏蔽項目（不可點擊） -->
                                 <div class="bg-slate-100 border border-slate-200 rounded-lg p-4 text-center cursor-not-allowed opacity-75">
-                                    <h5 class="font-bold text-slate-600 text-base">其他材料</h5>
+                                    <h5 class="font-bold text-slate-600 text-base">其他材料 (無上市公司)</h5>
                                     <span class="text-xs text-slate-400 block mt-0.5">(如鋅合金、陶瓷、玻璃)</span>
                                 </div>
                             </div>
@@ -97,7 +97,7 @@ $category = "連接器";
                                 <!-- 可點擊項目（大卡片） -->
                                 <div onclick="toggleCompanyList(companySectors, '連接器設計、組裝及製造', 'amber')"
                                      class="cursor-pointer bg-white border border-slate-200 hover:border-amber-400 hover:bg-amber-50 rounded-lg p-6 transition-all flex items-center justify-center text-center hover:-translate-y-1 shadow-sm h-full min-h-[220px]">
-                                    <h5 class="font-bold text-slate-800 text-lg leading-relaxed">連接器設計、<br>組裝及製造</h5>
+                                    <h5 class="font-bold text-slate-800 text-lg leading-relaxed">連接器設計、組裝及製造</h5>
                                 </div>
                             </div>
                         </div>
