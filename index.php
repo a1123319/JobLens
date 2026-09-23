@@ -230,6 +230,10 @@ try {
                 name: "石化及塑橡膠",
                 icon: "assets/petrochemical-plastic-rubber.svg",
             },{
+                href: "supply-chain/communication-network.php",
+                name: "通信網路",
+                icon: "assets/communication-network.svg",
+            },{
                 href: "supply-chain/led.php",
                 name: "LED照明",
                 icon: "assets/led.svg",
