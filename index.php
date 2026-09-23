@@ -74,6 +74,10 @@ try {
                 name: "半導體",
                 icon: "assets/chip.png",
             },{
+                href: "supply-chain/printed-circuit-board.php",
+                name: "印刷電路板",
+                icon: "assets/printed-circuit-board.png",
+            },{
                 href: "supply-chain/computer-peripherals.php",
                 name: "電腦周邊",
                 icon: "assets/pc.png",
@@ -229,6 +233,10 @@ try {
                 href: "supply-chain/communication-network.php",
                 name: "通信網路",
                 icon: "assets/communication-network.svg",
+            },{
+                href: "supply-chain/led.php",
+                name: "LED照明",
+                icon: "assets/led.svg",
             }
         ]
 
