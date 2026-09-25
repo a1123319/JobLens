@@ -1,7 +1,7 @@
 <?php
 require_once "search-component.php";
 
-$year = 2024;
+$year = 2025;
 
 // 1. Database Connection
 $host = 'localhost';
@@ -142,7 +142,7 @@ $stmt = $pdo->prepare("
            rs.OneHundredAndFour, rs.Official,
            m.FemaleManagerRatio
     FROM company c
-    LEFT JOIN salary s ON c.Id = s.CompanyId AND s.Year = 2024
+    LEFT JOIN salary s ON c.Id = s.CompanyId AND s.Year = $year
     LEFT JOIN companycategory cc ON c.Id = cc.CompanyId
     LEFT JOIN safetyrisk sr ON c.Id = sr.CompanyId
     LEFT JOIN ghgemissions ge ON c.Id = ge.CompanyId
@@ -172,7 +172,7 @@ $stmt->execute([$company['Id']]);
 $jobsList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Salary histories
-$stmt = $pdo->prepare("SELECT * FROM company c LEFT JOIN salary s ON c.Id = s.CompanyId WHERE c.Id = ? ORDER BY s.Year ASC");
+$stmt = $pdo->prepare("SELECT * FROM salary WHERE CompanyId = ? ORDER BY Year ASC");
 $stmt->execute([$company['Id']]);
 $salaries = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -185,7 +185,7 @@ $companies = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $stmt = $pdo->prepare("
     SELECT DISTINCT c.Name, c.Id, s.NonAdminstrativeMedian
     FROM company c
-    JOIN salary s ON c.Id = s.CompanyId AND s.Year = 2024
+    JOIN salary s ON c.Id = s.CompanyId AND s.Year = $year
     JOIN companycategory cc ON c.Id = cc.CompanyId
     WHERE cc.Sector = ?
     ORDER BY s.NonAdminstrativeMedian DESC
@@ -197,7 +197,7 @@ $medians = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $stmt = $pdo->prepare("
     SELECT DISTINCT c.Name, c.Id, s.NonAdminstrativeAverage
     FROM company c
-    JOIN salary s ON c.Id = s.CompanyId AND s.Year = 2024
+    JOIN salary s ON c.Id = s.CompanyId AND s.Year = $year
     JOIN companycategory cc ON c.Id = cc.CompanyId
     WHERE cc.Sector = ?
     ORDER BY s.NonAdminstrativeAverage DESC
@@ -217,6 +217,11 @@ $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // News
 $news = searchNews($pdo, $company['Name'], 10);
+
+// Nicknames
+$stmt = $pdo->prepare("SELECT * FROM Nickname WHERE CompanyId = ?");
+$stmt->execute([$company['Id']]);
+$nicknames = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Word cloud: use the per-term sentiment produced during comment review.
 // Change this version only after a complete re-analysis has been imported.
@@ -326,12 +331,18 @@ foreach ($wordcloudData as $row) {
         
         <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center border-l-8 border-cyan-600">
             <div class="w-full">
-                <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
-                    <h2 class="text-3xl font-bold text-slate-900">
-                        <?= htmlspecialchars($company['Name']); ?> (<?= htmlspecialchars($company['Id']); ?>)
-                    </h2>
-                    
-                    <div class="flex flex-wrap gap-2 items-center">
+                <div class="flex flex-col sm:flex-row items-start gap-3 mb-2">
+                    <div>
+                        <h2 class="text-3xl font-bold text-slate-900">
+                            <?= htmlspecialchars($company['Name']); ?> (<?= htmlspecialchars($company['Id']); ?>)
+                        </h2>
+                        <?php if (!empty($nicknames)): ?>
+                        <p class="text-slate-500 text-sm mt-2">
+                            <?= implode(" ", array_map(fn($n): string => $n["Name"], $nicknames)) ?>
+                        </p>
+                        <?php endif; ?>
+                    </div>
+                    <div class="flex flex-wrap gap-2 items-center mt-2">
                         <?php 
                         // 1. 撈取該公司所有關聯的產業類別
                         $catStmt = $pdo->prepare("SELECT DISTINCT Category FROM companycategory WHERE CompanyId = ?");
@@ -351,12 +362,12 @@ foreach ($wordcloudData as $row) {
                             $linkSlug = isset($category_links[$categoryName]) ? $category_links[$categoryName] : '';
                             $targetUrl = !empty($linkSlug) ? $linkSlug . "?id=$companyId" : "#";
                         ?>
-                            <a href="<?= $targetUrl ?>" 
-                            title="查看「<?= htmlspecialchars($categoryName) ?>」所屬產業鏈"
-                            class="bg-slate-100 hover:bg-cyan-600 text-slate-700 hover:text-white border border-slate-200 hover:border-cyan-600 px-2.5 py-1 rounded-md text-xs font-bold transition-all inline-flex items-center gap-1 shadow-sm group">
-                                <i class="fa-solid fa-link text-[10px] opacity-40 group-hover:opacity-100 group-hover:text-cyan-200 transition-opacity"></i>
-                                <span><?= htmlspecialchars($categoryName); ?></span>
-                            </a>
+                        <a href="<?= $targetUrl ?>" 
+                        title="查看「<?= htmlspecialchars($categoryName) ?>」所屬產業鏈"
+                        class="bg-slate-100 hover:bg-cyan-600 text-slate-700 hover:text-white border border-slate-200 hover:border-cyan-600 px-2.5 py-1 rounded-md text-xs font-bold transition-all inline-flex items-center gap-1 shadow-sm group">
+                            <i class="fa-solid fa-link text-[10px] opacity-40 group-hover:opacity-100 group-hover:text-cyan-200 transition-opacity"></i>
+                            <span><?= htmlspecialchars($categoryName); ?></span>
+                        </a>
                         <?php endforeach; ?>
                     </div>
                 </div>
@@ -378,7 +389,7 @@ foreach ($wordcloudData as $row) {
                                 <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center p-2.5 group-hover:scale-110 transition-transform">
                                     <img src="assets/work.png" class="w-full h-full object-contain">
                                 </div>
-                                <div><h4 class="font-bold text-base text-slate-800">「<?= $company['Name'] ?>」招募網站</h4><p class="text-xs text-slate-500">瀏覽最完整的職缺列表</p></div>
+                                <div><h4 class="font-bold text-base text-slate-800">「<?= $company['Name'] ?>」官方網站</h4><p class="text-xs text-slate-500">瀏覽更詳細的企業資訊</p></div>
                             </div>
                             <div class="text-slate-300 group-hover:text-cyan-600 transition-colors"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
                         </div>
@@ -388,7 +399,7 @@ foreach ($wordcloudData as $row) {
                         <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 shrink-0">
                             <i class="fa-solid fa-briefcase text-lg"></i>
                         </div>
-                        <p class="text-slate-500 font-bold text-sm">「<?= $company['Name'] ?>」沒有官網頁面</p>
+                        <p class="text-slate-500 font-bold text-sm">「<?= $company['Name'] ?>」沒有官方網站</p>
                     </div>
                     <?php endif ?>
                     <?php if (isset($company['OneHundredAndFour'])): ?>
@@ -423,7 +434,7 @@ foreach ($wordcloudData as $row) {
                         <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
                             <i class="fa-solid fa-briefcase text-2xl"></i>
                         </div>
-                        <p class="text-slate-500 font-bold">「<?= $company['Name'] ?>」沒有官網職缺頁面或 104 人力銀行頁面</p>
+                        <p class="text-slate-500 font-bold">「<?= $company['Name'] ?>」沒有官方網站或 104 人力銀行頁面</p>
                     </div>
                 </div>
                 <?php endif ?>
@@ -459,7 +470,10 @@ foreach ($wordcloudData as $row) {
             </div>
             <?php endif ?>
         </section>
-
+        <?php
+            $hasThisYearSalary = isset($company['NonAdminstrativeMedian']) || isset($company['NonAdminstrativeAverage']);
+            $hasSalary = !empty($salaries);
+        ?>
         <section id="section-salary" class="scroll-mt-24 relative">
             <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 薪資與福利透視
@@ -472,24 +486,45 @@ foreach ($wordcloudData as $row) {
                             近年薪資趨勢
                         </h4>
                     </div>
-                    <div class="w-full flex-1 min-h-[300px]">
+                    <div class="w-full flex-1">
+                        <?php if ($hasSalary): ?>
                         <canvas id="salary-trend-chart"></canvas>
+                        <?php else: ?>
+                        <div class="flex flex-col items-center justify-center h-full box-border py-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
+                            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                                <i class="fa-solid fa-dollar-sign text-2xl"></i>
+                            </div>
+                            <p class="text-slate-500 font-bold">「<?= $company["Name"]?>」未揭露薪資資訊</p>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="lg:col-span-1 flex flex-col gap-6">
                     <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100 flex-1 flex flex-col justify-center">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-md font-bold text-slate-700">年度薪資結構 (<?= $year ?>)</h4>
+                            <h4 class="text-md font-bold text-slate-700"><?= $year ?>年薪資結構</h4>
                             <span class="text-[10px] bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-bold">非主管全時員工</span>
                         </div>
                         <div class="flex flex-col gap-3">
                             <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
                                 <p class="text-slate-500 text-xs mb-1">平均數 (Mean)</p>
-                                <p class="text-2xl font-bold text-slate-700"><?= number_format($company['NonAdminstrativeAverage'] / 10000, 1); ?> <span class="text-sm font-normal text-slate-500">萬 / 年</span></p>
+                                <p class="text-2xl font-bold text-slate-700">
+                                <?php if (isset($company['NonAdminstrativeAverage'])): ?>
+                                    <?= number_format($company['NonAdminstrativeAverage'] / 10000, 1); ?><span class="text-sm font-normal text-slate-500">萬 / 年</span>
+                                <?php else: ?>
+                                    <span class="text-xl font-bold text-slant-600">未揭露</span>
+                                <?php endif; ?>
+                                </p>
                             </div>
                             <div class="bg-cyan-50 p-4 rounded-lg border border-cyan-200">
-                                <p class="text-cyan-800 text-xs mb-1 font-bold"><i class="fa-solid fa-bullseye"></i> 中位數 (Median)</p>
-                                <p class="text-2xl font-bold text-cyan-800"><?= number_format($company['NonAdminstrativeMedian'] / 10000, 1); ?> <span class="text-sm font-normal text-cyan-700">萬 / 年</span></p>
+                                <p class="text-cyan-800 text-xs mb-1"> 中位數 (Median)</p>
+                                <p class="text-2xl font-bold text-cyan-800">
+                                <?php if (isset($company['NonAdminstrativeMedian'])): ?>
+                                    <?= number_format($company['NonAdminstrativeMedian'] / 10000, 1); ?><span class="text-sm font-normal text-cyan-700">萬 / 年</span>
+                                <?php else: ?>
+                                    <span class="text-xl font-bold text-cyan-800">未揭露</span>
+                                <?php endif; ?>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -516,11 +551,11 @@ foreach ($wordcloudData as $row) {
         </section>
 
         <section id="section-rank" class="scroll-mt-24 relative">
-            <?php if (isset($company['NonAdminstrativeMedian']) || isset($company['NonAdminstrativeAverage'])): ?>
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                 <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 前 10 名薪資排名【<?= $company['Category'] ?> - <?= $company['Sector'] ?>】
+                    <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 前 10 名薪資排名<?php if  ($hasThisYearSalary) { echo "【{$company['Category']} - {$company['Sector']} 】"; } ?>
                 </h3>
+                <?php if ($hasThisYearSalary): ?>
                 <div class="flex flex-wrap items-center gap-3">
                     <div class="flex gap-1 bg-slate-100 p-1.5 rounded-lg border border-slate-200">
                         <button id="btn-median" onclick="updateChart('median')" class="px-4 py-1.5 text-sm font-bold rounded-md bg-white text-cyan-700 shadow-sm transition">中位數</button>
@@ -538,11 +573,14 @@ foreach ($wordcloudData as $row) {
                 </div>
             </div>
             <?php else: ?>
-            <div class="flex flex-col items-center justify-center py-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
-                <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
-                    <i class="fa-solid fa-briefcase text-2xl"></i>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-8">
+                <div class="flex flex-col items-center justify-center py-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
+                    <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                        <i class="fa-solid fa-dollar-sign text-2xl"></i>
+                    </div>
+                    <p class="text-slate-500 font-bold">「<?= "${company['Name'] }」未揭露${year}年的薪資資訊" ?></p>
                 </div>
-                <p class="text-slate-500 font-bold">「<?= $company['Name'] ?>」沒有揭露薪資資訊</p>
             </div>
             <?php endif ?>
         </section>
@@ -562,9 +600,10 @@ foreach ($wordcloudData as $row) {
                 ?>
                 <?php if (!empty($safetyYears)): ?>
                 <div class="relative">
+                    <span class="font-bold mr-2 inline-block">年度</span>
                     <select id="safety-year-select" onchange="updateSafetyData()" class="bg-white text-slate-700 text-sm font-bold py-2 pl-3 pr-8 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-600 cursor-pointer shadow-sm hover:bg-slate-50">
                         <?php foreach ($safetyYears as $safetyYear): ?>
-                        <option value="<?= $safetyYear ?>"><?= $safetyYear ?> 年 (民國<?= $safetyYear - 1911 ?>年)</option>
+                        <option value="<?= $safetyYear ?>"><?= $safetyYear ?>年</option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -572,8 +611,9 @@ foreach ($wordcloudData as $row) {
             </div>
             <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-8">
                 <div class="mb-6 pb-4 border-b border-slate-100">
-                    <h4 class="text-lg font-bold text-slate-700">職業災害與火災指標快篩</h4>
-                    <p class="text-slate-400 text-xs mt-1">資料來源：職業災害統計</p>
+                    <h4 class="text-lg font-bold text-slate-700">
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-fire text-red-500"></i>職業災害與火災指標快篩</span>
+                    </h4>
                 </div>
                 <?php if (!empty($safetyRecords)): ?>
                 <div class="flex flex-col md:flex-row gap-6 w-full">
@@ -748,9 +788,9 @@ foreach ($wordcloudData as $row) {
                         <?php else: ?>
                         <div class="flex flex-col items-center justify-center py-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
                             <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
-                                <i class="fa-solid fa-briefcase text-2xl"></i>
+                                <i class="fa-solid fa-leaf text-2xl"></i>
                             </div>
-                            <p class="text-slate-500 font-bold">「<?= $company['Name'] ?>」沒有揭露溫室氣體排放量資料</p>
+                            <p class="text-slate-500 font-bold">「<?= $company['Name'] ?>」未揭露溫室氣體排放量資料</p>
                         </div>
                         <?php endif ?>
                     </div>
@@ -810,9 +850,9 @@ foreach ($wordcloudData as $row) {
                         <?php else: ?>
                         <div class="flex flex-col items-center justify-center py-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
                             <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
-                                <i class="fa-solid fa-briefcase text-2xl"></i>
+                                <i class="fa-solid fa-leaf text-2xl"></i>
                             </div>
-                            <p class="text-slate-500 font-bold">「<?= $company['Name'] ?>」沒有揭露再生能源使用資料</p>
+                            <p class="text-slate-500 font-bold">「<?= $company['Name'] ?>」未揭露再生能源使用資料</p>
                         </div>
                         <?php endif ?>
                     </div>
@@ -935,7 +975,7 @@ foreach ($wordcloudData as $row) {
                     <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
                         <i class="fa-solid fa-newspaper text-2xl"></i>
                     </div>
-                    <p class="text-slate-500 font-bold">最近無相關新聞</p>
+                    <p class="text-slate-500 font-bold">「<?= $company['Name'] ?>」最近無相關新聞</p>
                 </div>
                 <?php endif ?>
             </div>
