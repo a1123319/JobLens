@@ -219,7 +219,7 @@ $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $news = searchNews($pdo, $company['Name'], 10);
 
 // Nicknames
-$stmt = $pdo->prepare("SELECT * FROM Nickname WHERE CompanyId = ?");
+$stmt = $pdo->prepare("SELECT * FROM nickname WHERE CompanyId = ?");
 $stmt->execute([$company['Id']]);
 $nicknames = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
