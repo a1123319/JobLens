@@ -1,6 +1,8 @@
 <?php
 require_once "search-component.php";
 
+$defaultUseSector = $_COOKIE["useSector"] ?? 0;
+
 $year = 2025;
 
 // 1. Database Connection
@@ -135,15 +137,13 @@ if (empty($companyId)) {
 
 // 3. Fetch Core Company Data (Search by Id or UniformId)
 $stmt = $pdo->prepare("
-    SELECT c.*, cc.Category, cc.Sector, cc.Subsector,
-           s.NonAdminstrativeAverage, s.NonAdminstrativeMedian,
+    SELECT c.*, s.NonAdminstrativeAverage, s.NonAdminstrativeMedian,
            ge.Scope1EmissionTonCO2e, ge.Scope2EmissionTonCO2e, ge.Scope3EmissionTonCO2e,
            em.RenewEnergyUsageRate,
            rs.OneHundredAndFour, rs.Official,
            m.FemaleManagerRatio
     FROM company c
     LEFT JOIN salary s ON c.Id = s.CompanyId AND s.Year = $year
-    LEFT JOIN companycategory cc ON c.Id = cc.CompanyId
     LEFT JOIN safetyrisk sr ON c.Id = sr.CompanyId
     LEFT JOIN ghgemissions ge ON c.Id = ge.CompanyId
     LEFT JOIN em ON c.Id = em.CompanyId
@@ -159,29 +159,27 @@ if (!$company) {
     exit;
 }
 
-// 4. Fetch Sub-data for JavaScript Arrays
-// Recruitment Jobs
+$catStmt = $pdo->prepare("SELECT DISTINCT Category, Sector FROM companycategory WHERE CompanyId = ?");
+$catStmt->execute([$company['Id']]);
+$categories = $catStmt->fetchAll(PDO::FETCH_ASSOC);
+
 $stmt = $pdo->prepare("SELECT * FROM safetyrisk WHERE CompanyId = ?");
 $stmt->execute([$company['Id']]);
 $safetyRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// 4. Fetch Sub-data for JavaScript Arrays
-// Recruitment Jobs
 $stmt = $pdo->prepare("SELECT Name, Url, Salary FROM recruitment WHERE CompanyId = ?");
 $stmt->execute([$company['Id']]);
 $jobsList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Salary histories
 $stmt = $pdo->prepare("SELECT * FROM salary WHERE CompanyId = ? ORDER BY Year ASC");
 $stmt->execute([$company['Id']]);
 $salaries = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Company list
 $stmt = $pdo->prepare("SELECT * FROM company");
 $stmt->execute();
 $companies = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Industry Rankings (Top 10 in same Sector)
+// Industry median rankings (Top 10 in same Sector)
 $stmt = $pdo->prepare("
     SELECT DISTINCT c.Name, c.Id, s.NonAdminstrativeMedian
     FROM company c
@@ -190,10 +188,10 @@ $stmt = $pdo->prepare("
     WHERE cc.Sector = ?
     ORDER BY s.NonAdminstrativeMedian DESC
 ");
-$stmt->execute([$company['Sector']]);
+$stmt->execute([$categories[0]['Sector']]);
 $medians = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Industry Rankings (Top 10 in same Sector)
+// Industry average rankings (Top 10 in same Sector)
 $stmt = $pdo->prepare("
     SELECT DISTINCT c.Name, c.Id, s.NonAdminstrativeAverage
     FROM company c
@@ -202,23 +200,19 @@ $stmt = $pdo->prepare("
     WHERE cc.Sector = ?
     ORDER BY s.NonAdminstrativeAverage DESC
 ");
-$stmt->execute([$company['Sector']]);
+$stmt->execute([$categories[0]['Sector']]);
 $averages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Disasters
 $stmt = $pdo->prepare("SELECT * FROM disaster WHERE BusinessUnitUniformId = ? OR ProjectOwnerUniformId  = ?");
 $stmt->execute([$company['UniformId'], $company['UniformId']]);
 $disasters = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Comments
 $stmt = $pdo->prepare("SELECT * FROM comment WHERE CompanyId = ?");
 $stmt->execute([$company['Id']]);
 $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// News
 $news = searchNews($pdo, $company['Name'], 10);
 
-// Nicknames
 $stmt = $pdo->prepare("SELECT * FROM nickname WHERE CompanyId = ?");
 $stmt->execute([$company['Id']]);
 $nicknames = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -295,6 +289,82 @@ foreach ($wordcloudData as $row) {
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
         .no-select { user-select: none; -webkit-user-select: none; }
+
+        .checkbox-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+          visibility: hidden;
+          display: none;
+        }
+  
+        .checkbox-wrapper .toggle {
+          position: relative;
+          display: inline-block;
+          width: 40px;
+          height: 20px;
+          cursor: pointer;
+          -webkit-tap-highlight-color: transparent;
+          transform: translate3d(0, 0, 0);
+        }
+        .checkbox-wrapper .toggle:before {
+          content: "";
+          position: relative;
+          top: 3px;
+          left: 3px;
+          width: 34px;
+          height: 14px;
+          display: block;
+          background: #9A9999;
+          border-radius: 8px;
+          transition: background 0.2s ease;
+        }
+        .checkbox-wrapper .toggle span {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 20px;
+          height: 20px;
+          display: block;
+          background: white;
+          border-radius: 10px;
+          box-shadow: 0 3px 8px rgba(154, 153, 153, 0.5);
+          transition: all 0.2s ease;
+        }
+        .checkbox-wrapper .toggle span:before {
+          content: "";
+          position: absolute;
+          display: block;
+          margin: -18px;
+          width: 56px;
+          height: 56px;
+          background: oklch(52% 0.105 223.128);
+          border-radius: 50%;
+          transform: scale(0);
+          opacity: 1;
+          pointer-events: none;
+        }
+  
+        .checkbox-wrapper input[type="checkbox"]:checked + .toggle:before {
+          background: oklch(71.5% 0.143 215.221);
+        }
+
+        .checkbox-wrapper input[type="checkbox"]:checked + .toggle span {
+          background: oklch(45% 0.085 224.283);
+          transform: translateX(20px);
+          transition: all 0.2s cubic-bezier(0.8, 0.4, 0.3, 1.25), background 0.15s ease;
+          box-shadow: 0 3px 8px rgba(79, 46, 220, 0.2);
+        }
+
+        .checkbox-wrapper input[type="checkbox"]:checked + .toggle span:before {
+          transform: scale(1);
+          opacity: 0;
+          transition: all 0.4s ease;
+        }
     </style>
 </head>
 <body class="text-slate-800 relative">
@@ -328,9 +398,13 @@ foreach ($wordcloudData as $row) {
     </header>
 
     <main class="container mx-auto px-4 py-8 space-y-16 max-w-6xl">
-        
-        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center border-l-8 border-cyan-600">
+        <div class="bg-white rounded-xl shadow-lg p-6 pt-2 flex flex-col md:flex-row justify-between items-start md:items-center border-l-8 border-cyan-600">
             <div class="w-full">
+                <div class="checkbox-wrapper">
+                    <span class="text-slant-600">子產業</span>
+                    <input type="checkbox" id="use-sector" <?= $defaultUseSector ? "checked" : "" ?> />
+                    <label for="use-sector" class="toggle"><span></span></label>
+                </div>
                 <div class="flex flex-col sm:flex-row items-start gap-3 mb-2">
                     <div>
                         <h2 class="text-3xl font-bold text-slate-900">
@@ -342,34 +416,7 @@ foreach ($wordcloudData as $row) {
                         </p>
                         <?php endif; ?>
                     </div>
-                    <div class="flex flex-wrap gap-2 items-center mt-2">
-                        <?php 
-                        // 1. 撈取該公司所有關聯的產業類別
-                        $catStmt = $pdo->prepare("SELECT DISTINCT Category FROM companycategory WHERE CompanyId = ?");
-                        $catStmt->execute([$company['Id']]);
-                        $categories = $catStmt->fetchAll(PDO::FETCH_ASSOC);
-
-                        // 若防呆找不到資料，則拿原先 $company 帶出的主資料作為 fallback
-                        if (empty($categories) && !empty($company['Category'])) {
-                            $categories = [['Category' => $company['Category']]];
-                        }
-
-                        // 2. 迭代輸出每一個產業類別標籤
-                        foreach ($categories as $cat): 
-                            $categoryName = $cat['Category'];
-                            
-                            // 根據 mapping 陣列取得對應網址
-                            $linkSlug = isset($category_links[$categoryName]) ? $category_links[$categoryName] : '';
-                            $targetUrl = !empty($linkSlug) ? $linkSlug . "?id=$companyId" : "#";
-                        ?>
-                        <a href="<?= $targetUrl ?>" 
-                        title="查看「<?= htmlspecialchars($categoryName) ?>」所屬產業鏈"
-                        class="bg-slate-100 hover:bg-cyan-600 text-slate-700 hover:text-white border border-slate-200 hover:border-cyan-600 px-2.5 py-1 rounded-md text-xs font-bold transition-all inline-flex items-center gap-1 shadow-sm group">
-                            <i class="fa-solid fa-link text-[10px] opacity-40 group-hover:opacity-100 group-hover:text-cyan-200 transition-opacity"></i>
-                            <span><?= htmlspecialchars($categoryName); ?></span>
-                        </a>
-                        <?php endforeach; ?>
-                    </div>
+                    <div id="category-tags" class="flex flex-wrap gap-2 items-center mt-2"></div>
                 </div>
                 <p class="text-slate-500 text-sm">資料年度：<?= $year ?> | 資料來源：公開資訊觀測站</p>
             </div>
@@ -379,7 +426,7 @@ foreach ($wordcloudData as $row) {
             <div>
                 <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 官方徵才管道
-                </h3>      
+                </h3>
                 <?php if (isset($company['Official']) || isset($company['OneHundredAndFour'])): ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <?php if (isset($company['Official'])): ?>
@@ -553,7 +600,7 @@ foreach ($wordcloudData as $row) {
         <section id="section-rank" class="scroll-mt-24 relative">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                 <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 前 10 名薪資排名<?php if  ($hasThisYearSalary) { echo "【{$company['Category']} - {$company['Sector']} 】"; } ?>
+                    <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 前 10 名薪資排名<?php if  ($hasThisYearSalary) { echo "【{$categories[0]['Category']} - {$categories[0]['Sector']} 】"; } ?>
                 </h3>
                 <?php if ($hasThisYearSalary): ?>
                 <div class="flex flex-wrap items-center gap-3">
@@ -1118,6 +1165,53 @@ foreach ($wordcloudData as $row) {
             });
         });
 
+        const tagDiv = document.getElementById("category-tags");
+        const useSectorCheckbox = document.getElementById("use-sector");
+        useSectorCheckbox.addEventListener("change", e => {
+            let tags = [];
+            tagDiv.innerHTML = "";
+
+            // expire in 30 days
+            document.cookie = `useSector=${e.target.checked ? 1 : 0}; max-age=2592000; path=/search.php`; e.target.checked
+
+            if (e.target.checked) {
+                tags = <?= json_encode(array_map(function ($cat) use ($category_links, $company) {
+                    $category = $cat['Category'];
+                    $sector = $cat['Sector'];
+                    $url = isset($category_links[$category]) ? "{$category_links[$category]}?id={$company['Id']}" : "#";
+
+                    return [
+                        "category" => $category, 
+                        "title" => "$category - $sector", 
+                        "url" => $url,
+                    ];
+                }, $categories)) ?>;
+            } else {
+                tags = <?= json_encode(array_map(function ($cat) use ($category_links, $company) {
+                    $category = $cat['Category'];
+                    $url = isset($category_links[$category]) ? "{$category_links[$category]}?id={$company['Id']}" : "#";
+                    return [
+                        "category" => $category,
+                        "title" => $category,
+                        "url" => $url,
+                    ];
+                }, $categories)) ?>.filter((val, index, self) => index === self.findIndex(t => t.category === val.category));
+            }
+
+            for (const tag of tags) {
+                tagDiv.innerHTML += `<a href="${tag.url}" 
+                title="查看${tag.category}產業鏈"
+                class="bg-slate-100 hover:bg-cyan-600 text-slate-700 hover:text-white border border-slate-200 hover:border-cyan-600 px-2.5 py-1 rounded-md text-xs font-bold transition-all inline-flex items-center gap-1 shadow-sm group">
+                    <i class="fa-solid fa-link text-[10px] opacity-40 group-hover:opacity-100 group-hover:text-cyan-200 transition-opacity"></i>
+                    <span>${tag.title}</span>
+                </a>`;
+            }
+
+            initSliderDotsAndLabels();
+        });
+
+        useSectorCheckbox.dispatchEvent(new Event("change"));
+
         // --- 1. 職缺資料 ---
         const jobData = <?= json_encode($jobsList) ?>;
 
@@ -1533,350 +1627,306 @@ foreach ($wordcloudData as $row) {
 
         // --- 7. 3D 輿情球體渲染器 (Interactive 3D Point-Cloud Sphere) ---
         const rawCommentsData = <?= json_encode($comments) ?>;
-        
+
         function initComments3DSphere() {
-        const canvas = document.getElementById('comments-sphere-canvas');
-        if (!canvas || !rawCommentsData || rawCommentsData.length === 0) return;
-        
-        const ctx = canvas.getContext('2d');
-        let width = 0, height = 0, cx = 0, cy = 0;
-        const R = 150; // Sphere radius
-        const D = 2.5; // Camera distance
-        
-        // Adjust canvas resolution for high-DPI displays
-        function resizeCanvas() {
-            const rect = canvas.parentNode.getBoundingClientRect();
-            width = rect.width;
-            height = rect.height;
-            canvas.width = width * window.devicePixelRatio;
-            canvas.height = height * window.devicePixelRatio;
-            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-            cx = width / 2;
-            cy = height / 2;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-        
-        // Distribute points on a sphere using Fibonacci Sphere distribution
-        const points = [];
-        const phi = Math.PI * (3 - Math.sqrt(5)); // Golden angle
-        const n = rawCommentsData.length;
-        
-        for (let i = 0; i < n; i++) {
-            // Guard divide-by-zero when there is only one comment (n === 1):
-            // place the single point at the sphere's equator (y = 0).
-            const y = n > 1 ? 1 - (i / (n - 1)) * 2 : 0; // goes from 1 to -1
-            const radiusAtY = Math.sqrt(1 - y * y);
-            const theta = phi * i;
-            const x = Math.cos(theta) * radiusAtY;
-            const z = Math.sin(theta) * radiusAtY;
-            
-            const commentObj = rawCommentsData[i];
-            
-            // --- 1. DETERMINE TONE AND BASE RGB COLORS ---
-            // 統一為系統主色 Cyan 藍色
-            let rgb = { r: 8, g: 145, b: 178 };
-            let sentimentType = 'neutral';
-            
-            points.push({
-                x: x, y: y, z: z,
-                comment: commentObj,
-                index: i + 1,
-                rgb: rgb,                       // Store color settings directly inside node
-                sentimentType: sentimentType,   // Cached helper for details tab mapping
-                hovered: false,
-                selected: false
-            });
-        }
-        
-        // Physics / Rotation speeds
-        let angleX = 0.001; 
-        let angleY = 0.0015; 
-        let targetAngleX = angleX;
-        let targetAngleY = angleY;
-        
-        // Drag and Hover interaction states
-        let isDraggingSphere = false;
-        let isMouseOverCanvas = false;
-        let lastMouseX = 0, lastMouseY = 0;
-        let mouseX = -9999, mouseY = -9999;
-        let hoveredPoint = null;
-        
-        // 3D rotation math
-        function rotateX(point, radians) {
-            const cos = Math.cos(radians);
-            const sin = Math.sin(radians);
-            const y1 = point.y * cos - point.z * sin;
-            const z1 = point.y * sin + point.z * cos;
-            point.y = y1; point.z = z1;
-        }
-        
-        function rotateY(point, radians) {
-            const cos = Math.cos(radians);
-            const sin = Math.sin(radians);
-            const x1 = point.x * cos + point.z * sin;
-            const z1 = -point.x * sin + point.z * cos;
-            point.x = x1; point.z = z1;
-        }
-        
-        // Details Panel elements
-        const placeholder = document.getElementById('comment-detail-placeholder');
-        const detailContent = document.getElementById('comment-detail-content');
-        const detailSource = document.getElementById('comment-detail-source');
-        const detailIndex = document.getElementById('comment-detail-index');
-        const detailLink = document.getElementById('comment-detail-link');
-        const detailText = document.getElementById('comment-detail-text');
-        const detailLength = document.getElementById('comment-detail-length');
-        const detailEmotion = document.getElementById('comment-emotion');
-        const cardContainer = document.getElementById('comment-detail-card');
-        
-        function selectComment(pt) {
-            if (!pt || !pt.comment) return;
-            
-            points.forEach(p => p.selected = (p === pt));
-            
-            cardContainer.classList.add('scale-[0.98]', 'opacity-80');
-            setTimeout(() => {
-                placeholder.classList.add('hidden');
-                detailContent.classList.remove('hidden');
-                detailContent.classList.add('flex');
-                
-                const commentObj = pt.comment;
-                const sourceVal = commentObj.Source || commentObj.source || 'Dcard';
-                const contentVal = commentObj.Content || commentObj.content || '';
-                const urlVal = commentObj.Url || commentObj.url || '';
-                
-                const isDcard = sourceVal.toUpperCase() === 'DCARD';
-                detailSource.innerText = isDcard ? 'Dcard' : 'PTT';
-                detailSource.className = isDcard 
-                    ? 'px-3 py-1 rounded-full text-xs font-bold shadow-sm bg-blue-100 text-blue-800' 
-                    : 'px-3 py-1 rounded-full text-xs font-bold shadow-sm bg-slate-800 text-white';
-                
-                detailIndex.innerText = `評論 #${pt.index}`;
-                
-                if (urlVal) {
-                    detailLink.href = urlVal;
-                    detailLink.classList.remove('hidden');
-                } else {
-                    detailLink.classList.add('hidden');
-                }
-                
-                detailText.textContent = contentVal;
-                detailLength.innerText = `長度: ${contentVal.length} 字`;
-                
-                // --- 2. UPDATE BOTTOM PANEL EMOTION INDICATOR DYNAMICALLY ---
-                detailEmotion.innerHTML = `<i class="fa-regular fa-comments text-cyan-600 mr-1"></i> 社群輿情觀測`;
-                
-                cardContainer.classList.remove('scale-[0.98]', 'opacity-80');
-            }, 100);
-        }
-        
-        // Render / Animation Loop
-        function animate() {
-            ctx.clearRect(0, 0, width, height);
-            
-            if (!isDraggingSphere) {
-                const targetSpeedX = isMouseOverCanvas ? 0 : 0.0008;
-                const targetSpeedY = isMouseOverCanvas ? 0 : 0.0012;
-                targetAngleX += (targetSpeedX - targetAngleX) * 0.05;
-                targetAngleY += (targetSpeedY - targetAngleY) * 0.05;
+            const canvas = document.getElementById('comments-sphere-canvas');
+            if (!canvas || !rawCommentsData || rawCommentsData.length === 0) return;
+
+            const ctx = canvas.getContext('2d');
+            let width = 0, height = 0, cx = 0, cy = 0;
+            const R = 150; // Sphere radius
+            const D = 2.5; // Camera distance
+
+            // Adjust canvas resolution for high-DPI displays
+            function resizeCanvas() {
+                const rect = canvas.parentNode.getBoundingClientRect();
+                width = rect.width;
+                height = rect.height;
+                canvas.width = width * window.devicePixelRatio;
+                canvas.height = height * window.devicePixelRatio;
+                ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+                cx = width / 2;
+                cy = height / 2;
             }
-            
-            angleX = targetAngleX;
-            angleY = targetAngleY;
-            
-            points.forEach(pt => {
-                rotateX(pt, angleX);
-                rotateY(pt, angleY);
-            });
-            
-            const sortedPoints = [...points].sort((a, b) => a.z - b.z);
-            hoveredPoint = null;
-            let minDistance = 15;
-            
-            sortedPoints.forEach(pt => {
-                const depthScale = D / (D - pt.z);
-                pt.px = cx + pt.x * R * depthScale;
-                pt.py = cy + pt.y * R * depthScale;
-                pt.radius = 4.5 * depthScale;
-                
-                if (pt.z > -0.3 && !isDraggingSphere && mouseX >= 0 && mouseY >= 0) {
-                    const dist = Math.hypot(pt.px - mouseX, pt.py - mouseY);
-                    if (dist < minDistance) {
-                        minDistance = dist;
-                        hoveredPoint = pt;
-                    }
-                }
-            });
-            
-            // Draw all elements in z-sorted order (back-to-front)
-            sortedPoints.forEach(pt => {
-                const depthScale = D / (D - pt.z);
-                const isHovered = (pt === hoveredPoint);
-                pt.hovered = isHovered;
-                
-                const baseAlpha = 0.15 + ((pt.z + 1) / 2) * 0.75;
-                
-                // --- 3. HARVEST EXTRACTED EMOTION RGB STRINGS FOR SPHERE RENDER ---
-                const r = pt.rgb.r;
-                const g = pt.rgb.g;
-                const b = pt.rgb.b;
-                
-                ctx.save();
-                
-                // Draw selection glow halo
-                if (pt.selected) {
-                    ctx.beginPath();
-                    ctx.arc(pt.px, pt.py, pt.radius * 3.5, 0, Math.PI * 2);
-                    const glowGrad = ctx.createRadialGradient(pt.px, pt.py, 0, pt.px, pt.py, pt.radius * 3.5);
-                    glowGrad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${baseAlpha * 0.6})`);
-                    glowGrad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-                    ctx.fillStyle = glowGrad;
-                    ctx.fill();
-                }
-                
-                // Draw outer hover halo
-                if (isHovered) {
-                    ctx.beginPath();
-                    ctx.arc(pt.px, pt.py, pt.radius * 2.5, 0, Math.PI * 2);
-                    ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${baseAlpha * 0.8})`;
-                    ctx.lineWidth = 1.5;
-                    ctx.stroke();
-                }
-                
-                // Draw point dot
-                ctx.beginPath();
-                ctx.arc(pt.px, pt.py, pt.radius * (isHovered ? 1.5 : 1), 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isHovered ? 1.0 : baseAlpha})`;
-                ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${isHovered ? 0.9 : baseAlpha * 0.5})`;
-                ctx.shadowBlur = isHovered ? 10 : 3;
-                ctx.fill();
-                ctx.restore();
-                
-                // Draw floating mini-label for hovered point
-                if (isHovered) {
-                    ctx.save();
-                    ctx.font = "bold 11px 'Noto Sans TC', sans-serif";
-                    ctx.fillStyle = "#ffffff";
-                    ctx.shadowColor = "rgba(0,0,0,0.8)";
-                    ctx.shadowBlur = 4;
-                    
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // Distribute points on a sphere using Fibonacci Sphere distribution
+            const points = [];
+            const phi = Math.PI * (3 - Math.sqrt(5)); // Golden angle
+            const n = rawCommentsData.length;
+
+            for (let i = 0; i < n; i++) {
+                // Guard divide-by-zero when there is only one comment (n === 1):
+                // place the single point at the sphere's equator (y = 0).
+                const y = n > 1 ? 1 - (i / (n - 1)) * 2 : 0; // goes from 1 to -1
+                const radiusAtY = Math.sqrt(1 - y * y);
+                const theta = phi * i;
+                const x = Math.cos(theta) * radiusAtY;
+                const z = Math.sin(theta) * radiusAtY;
+
+                const commentObj = rawCommentsData[i];
+
+                // --- 1. DETERMINE TONE AND BASE RGB COLORS ---
+                // 統一為系統主色 Cyan 藍色
+                let rgb = { r: 8, g: 145, b: 178 };
+                let sentimentType = 'neutral';
+
+                points.push({
+                    x: x, y: y, z: z,
+                    comment: commentObj,
+                    index: i + 1,
+                    rgb: rgb,                       // Store color settings directly inside node
+                    sentimentType: sentimentType,   // Cached helper for details tab mapping
+                    hovered: false,
+                    selected: false
+                });
+            }
+
+            // Physics / Rotation speeds
+            let angleX = 0.001; 
+            let angleY = 0.0015; 
+            let targetAngleX = angleX;
+            let targetAngleY = angleY;
+
+            // Drag and Hover interaction states
+            let isDraggingSphere = false;
+            let isMouseOverCanvas = false;
+            let lastMouseX = 0, lastMouseY = 0;
+            let mouseX = -9999, mouseY = -9999;
+            let hoveredPoint = null;
+
+            // 3D rotation math
+            function rotateX(point, radians) {
+                const cos = Math.cos(radians);
+                const sin = Math.sin(radians);
+                const y1 = point.y * cos - point.z * sin;
+                const z1 = point.y * sin + point.z * cos;
+                point.y = y1; point.z = z1;
+            }
+
+            function rotateY(point, radians) {
+                const cos = Math.cos(radians);
+                const sin = Math.sin(radians);
+                const x1 = point.x * cos + point.z * sin;
+                const z1 = -point.x * sin + point.z * cos;
+                point.x = x1; point.z = z1;
+            }
+
+            // Details Panel elements
+            const placeholder = document.getElementById('comment-detail-placeholder');
+            const detailContent = document.getElementById('comment-detail-content');
+            const detailSource = document.getElementById('comment-detail-source');
+            const detailIndex = document.getElementById('comment-detail-index');
+            const detailLink = document.getElementById('comment-detail-link');
+            const detailText = document.getElementById('comment-detail-text');
+            const detailLength = document.getElementById('comment-detail-length');
+            const detailEmotion = document.getElementById('comment-emotion');
+            const cardContainer = document.getElementById('comment-detail-card');
+
+            function selectComment(pt) {
+                if (!pt || !pt.comment) return;
+
+                points.forEach(p => p.selected = (p === pt));
+
+                cardContainer.classList.add('scale-[0.98]', 'opacity-80');
+                setTimeout(() => {
+                    placeholder.classList.add('hidden');
+                    detailContent.classList.remove('hidden');
+                    detailContent.classList.add('flex');
+
                     const commentObj = pt.comment;
                     const sourceVal = commentObj.Source || commentObj.source || 'Dcard';
+                    const contentVal = commentObj.Content || commentObj.content || '';
+                    const urlVal = commentObj.Url || commentObj.url || '';
+
                     const isDcard = sourceVal.toUpperCase() === 'DCARD';
-                    const labelText = isDcard ? `Dcard #${pt.index}` : `PTT #${pt.index}`;
-                    const textWidth = ctx.measureText(labelText).width;
-                    
-                    ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
-                    ctx.beginPath();
-                    if (ctx.roundRect) {
-                        ctx.roundRect(pt.px - textWidth/2 - 6, pt.py - pt.radius - 22, textWidth + 12, 18, 9);
+                    detailSource.innerText = isDcard ? 'Dcard' : 'PTT';
+                    detailSource.className = isDcard 
+                        ? 'px-3 py-1 rounded-full text-xs font-bold shadow-sm bg-blue-100 text-blue-800' 
+                        : 'px-3 py-1 rounded-full text-xs font-bold shadow-sm bg-slate-800 text-white';
+
+                    detailIndex.innerText = `評論 #${pt.index}`;
+
+                    if (urlVal) {
+                        detailLink.href = urlVal;
+                        detailLink.classList.remove('hidden');
                     } else {
-                        ctx.rect(pt.px - textWidth/2 - 6, pt.py - pt.radius - 22, textWidth + 12, 18);
+                        detailLink.classList.add('hidden');
                     }
-                    ctx.fill();
-                    
-                    ctx.fillStyle = "#e2e8f0";
-                    ctx.textAlign = "center";
-                    ctx.fillText(labelText, pt.px, pt.py - pt.radius - 9);
-                    ctx.restore();
+
+                    detailText.textContent = contentVal;
+                    detailLength.innerText = `長度: ${contentVal.length} 字`;
+
+                    // --- 2. UPDATE BOTTOM PANEL EMOTION INDICATOR DYNAMICALLY ---
+                    detailEmotion.innerHTML = `<i class="fa-regular fa-comments text-cyan-600 mr-1"></i> 社群輿情觀測`;
+
+                    cardContainer.classList.remove('scale-[0.98]', 'opacity-80');
+                }, 100);
+            }
+
+            // Render / Animation Loop
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+
+                if (!isDraggingSphere) {
+                    const targetSpeedX = isMouseOverCanvas ? 0 : 0.0008;
+                    const targetSpeedY = isMouseOverCanvas ? 0 : 0.0012;
+                    targetAngleX += (targetSpeedX - targetAngleX) * 0.05;
+                    targetAngleY += (targetSpeedY - targetAngleY) * 0.05;
                 }
-            });
-            
-            canvas.style.cursor = isDraggingSphere 
-                ? 'grabbing' 
-                : (hoveredPoint ? 'pointer' : 'grab');
-            
-            requestAnimationFrame(animate);
-        }
-        
-        // Interaction Event Listeners
-        function handleStart(x, y) {
-            isDraggingSphere = true;
-            isMouseOverCanvas = true;
-            lastMouseX = x;
-            lastMouseY = y;
-        }
-        
-        function handleMove(x, y) {
-            const rect = canvas.getBoundingClientRect();
-            mouseX = x - rect.left;
-            mouseX = x - rect.left;
-            mouseY = y - rect.top;
-            
-            if (isDraggingSphere) {
-                const dx = x - lastMouseX;
-                const dy = y - lastMouseY;
-                targetAngleY = dx * 0.007;
-                targetAngleX = -dy * 0.007;
+
+                angleX = targetAngleX;
+                angleY = targetAngleY;
+
+                points.forEach(pt => {
+                    rotateX(pt, angleX);
+                    rotateY(pt, angleY);
+                });
+
+                const sortedPoints = [...points].sort((a, b) => a.z - b.z);
+                hoveredPoint = null;
+                let minDistance = 15;
+
+                sortedPoints.forEach(pt => {
+                    const depthScale = D / (D - pt.z);
+                    pt.px = cx + pt.x * R * depthScale;
+                    pt.py = cy + pt.y * R * depthScale;
+                    pt.radius = 4.5 * depthScale;
+
+                    if (pt.z > -0.3 && !isDraggingSphere && mouseX >= 0 && mouseY >= 0) {
+                        const dist = Math.hypot(pt.px - mouseX, pt.py - mouseY);
+                        if (dist < minDistance) {
+                            minDistance = dist;
+                            hoveredPoint = pt;
+                        }
+                    }
+                });
+
+                // Draw all elements in z-sorted order (back-to-front)
+                sortedPoints.forEach(pt => {
+                    const depthScale = D / (D - pt.z);
+                    const isHovered = (pt === hoveredPoint);
+                    pt.hovered = isHovered;
+
+                    const baseAlpha = 0.15 + ((pt.z + 1) / 2) * 0.75;
+
+                    // --- 3. HARVEST EXTRACTED EMOTION RGB STRINGS FOR SPHERE RENDER ---
+                    const r = pt.rgb.r;
+                    const g = pt.rgb.g;
+                    const b = pt.rgb.b;
+
+                    ctx.save();
+
+                    // Draw selection glow halo
+                    if (pt.selected) {
+                        ctx.beginPath();
+                        ctx.arc(pt.px, pt.py, pt.radius * 3.5, 0, Math.PI * 2);
+                        const glowGrad = ctx.createRadialGradient(pt.px, pt.py, 0, pt.px, pt.py, pt.radius * 3.5);
+                        glowGrad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${baseAlpha * 0.6})`);
+                        glowGrad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+                        ctx.fillStyle = glowGrad;
+                        ctx.fill();
+                    }
+
+                    // Draw outer hover halo
+                    if (isHovered) {
+                        ctx.beginPath();
+                        ctx.arc(pt.px, pt.py, pt.radius * 2.5, 0, Math.PI * 2);
+                        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${baseAlpha * 0.8})`;
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+                    }
+
+                    // Draw point dot
+                    ctx.beginPath();
+                    ctx.arc(pt.px, pt.py, pt.radius * (isHovered ? 1.5 : 1), 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${isHovered ? 1.0 : baseAlpha})`;
+                    ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${isHovered ? 0.9 : baseAlpha * 0.5})`;
+                    ctx.shadowBlur = isHovered ? 10 : 3;
+                    ctx.fill();
+                    ctx.restore();
+
+                    // Draw floating mini-label for hovered point
+                    if (isHovered) {
+                        ctx.save();
+                        ctx.font = "bold 11px 'Noto Sans TC', sans-serif";
+                        ctx.fillStyle = "#ffffff";
+                        ctx.shadowColor = "rgba(0,0,0,0.8)";
+                        ctx.shadowBlur = 4;
+
+                        const commentObj = pt.comment;
+                        const sourceVal = commentObj.Source || commentObj.source || 'Dcard';
+                        const isDcard = sourceVal.toUpperCase() === 'DCARD';
+                        const labelText = isDcard ? `Dcard #${pt.index}` : `PTT #${pt.index}`;
+                        const textWidth = ctx.measureText(labelText).width;
+
+                        ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
+                        ctx.beginPath();
+                        if (ctx.roundRect) {
+                            ctx.roundRect(pt.px - textWidth/2 - 6, pt.py - pt.radius - 22, textWidth + 12, 18, 9);
+                        } else {
+                            ctx.rect(pt.px - textWidth/2 - 6, pt.py - pt.radius - 22, textWidth + 12, 18);
+                        }
+                        ctx.fill();
+
+                        ctx.fillStyle = "#e2e8f0";
+                        ctx.textAlign = "center";
+                        ctx.fillText(labelText, pt.px, pt.py - pt.radius - 9);
+                        ctx.restore();
+                    }
+                });
+
+                canvas.style.cursor = isDraggingSphere 
+                    ? 'grabbing' 
+                    : (hoveredPoint ? 'pointer' : 'grab');
+
+                requestAnimationFrame(animate);
+            }
+
+            // Interaction Event Listeners
+            function handleStart(x, y) {
+                isDraggingSphere = true;
+                isMouseOverCanvas = true;
                 lastMouseX = x;
                 lastMouseY = y;
             }
-        }
-        
-        canvas.addEventListener('mouseenter', () => { isMouseOverCanvas = true; });
-        canvas.addEventListener('mouseleave', () => {
-            isMouseOverCanvas = false;
-            mouseX = -9999; mouseY = -9999;
-        });
-        
-        canvas.addEventListener('mousedown', e => { handleStart(e.clientX, e.clientY); });
-        window.addEventListener('mousemove', e => { handleMove(e.clientX, e.clientY); });
-        window.addEventListener('mouseup', () => { isDraggingSphere = false; });
-        
-        canvas.addEventListener('click', e => {
-            if (isDraggingSphere) return;
-            const rect = canvas.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const clickY = e.clientY - rect.top;
-            
-            let clickedPt = null;
-            let minDist = 20;
-            
-            points.forEach(pt => {
-                if (pt.z > -0.3) {
-                    const dist = Math.hypot(pt.px - clickX, pt.py - clickY);
-                    if (dist < minDist) {
-                        minDist = dist;
-                        clickedPt = pt;
-                    }
+
+            function handleMove(x, y) {
+                const rect = canvas.getBoundingClientRect();
+                mouseX = x - rect.left;
+                mouseX = x - rect.left;
+                mouseY = y - rect.top;
+
+                if (isDraggingSphere) {
+                    const dx = x - lastMouseX;
+                    const dy = y - lastMouseY;
+                    targetAngleY = dx * 0.007;
+                    targetAngleX = -dy * 0.007;
+                    lastMouseX = x;
+                    lastMouseY = y;
                 }
+            }
+
+            canvas.addEventListener('mouseenter', () => { isMouseOverCanvas = true; });
+            canvas.addEventListener('mouseleave', () => {
+                isMouseOverCanvas = false;
+                mouseX = -9999; mouseY = -9999;
             });
-            
-            if (clickedPt) selectComment(clickedPt);
-        });
-        
-        // Mobile Touch support
-        canvas.addEventListener('touchstart', e => {
-            if (e.touches.length === 1) {
-                isMouseOverCanvas = true;
-                const touch = e.touches[0];
-                handleStart(touch.clientX, touch.clientY);
+
+            canvas.addEventListener('mousedown', e => { handleStart(e.clientX, e.clientY); });
+            window.addEventListener('mousemove', e => { handleMove(e.clientX, e.clientY); });
+            window.addEventListener('mouseup', () => { isDraggingSphere = false; });
+
+            canvas.addEventListener('click', e => {
+                if (isDraggingSphere) return;
                 const rect = canvas.getBoundingClientRect();
-                mouseX = touch.clientX - rect.left;
-                mouseY = touch.clientY - rect.top;
-            }
-        }, { passive: true });
-        
-        canvas.addEventListener('touchmove', e => {
-            if (e.touches.length === 1) {
-                const touch = e.touches[0];
-                handleMove(touch.clientX, touch.clientY);
-            }
-        }, { passive: true });
-        
-        canvas.addEventListener('touchend', e => {
-            isDraggingSphere = false;
-            isMouseOverCanvas = false;
-            if (e.changedTouches && e.changedTouches.length === 1) {
-                const touch = e.changedTouches[0];
-                const rect = canvas.getBoundingClientRect();
-                const clickX = touch.clientX - rect.left;
-                const clickY = touch.clientY - rect.top;
-                
+                const clickX = e.clientX - rect.left;
+                const clickY = e.clientY - rect.top;
+
                 let clickedPt = null;
-                let minDist = 25;
-                
+                let minDist = 20;
+
                 points.forEach(pt => {
                     if (pt.z > -0.3) {
                         const dist = Math.hypot(pt.px - clickX, pt.py - clickY);
@@ -1886,17 +1936,61 @@ foreach ($wordcloudData as $row) {
                         }
                     }
                 });
+
                 if (clickedPt) selectComment(clickedPt);
+            });
+
+            // Mobile Touch support
+            canvas.addEventListener('touchstart', e => {
+                if (e.touches.length === 1) {
+                    isMouseOverCanvas = true;
+                    const touch = e.touches[0];
+                    handleStart(touch.clientX, touch.clientY);
+                    const rect = canvas.getBoundingClientRect();
+                    mouseX = touch.clientX - rect.left;
+                    mouseY = touch.clientY - rect.top;
+                }
+            }, { passive: true });
+
+            canvas.addEventListener('touchmove', e => {
+                if (e.touches.length === 1) {
+                    const touch = e.touches[0];
+                    handleMove(touch.clientX, touch.clientY);
+                }
+            }, { passive: true });
+
+            canvas.addEventListener('touchend', e => {
+                isDraggingSphere = false;
+                isMouseOverCanvas = false;
+                if (e.changedTouches && e.changedTouches.length === 1) {
+                    const touch = e.changedTouches[0];
+                    const rect = canvas.getBoundingClientRect();
+                    const clickX = touch.clientX - rect.left;
+                    const clickY = touch.clientY - rect.top;
+
+                    let clickedPt = null;
+                    let minDist = 25;
+
+                    points.forEach(pt => {
+                        if (pt.z > -0.3) {
+                            const dist = Math.hypot(pt.px - clickX, pt.py - clickY);
+                            if (dist < minDist) {
+                                minDist = dist;
+                                clickedPt = pt;
+                            }
+                        }
+                    });
+                    if (clickedPt) selectComment(clickedPt);
+                }
+                mouseX = -9999; mouseY = -9999;
+            });
+
+            if (points.length > 0) {
+                setTimeout(() => { selectComment(points[0]); }, 500);
             }
-            mouseX = -9999; mouseY = -9999;
-        });
-        
-        if (points.length > 0) {
-            setTimeout(() => { selectComment(points[0]); }, 500);
+
+            animate();
         }
-        
-        animate();
-    }
 
         // --- 頁面初始化 ---
         // 改用 DOMContentLoaded 而非 window.onload：
