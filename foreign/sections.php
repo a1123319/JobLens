@@ -122,40 +122,61 @@ $fYear = $foreignLatestSalary['Year'] ?? null;
                 <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
                     <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 職業安全
                 </h3>
+                <?php if (!empty($foreignSafety)): ?>
+                <div class="relative">
+                    <span class="font-bold mr-2 inline-block">年度</span>
+                    <select id="foreign-safety-year" class="bg-white text-slate-700 text-sm font-bold py-2 pl-3 pr-8 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-600 cursor-pointer shadow-sm hover:bg-slate-50">
+                        <?php foreach (array_reverse($foreignSafety) as $fsRow): ?>
+                        <option value="<?= $fsRow['Year'] ?>"><?= $fsRow['Year'] ?>年</option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <?php endif ?>
             </div>
             <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-8">
                 <div class="mb-6 pb-4 border-b border-slate-100">
                     <h4 class="text-lg font-bold text-slate-700">
                         <span class="flex items-center gap-3"><i class="fa-solid fa-fire text-red-500"></i>職業災害指標</span>
                     </h4>
+                    <?php if (!empty($foreignSafety)): ?>
+                    <p class="text-xs text-slate-400 mt-2" id="foreign-safety-scope"></p>
+                    <?php endif ?>
                 </div>
-                <?php if (!empty($foreignSafety)):
-                    $fs = end($foreignSafety); ?>
+                <?php if (!empty($foreignSafety)): ?>
                 <div class="flex flex-col md:flex-row gap-6 w-full">
                     <div class="flex-1 bg-orange-50 p-6 rounded-xl border border-orange-100 flex flex-col items-center justify-center text-center">
                         <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mb-3 p-2.5">
                             <img src="assets/injury.png" class="w-full h-full object-contain">
                         </div>
-                        <h5 class="text-slate-500 text-xs font-bold mb-1 uppercase">可記錄職業傷害件數</h5>
-                        <p class="text-3xl font-bold text-slate-800"><?= isset($fs['RecordableCases']) ? number_format($fs['RecordableCases']) : '-' ?></p>
-                        <p class="text-xs text-slate-400 mt-2"><?= $fs['Year'] ?>年・美國據點</p>
+                        <h5 class="text-slate-500 text-xs font-bold mb-1 uppercase">可記錄職業傷病件數</h5>
+                        <p class="text-3xl font-bold text-slate-800" id="foreign-safety-cases">-</p>
+                        <p class="text-xs text-slate-400 mt-2" id="foreign-safety-dafw">-</p>
                     </div>
                     <div class="flex-1 bg-blue-50 p-6 rounded-xl border border-blue-100 flex flex-col items-center justify-center text-center">
                         <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-3 p-2.5">
                             <img src="assets/ratio.png" class="w-full h-full object-contain">
                         </div>
-                        <h5 class="text-slate-500 text-xs font-bold mb-1 uppercase">可記錄傷害率 (TRIR)</h5>
-                        <p class="text-3xl font-bold text-slate-800"><?= isset($fs['Trir']) ? number_format($fs['Trir'], 2) : '-' ?></p>
-                        <p class="text-xs text-slate-400 mt-2">每 20 萬工時</p>
+                        <h5 class="text-slate-500 text-xs font-bold mb-1 uppercase">可記錄傷病率 (TRIR)</h5>
+                        <p class="text-3xl font-bold text-slate-800" id="foreign-safety-trir">-</p>
+                        <p class="text-xs text-slate-400 mt-2">每 20 萬工時（約 100 名全職員工一年）</p>
+                    </div>
+                    <div class="flex-1 bg-red-50 p-6 rounded-xl border border-red-100 flex flex-col items-center justify-center text-center">
+                        <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-3 p-2.5">
+                            <i class="fa-solid fa-triangle-exclamation text-red-500 text-xl"></i>
+                        </div>
+                        <h5 class="text-slate-500 text-xs font-bold mb-1 uppercase">死亡人數</h5>
+                        <p class="text-3xl font-bold text-slate-800" id="foreign-safety-deaths">-</p>
+                        <p class="text-xs text-slate-400 mt-2">人</p>
                     </div>
                 </div>
+                <p class="text-xs text-slate-400 mt-6">資料來源：美國職業安全衛生署（OSHA）Form 300A。僅涵蓋需申報的美國據點；軟體、金融等產業的辦公室依規定免申報，因此不代表全球員工。計算方式與台灣職災比率不同，不宜直接比較。</p>
                 <?php else: ?>
                 <div class="flex flex-col items-center justify-center py-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl">
                     <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
                         <i class="fa-solid fa-fire text-2xl"></i>
                     </div>
                     <p class="text-slate-500 font-bold">「<?= $company["Name"]?>」尚無職業安全資料</p>
-                    <p class="text-slate-400 text-sm mt-2">台灣職災通報資料不涵蓋外國企業</p>
+                    <p class="text-slate-400 text-sm mt-2">台灣職災通報資料不涵蓋外國企業；美國 OSHA 資料中也查無此公司的申報據點</p>
                 </div>
                 <?php endif ?>
             </div>
@@ -260,8 +281,28 @@ $fYear = $foreignLatestSalary['Year'] ?? null;
             const rank = <?= json_encode($foreignRank, JSON_UNESCAPED_UNICODE) ?>;
             const targetId = <?= (int)$company['Id'] ?>;
             const scopes = <?= json_encode(array_map(fn($s) => $s[1] !== null ? (float)$s[1] : null, $fScopes)) ?>;
+            const safety = <?= json_encode(array_column($foreignSafety, null, 'Year')) ?>;
+            const n = v => v === null || v === undefined ? '-' : Math.round(v).toLocaleString();
+
+            function showSafety() {
+                const sel = document.getElementById('foreign-safety-year');
+                const d = sel && safety[sel.value];
+                if (!d) return;
+                document.getElementById('foreign-safety-cases').innerText = n(d.RecordableCases);
+                document.getElementById('foreign-safety-dafw').innerText = `其中需請假 ${n(d.DaysAwayCases)} 件`;
+                document.getElementById('foreign-safety-trir').innerText = d.Trir === null ? '無資料' : Number(d.Trir).toFixed(2);
+                document.getElementById('foreign-safety-deaths').innerText = n(d.Deaths);
+                document.getElementById('foreign-safety-scope').innerText =
+                    `美國 ${n(d.EstablishmentCount)} 個申報據點・年平均員工約 ${n(d.EmployeeCount)} 人`;
+            }
 
             document.addEventListener('DOMContentLoaded', () => {
+                const safetySelect = document.getElementById('foreign-safety-year');
+                if (safetySelect) {
+                    safetySelect.addEventListener('change', showSafety);
+                    showSafety();
+                }
+
                 const trendCanvas = document.getElementById('foreign-salary-trend-chart');
                 if (trendCanvas) {
                     const datasets = [];
