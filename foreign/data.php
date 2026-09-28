@@ -45,7 +45,7 @@ $foreignRankKey = null;
 if ($foreignLatestSalary) {
     $foreignRankKey = isset($foreignLatestSalary['MedianPay']) ? 'MedianPay' : 'AveragePay';
     $foreignRank = foreignQuery($pdo, "
-        SELECT c.Id, c.Name, s.Year, s.{$foreignRankKey} AS Pay
+        SELECT c.Id, c.Name, s.Year, s.Scope, s.{$foreignRankKey} AS Pay
         FROM foreignsalary s
         JOIN company c ON c.Id = s.CompanyId
         JOIN (

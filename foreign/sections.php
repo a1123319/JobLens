@@ -4,6 +4,8 @@
 $fSrc = $foreignSourceLabels[$foreignSalarySource] ?? null;
 $fCur = $foreignLatestSalary['Currency'] ?? 'USD';
 $fYear = $foreignLatestSalary['Year'] ?? null;
+// 申報主體是控股公司時，單體員工只有總部人員（foreignsalary.Scope = '控股總部'）
+$fHolding = ($foreignLatestSalary['Scope'] ?? null) === '控股總部';
 ?>
         <section id="section-salary" class="scroll-mt-24 relative">
             <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
@@ -38,9 +40,12 @@ $fYear = $foreignLatestSalary['Year'] ?? null;
                         <div class="flex justify-between items-center mb-4">
                             <h4 class="text-md font-bold text-slate-700"><?= $fYear ? "{$fYear}年" : '' ?>薪資結構</h4>
                             <?php if ($fSrc): ?>
-                            <span class="text-[10px] bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-bold"><?= $fSrc['scope'] ?></span>
+                            <span class="text-[10px] bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-bold"><?= $fHolding ? '僅控股公司總部員工' : $fSrc['scope'] ?></span>
                             <?php endif ?>
                         </div>
+                        <?php if ($fHolding): ?>
+                        <p class="text-xs text-slate-500 mb-3">申報公司為控股公司，數字只含總部員工，通常高於集團整體水準。</p>
+                        <?php endif ?>
                         <div class="flex flex-col gap-3">
                             <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
                                 <p class="text-slate-500 text-xs mb-1">平均數 (Mean)</p>
@@ -199,10 +204,13 @@ $fYear = $foreignLatestSalary['Year'] ?? null;
                             </div>
                         </div>
                         <?php
+                        // 範疇二以市場基準為主（反映綠電採購），地點基準列在下方供參考
+                        $fScope2Loc = $foreignEnvironment['Scope2LocationTonCO2e'] ?? null;
                         $fScopes = [
-                            ['直接排放 (範疇一)', $foreignEnvironment['Scope1EmissionTonCO2e'] ?? null],
-                            ['能源間接排放 (範疇二)', $foreignEnvironment['Scope2EmissionTonCO2e'] ?? null],
-                            ['其他間接排放 (範疇三)', $foreignEnvironment['Scope3EmissionTonCO2e'] ?? null],
+                            ['直接排放 (範疇一)', $foreignEnvironment['Scope1EmissionTonCO2e'] ?? null, null],
+                            ['能源間接排放 (範疇二・市場基準)', $foreignEnvironment['Scope2MarketTonCO2e'] ?? null,
+                                $fScope2Loc !== null ? '地點基準：' . formatNumber((int)$fScope2Loc) . ' 公噸' : null],
+                            ['其他間接排放 (範疇三)', $foreignEnvironment['Scope3EmissionTonCO2e'] ?? null, null],
                         ];
                         $fHasGhg = count(array_filter($fScopes, fn($s) => $s[1] !== null)) > 0;
                         ?>
@@ -212,13 +220,16 @@ $fYear = $foreignLatestSalary['Year'] ?? null;
                                 <canvas id="foreign-ghg-chart"></canvas>
                             </div>
                             <div class="space-y-3">
-                                <?php foreach ($fScopes as [$label, $value]): ?>
+                                <?php foreach ($fScopes as [$label, $value, $sub]): ?>
                                 <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
                                     <h4 class="text-sm font-bold text-emerald-700 mb-1"><?= $label ?></h4>
                                     <?php if ($value !== null): ?>
-                                    <p class="text-xl font-bold text-emerald-800 font-mono"><?= htmlspecialchars(formatNumber($value)) ?><span class="text-xl font-bold text-emerald-800 font-sans"> 公噸 CO₂e</span></p>
+                                    <p class="text-xl font-bold text-emerald-800 font-mono"><?= htmlspecialchars(formatNumber((int)$value)) ?><span class="text-xl font-bold text-emerald-800 font-sans"> 公噸 CO₂e</span></p>
                                     <?php else: ?>
                                     <p class="text-xl font-bold text-emerald-800">未揭露</p>
+                                    <?php endif ?>
+                                    <?php if ($sub): ?>
+                                    <p class="text-xs text-emerald-700/80 mt-1"><?= $sub ?></p>
                                     <?php endif ?>
                                 </div>
                                 <?php endforeach ?>
@@ -229,7 +240,7 @@ $fYear = $foreignLatestSalary['Year'] ?? null;
                             <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
                                 <i class="fa-solid fa-leaf text-2xl"></i>
                             </div>
-                            <p class="text-slate-500 font-bold">「<?= $company['Name'] ?>」未揭露溫室氣體排放量資料</p>
+                            <p class="text-slate-500 font-bold">尚未收錄「<?= $company['Name'] ?>」的溫室氣體排放量資料</p>
                         </div>
                         <?php endif ?>
                     </div>
@@ -242,18 +253,45 @@ $fYear = $foreignLatestSalary['Year'] ?? null;
                             </div>
                             <div>
                                 <h3 class="text-lg font-bold text-slate-800">再生能源使用概況</h3>
-                                <p class="text-xs text-slate-500">Renewable Energy Usage</p>
+                                <p class="text-xs text-slate-500">再生電力佔總用電比例<?= $foreignEnvironment ? "｜{$foreignEnvironment['Year']}年" : '' ?></p>
                             </div>
                         </div>
-                        <?php if (isset($foreignEnvironment['RenewEnergyUsageRate'])):
-                            $fRate = (float)$foreignEnvironment['RenewEnergyUsageRate']; ?>
-                        <div class="max-w-md mx-auto bg-slate-50 p-5 rounded-xl border border-slate-100">
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="font-bold text-emerald-700"><i class="fa-solid fa-leaf mr-1"></i>再生能源</span>
-                                <span class="font-bold text-emerald-700"><?= htmlspecialchars(formatPercentage($fRate, 2)) ?></span>
+                        <?php if (isset($foreignEnvironment['RenewableElectricityRate'])):
+                            $fRate = (float)$foreignEnvironment['RenewableElectricityRate']; ?>
+                        <!-- 與台灣公司相同的圓環圖版面（search.php 的 energyChart），canvas id 不同以免互相干擾 -->
+                        <div class="flex flex-col md:flex-row items-center justify-center gap-12">
+                            <div class="relative w-100 h-100">
+                                <canvas id="foreign-energy-chart"></canvas>
+                                <div class="absolute top-[50%] translate-y-[-50%] left-[196px] translate-x-[-50%] flex flex-col items-center justify-center pointer-events-none">
+                                    <span class="text-3xl font-bold text-emerald-600 font-mono"><?= htmlspecialchars(formatPercentage($fRate, 2)) ?></span>
+                                    <span class="text-xs text-slate-400 font-bold uppercase mt-1">再生電力比例</span>
+                                </div>
                             </div>
-                            <div class="w-full bg-emerald-100 rounded-full h-2">
-                                <div class="bg-emerald-500 h-2 rounded-full" style="width: <?= $fRate * 100 ?>%"></div>
+
+                            <div class="max-w-md space-y-6 w-full md:w-auto">
+                                <div class="bg-slate-50 p-5 rounded-xl border border-slate-100">
+                                    <h4 class="font-bold text-sm text-slate-500 mb-3">用電結構比例</h4>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <div class="flex justify-between text-sm mb-1">
+                                                <span class="font-bold text-emerald-700"><i class="fa-solid fa-leaf mr-1"></i>再生電力</span>
+                                                <span class="font-bold text-emerald-700"><?= htmlspecialchars(formatPercentage($fRate, 2)) ?></span>
+                                            </div>
+                                            <div class="w-full bg-emerald-100 rounded-full h-2">
+                                                <div class="bg-emerald-500 h-2 rounded-full" style="width: <?= $fRate * 100 ?>%"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="flex justify-between text-sm mb-1">
+                                                <span class="font-bold text-slate-600"><i class="fa-solid fa-industry mr-1"></i>其他電力</span>
+                                                <span class="font-bold text-slate-600"><?= htmlspecialchars(formatPercentage(1 - $fRate, 2)) ?></span>
+                                            </div>
+                                            <div class="w-full bg-slate-200 rounded-full h-2">
+                                                <div class="bg-slate-400 h-2 rounded-full" style="width: <?= 100 - $fRate * 100 ?>%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <?php else: ?>
@@ -261,11 +299,19 @@ $fYear = $foreignLatestSalary['Year'] ?? null;
                             <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
                                 <i class="fa-solid fa-leaf text-2xl"></i>
                             </div>
-                            <p class="text-slate-500 font-bold">「<?= $company['Name'] ?>」未揭露再生能源使用資料</p>
+                            <p class="text-slate-500 font-bold">尚未收錄「<?= $company['Name'] ?>」的再生能源使用資料</p>
                         </div>
                         <?php endif ?>
                     </div>
                 </div>
+                <?php if ($foreignEnvironment): ?>
+                <div class="text-xs text-slate-400 mt-8 pt-4 border-t border-slate-100 space-y-1">
+                    <?php if (!empty($foreignEnvironment['Note'])): ?>
+                    <p>說明：<?= htmlspecialchars($foreignEnvironment['Note']) ?></p>
+                    <?php endif ?>
+                    <p>資料來源：<a href="<?= htmlspecialchars($foreignEnvironment['SourceUrl']) ?>" target="_blank" class="underline hover:text-cyan-700">公司 <?= $foreignEnvironment['Year'] ?> 年度永續／環境報告</a>。各公司計算範圍與方法不同，不宜直接與台灣企業比較。</p>
+                </div>
+                <?php endif ?>
             </div>
         </section>
 
@@ -282,6 +328,7 @@ $fYear = $foreignLatestSalary['Year'] ?? null;
             const targetId = <?= (int)$company['Id'] ?>;
             const scopes = <?= json_encode(array_map(fn($s) => $s[1] !== null ? (float)$s[1] : null, $fScopes)) ?>;
             const safety = <?= json_encode(array_column($foreignSafety, null, 'Year')) ?>;
+            const renewableRate = <?= isset($foreignEnvironment['RenewableElectricityRate']) ? (float)$foreignEnvironment['RenewableElectricityRate'] : 'null' ?>;
             const n = v => v === null || v === undefined ? '-' : Math.round(v).toLocaleString();
 
             function showSafety() {
@@ -347,7 +394,7 @@ $fYear = $foreignLatestSalary['Year'] ?? null;
                     new Chart(rankCanvas.getContext('2d'), {
                         type: 'bar',
                         data: {
-                            labels: shown.map(d => `No.${d.pos} ${d.Name}`),
+                            labels: shown.map(d => `No.${d.pos} ${d.Name}${d.Scope === '控股總部' ? '（僅總部）' : ''}`),
                             datasets: [{
                                 data: shown.map(d => +d.Pay),
                                 backgroundColor: shown.map(d => isSelf(d) ? 'rgba(8, 145, 178, 0.8)' : 'rgba(203, 213, 225, 0.6)'),
@@ -361,6 +408,25 @@ $fYear = $foreignLatestSalary['Year'] ?? null;
                             scales: {
                                 y: { ticks: { color: c => tickColors[c.index], font: c => ({ weight: tickColors[c.index] === '#0891b2' ? 'bold' : 'normal' }) } },
                                 x: { display: false, grid: { color: '#f1f5f9' } }
+                            }
+                        }
+                    });
+                }
+
+                // 與 search.php 的 energyChart 相同設定
+                const energyCanvas = document.getElementById('foreign-energy-chart');
+                if (energyCanvas && renewableRate !== null) {
+                    new Chart(energyCanvas.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['再生電力', '其他電力'],
+                            datasets: [{ data: [renewableRate, 1 - renewableRate], backgroundColor: ['#10b981', '#e7e7e7'], borderWidth: 0, hoverOffset: 4 }]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false, cutout: '80%',
+                            plugins: {
+                                legend: { display: true, position: 'left', labels: { boxWidth: 12, padding: 15 } },
+                                tooltip: { callbacks: { label: (context) => (context.raw * 100).toFixed(2) + '%' } }
                             }
                         }
                     });
