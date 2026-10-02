@@ -414,7 +414,9 @@ foreach ($wordcloudData as $row) {
                 <div class="flex flex-col sm:flex-row items-start gap-3 mb-2">
                     <div>
                         <h2 class="text-3xl font-bold text-slate-900">
-                            <?= htmlspecialchars($company['Name']); ?> (<?= htmlspecialchars($company['Id']); ?>)
+                            <?php // 外國公司的 Id 是自編流水號，標題改顯示股票代碼 ?>
+                            <?php $displayCode = $isForeign ? ($foreignInfo['Ticker'] ?? null) : $company['Id']; ?>
+                            <?= htmlspecialchars($company['Name']); ?><?= $displayCode !== null ? ' (' . htmlspecialchars($displayCode) . ')' : '' ?>
                         </h2>
                         <?php if (!empty($nicknames)): ?>
                         <p class="text-slate-500 text-sm mt-2">

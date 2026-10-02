@@ -17,7 +17,6 @@ $foreignSourceLabels = [
     'SEC_PAYRATIO' => ['name' => '美國 SEC 股東會委託書', 'scope' => '全球員工（不含 CEO）'],
     'EDINET'       => ['name' => '日本有價證券報告書', 'scope' => '日本母公司員工'],
     'DART'         => ['name' => '韓國事業報告書', 'scope' => '韓國母公司員工'],
-    'H1B_LCA'      => ['name' => '美國 H-1B 薪資申報（LCA）', 'scope' => '僅美國 H-1B 職缺'],
 ];
 
 $foreignInfo = foreignQuery($pdo, "SELECT * FROM foreigncompany WHERE CompanyId = ?", [$company['Id']])[0] ?? null;
