@@ -11,18 +11,29 @@ function renderSearch(
     string $boxId = 'suggestionBox') {
     // 1. Fetch Company Data directly within the component
     try {
-        $stmt = $pdo->prepare("
-            SELECT 
-                c.Id, 
+        // Code 是顯示與搜尋用的代碼：外國公司（自編 Id）用股票代碼，其餘仍是 Id。
+        // foreigncompany 還沒建立的資料庫退回只用 Id 的寫法，搜尋不受影響。
+        $sql = "
+            SELECT
+                c.Id,
                 c.Name,
+                %s AS Code,
                 GROUP_CONCAT(DISTINCT cc.Category SEPARATOR ',') AS Category,
                 GROUP_CONCAT(DISTINCT n.Name SEPARATOR ' ') AS Nickname
-            FROM company c 
+            FROM company c
             JOIN companycategory cc ON c.Id = cc.CompanyId
             LEFT JOIN nickname n ON c.Id = n.CompanyId
-            GROUP BY c.Id, c.Name
-        ");
-        $stmt->execute();
+            %s
+            GROUP BY c.Id, c.Name%s
+        ";
+        try {
+            $stmt = $pdo->prepare(sprintf($sql, 'COALESCE(fc.Ticker, CAST(c.Id AS CHAR))',
+                'LEFT JOIN foreigncompany fc ON fc.CompanyId = c.Id', ', fc.Ticker'));
+            $stmt->execute();
+        } catch (PDOException $e) {
+            $stmt = $pdo->prepare(sprintf($sql, 'CAST(c.Id AS CHAR)', '', ''));
+            $stmt->execute();
+        }
         $companies = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
         echo "<p class='text-red-500'>Search component error: " . htmlspecialchars($e->getMessage()) . "</p>";
@@ -63,7 +74,7 @@ function renderSearch(
 
         const fuse = new Fuse(companyData, {
             keys: [
-                { name: 'Id', weight: 0.7 },
+                { name: 'Code', weight: 0.7 },
                 { name: 'Name', weight: 0.5 },
                 { name: 'Nickname', weight: 0.3 }
             ],
@@ -108,7 +119,7 @@ function renderSearch(
 
             if (/^\d+$/.test(query)) {
                 currentResults = companyData
-                    .filter(c => isSubsequence(query, String(c.Id)))
+                    .filter(c => isSubsequence(query, String(c.Code)))
                     .map(c => ({ item: c }));
             } else {
                 currentResults = fuse.search(query);
@@ -138,7 +149,7 @@ function renderSearch(
                 }
 
                 return `
-                    <div data-id="${item.Id}" data-name="${item.Name}"
+                    <div data-id="${item.Id}" data-code="${item.Code}" data-name="${item.Name}"
                          class="joblens-item p-4 hover:bg-slate-50 border-b border-slate-100 last:border-none cursor-pointer flex items-center justify-between transition-colors group">
                         <div class="flex flex-col text-left">
                             <span class="font-bold text-slate-700 group-hover:text-cyan-800">${item.Name}</span>
@@ -146,7 +157,7 @@ function renderSearch(
                         </div>
                         <div class="flex items-center gap-3 text-right">
                             ${categoryHtml}
-                            <span class="font-mono font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded text-sm">${item.Id}</span>
+                            <span class="font-mono font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded text-sm">${item.Code}</span>
                         </div>
                     </div>`;
             }).join('');
@@ -166,7 +177,8 @@ function renderSearch(
             if (row) {
                 const id = row.getAttribute('data-id');
                 const name = row.getAttribute('data-name');
-                searchInput.value = `${id} ${name}`;
+                const code = row.getAttribute('data-code');
+                searchInput.value = `${code} ${name}`;
                 suggestionBox.classList.add('hidden');
                 window.location.href = `search.php?id=${encodeURIComponent(id)}`;
             }
