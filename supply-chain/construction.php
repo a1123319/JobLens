@@ -867,7 +867,6 @@ $companyData = safeGetCompanies($category);
                                         <h5 class="font-bold text-slate-700 text-sm">建材原料</h5>
                                         <p class="text-xs text-slate-400 truncate">鋼鐵、水泥製品、玻璃等</p>
                                     </div>
-                                    <span class="text-xs text-slate-400 font-medium bg-slate-50 px-2 py-1 rounded border border-slate-100">14家</span>
                                 </div>
 
                                 <div onclick="showCompanyList('基礎工程', 'amber')" class="cursor-pointer bg-white border border-slate-200 hover:border-amber-400 hover:bg-amber-50 rounded-xl p-3.5 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-sm">
@@ -878,7 +877,6 @@ $companyData = safeGetCompanies($category);
                                         <h5 class="font-bold text-slate-700 text-sm">基礎工程</h5>
                                         <p class="text-xs text-slate-400 truncate">地基、鋼板樁、擋土工程</p>
                                     </div>
-                                    <span class="text-xs text-slate-400 font-medium bg-slate-50 px-2 py-1 rounded border border-slate-100">2家</span>
                                 </div>
 
                                 <div onclick="showCompanyList('結構工程', 'amber')" class="cursor-pointer bg-white border border-slate-200 hover:border-amber-400 hover:bg-amber-50 rounded-xl p-3.5 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-sm">
@@ -889,7 +887,6 @@ $companyData = safeGetCompanies($category);
                                         <h5 class="font-bold text-slate-700 text-sm">結構工程</h5>
                                         <p class="text-xs text-slate-400 truncate">鋼構主體、預鑄梁柱</p>
                                     </div>
-                                    <span class="text-xs text-slate-400 font-medium bg-slate-50 px-2 py-1 rounded border border-slate-100">5家</span>
                                 </div>
 
                                 <div onclick="showCompanyList('機電工程', 'amber')" class="cursor-pointer bg-white border border-slate-200 hover:border-amber-400 hover:bg-amber-50 rounded-xl p-3.5 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-sm">
@@ -900,7 +897,6 @@ $companyData = safeGetCompanies($category);
                                         <h5 class="font-bold text-slate-700 text-sm">機電工程</h5>
                                         <p class="text-xs text-slate-400 truncate">水電系統、配電空調設施</p>
                                     </div>
-                                    <span class="text-xs text-slate-400 font-medium bg-slate-50 px-2 py-1 rounded border border-slate-100">8家</span>
                                 </div>
 
                                 <div onclick="showCompanyList('工程設計', 'amber')" class="cursor-pointer bg-white border border-slate-200 hover:border-amber-400 hover:bg-amber-50 rounded-xl p-3.5 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-sm">
@@ -911,7 +907,6 @@ $companyData = safeGetCompanies($category);
                                         <h5 class="font-bold text-slate-700 text-sm">工程設計</h5>
                                         <p class="text-xs text-slate-400 truncate">建築規劃與結構設計</p>
                                     </div>
-                                    <span class="text-xs text-slate-400 font-medium bg-slate-50 px-2 py-1 rounded border border-slate-100">2家</span>
                                 </div>
                             </div>
                         </div>
@@ -934,7 +929,6 @@ $companyData = safeGetCompanies($category);
                                         <h5 class="font-bold text-slate-700 text-sm">營造業</h5>
                                         <p class="text-xs text-slate-400 truncate">土木工程與各類建築主體營造</p>
                                     </div>
-                                    <span class="text-xs text-slate-400 font-medium bg-slate-50 px-2 py-1 rounded border border-slate-100">13家</span>
                                 </div>
 
                                 <div onclick="showCompanyList('建設業', 'orange')" class="cursor-pointer bg-gradient-to-br from-orange-500 to-amber-600 text-white rounded-xl p-4 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-lg shadow-orange-100 hover:shadow-xl">
@@ -945,7 +939,6 @@ $companyData = safeGetCompanies($category);
                                         <h5 class="font-bold text-white text-sm">建設業 (核心開發)</h5>
                                         <p class="text-xs text-orange-100 truncate">土地開發、住宅及商辦開發案</p>
                                     </div>
-                                    <span class="text-xs bg-white/30 text-white font-bold px-2 py-1 rounded">54家</span>
                                 </div>
 
                                 <div onclick="showCompanyList('工程承攬', 'orange')" class="cursor-pointer bg-white border border-slate-200 hover:border-orange-400 hover:bg-orange-50 rounded-xl p-4 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-sm">
@@ -956,7 +949,6 @@ $companyData = safeGetCompanies($category);
                                         <h5 class="font-bold text-slate-700 text-sm">工程承攬</h5>
                                         <p class="text-xs text-slate-400 truncate">大型統包工程、公共及廠房承攬</p>
                                     </div>
-                                    <span class="text-xs text-slate-400 font-medium bg-slate-50 px-2 py-1 rounded border border-slate-100">11家</span>
                                 </div>
                             </div>
                         </div>
@@ -979,7 +971,6 @@ $companyData = safeGetCompanies($category);
                                         <h5 class="font-bold text-slate-700 text-sm">民間企業與政府機構</h5>
                                         <p class="text-xs text-slate-400 truncate">終端買方、公共建設主體</p>
                                     </div>
-                                    <span class="text-xs text-slate-400 font-medium bg-slate-50 px-2 py-1 rounded border border-slate-100">1家</span>
                                 </div>
 
                                 <div onclick="showCompanyList('裝潢業', 'emerald')" class="cursor-pointer bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50 rounded-xl p-3.5 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-sm">
@@ -990,7 +981,6 @@ $companyData = safeGetCompanies($category);
                                         <h5 class="font-bold text-slate-700 text-sm">裝潢業</h5>
                                         <p class="text-xs text-slate-400 truncate">室內裝修、空間設計施工</p>
                                     </div>
-                                    <span class="text-xs text-slate-400 font-medium bg-slate-50 px-2 py-1 rounded border border-slate-100">3家</span>
                                 </div>
 
                                 <div onclick="showCompanyList('物業管理', 'emerald')" class="cursor-pointer bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50 rounded-xl p-3.5 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-sm">
@@ -1001,7 +991,6 @@ $companyData = safeGetCompanies($category);
                                         <h5 class="font-bold text-slate-700 text-sm">物業管理</h5>
                                         <p class="text-xs text-slate-400 truncate">大樓保全、維運及物業服務</p>
                                     </div>
-                                    <span class="text-xs text-slate-400 font-medium bg-slate-50 px-2 py-1 rounded border border-slate-100">6家</span>
                                 </div>
                             </div>
                         </div>
