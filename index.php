@@ -237,6 +237,10 @@ try {
                 href: "supply-chain/led.php",
                 name: "LED照明",
                 icon: "assets/led.svg",
+            },{
+                href: "supply-chain/construction.php",
+                name: "建材營造",
+                icon: "assets/construction.png",
             }
         ]
 
