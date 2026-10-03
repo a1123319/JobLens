@@ -921,27 +921,43 @@ $companyData = safeGetCompanies($category);
                             </div>
                             
                             <div class="flex flex-col gap-3">
-                                <div onclick="showCompanyList('營造業', 'orange')" class="cursor-pointer bg-white border border-slate-200 hover:border-orange-400 hover:bg-orange-50 rounded-xl p-4 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-sm">
-                                    <div class="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center text-lg flex-shrink-0">
-                                        <i class="fa-solid fa-helmet-safety"></i>
+                                <!-- 上半部：營造業 -> 建設業 -->
+                                <div class="grid grid-cols-1 md:grid-cols-11 gap-2 items-center">
+                                    <div class="md:col-span-5">
+                                        <div onclick="showCompanyList('營造業', 'orange')" class="cursor-pointer bg-white border border-slate-200 hover:border-orange-400 hover:bg-orange-50 rounded-xl p-3.5 transition-all flex items-center gap-3 hover:-translate-y-0.5 shadow-sm h-full">
+                                            <div class="w-9 h-9 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center text-base flex-shrink-0">
+                                                <i class="fa-solid fa-helmet-safety"></i>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <h5 class="font-bold text-slate-700 text-sm">營造業</h5>
+                                                <p class="text-[11px] text-slate-400 truncate">土木工程與建築營造</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h5 class="font-bold text-slate-700 text-sm">營造業</h5>
-                                        <p class="text-xs text-slate-400 truncate">土木工程與各類建築主體營造</p>
+
+                                    <!-- 營造業 -> 建設業 箭頭 -->
+                                    <div class="md:col-span-1 flex justify-center items-center py-1">
+                                        <div class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold shadow-xs">
+                                            <i class="fa-solid fa-chevron-right hidden md:block"></i>
+                                            <i class="fa-solid fa-chevron-down md:hidden"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="md:col-span-5">
+                                        <div onclick="showCompanyList('建設業', 'orange')" class="cursor-pointer bg-gradient-to-br from-orange-500 to-amber-600 text-white rounded-xl p-3.5 transition-all flex items-center gap-3 hover:-translate-y-0.5 shadow-lg shadow-orange-100 hover:shadow-xl h-full">
+                                            <div class="w-9 h-9 rounded-lg bg-white/20 text-white flex items-center justify-center text-base flex-shrink-0">
+                                                <i class="fa-solid fa-building"></i>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <h5 class="font-bold text-white text-sm">建設業</h5>
+                                                <p class="text-[11px] text-orange-100 truncate">土地開發與商辦建案</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div onclick="showCompanyList('建設業', 'orange')" class="cursor-pointer bg-gradient-to-br from-orange-500 to-amber-600 text-white rounded-xl p-4 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-lg shadow-orange-100 hover:shadow-xl">
-                                    <div class="w-10 h-10 rounded-lg bg-white/20 text-white flex items-center justify-center text-lg flex-shrink-0">
-                                        <i class="fa-solid fa-building"></i>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h5 class="font-bold text-white text-sm">建設業 (核心開發)</h5>
-                                        <p class="text-xs text-orange-100 truncate">土地開發、住宅及商辦開發案</p>
-                                    </div>
-                                </div>
-
-                                <div onclick="showCompanyList('工程承攬', 'orange')" class="cursor-pointer bg-white border border-slate-200 hover:border-orange-400 hover:bg-orange-50 rounded-xl p-4 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-sm">
+                                <!-- 下半部：工程承攬 (寬版) -->
+                                <div onclick="showCompanyList('工程承攬', 'orange')" class="cursor-pointer bg-white border border-slate-200 hover:border-orange-400 hover:bg-orange-50 rounded-xl p-3.5 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-sm mt-1">
                                     <div class="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center text-lg flex-shrink-0">
                                         <i class="fa-solid fa-file-signature"></i>
                                     </div>
@@ -963,35 +979,52 @@ $companyData = safeGetCompanies($category);
                             </div>
                             
                             <div class="flex flex-col gap-3">
-                                <div onclick="showCompanyList('個人、民間企業、政府機構', 'emerald')" class="cursor-pointer bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50 rounded-xl p-3.5 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-sm">
-                                    <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0">
+                                <!-- 上方：個人、民間企業、政府機構 -->
+                                <div onclick="showCompanyList('個人、民間企業、政府機構', 'emerald')" class="cursor-pointer bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-xl p-4 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-md shadow-emerald-100 hover:shadow-lg">
+                                    <div class="w-10 h-10 rounded-lg bg-white/20 text-white flex items-center justify-center text-lg flex-shrink-0">
                                         <i class="fa-solid fa-landmark"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <h5 class="font-bold text-slate-700 text-sm">民間企業與政府機構</h5>
-                                        <p class="text-xs text-slate-400 truncate">終端買方、公共建設主體</p>
+                                        <h5 class="font-bold text-white text-sm">個人、民間企業、政府機構</h5>
+                                        <p class="text-xs text-emerald-100 truncate">終端買方、公共建設主體</p>
                                     </div>
                                 </div>
 
-                                <div onclick="showCompanyList('裝潢業', 'emerald')" class="cursor-pointer bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50 rounded-xl p-3.5 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-sm">
-                                    <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0">
-                                        <i class="fa-solid fa-paint-roller"></i>
+                                <!-- 下方：裝潢業與物業管理，各帶往上的箭頭 -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                                    <!-- 裝潢業 (含往上箭頭) -->
+                                    <div class="flex flex-col items-center gap-1.5">
+                                        <div class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold shadow-xs">
+                                            <i class="fa-solid fa-chevron-up"></i>
+                                        </div>
+                                        <div onclick="showCompanyList('裝潢業', 'emerald')" class="w-full cursor-pointer bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50 rounded-xl p-3 transition-all flex flex-col items-center text-center gap-2 hover:-translate-y-0.5 shadow-sm">
+                                            <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-base">
+                                                <i class="fa-solid fa-paint-roller"></i>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <h5 class="font-bold text-slate-700 text-sm">裝潢業</h5>
+                                                <p class="text-[11px] text-slate-400 truncate">室內裝修施工</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h5 class="font-bold text-slate-700 text-sm">裝潢業</h5>
-                                        <p class="text-xs text-slate-400 truncate">室內裝修、空間設計施工</p>
+
+                                    <!-- 物業管理 (含往上箭頭) -->
+                                    <div class="flex flex-col items-center gap-1.5">
+                                        <div class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold shadow-xs">
+                                            <i class="fa-solid fa-chevron-up"></i>
+                                        </div>
+                                        <div onclick="showCompanyList('物業管理', 'emerald')" class="w-full cursor-pointer bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50 rounded-xl p-3 transition-all flex flex-col items-center text-center gap-2 hover:-translate-y-0.5 shadow-sm">
+                                            <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-base">
+                                                <i class="fa-solid fa-key"></i>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <h5 class="font-bold text-slate-700 text-sm">物業管理</h5>
+                                                <p class="text-[11px] text-slate-400 truncate">大樓保全與維運</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div onclick="showCompanyList('物業管理', 'emerald')" class="cursor-pointer bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50 rounded-xl p-3.5 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-sm">
-                                    <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0">
-                                        <i class="fa-solid fa-key"></i>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h5 class="font-bold text-slate-700 text-sm">物業管理</h5>
-                                        <p class="text-xs text-slate-400 truncate">大樓保全、維運及物業服務</p>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
