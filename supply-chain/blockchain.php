@@ -184,13 +184,14 @@ $category = "區塊鏈";
                         <div
                             class="bg-slate-50 rounded-xl p-5 border border-slate-200 h-full shadow-sm hover:shadow-md transition-shadow">
                             <div class="flex flex-col gap-3">
-                                <div class="bg-slate-100 opacity-60 border border-slate-200 rounded-lg p-3 flex items-center gap-3 shadow-sm cursor-not-allowed">
+                                <div onclick="toggleCompanyList(companySectors, '運算晶片', 'indigo')"
+                                    class="cursor-pointer bg-white border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 rounded-lg p-3 transition-all flex items-center gap-3 hover:-translate-y-1 shadow-sm">
                                     <div
-                                        class="w-9 h-9 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-base flex-shrink-0">
+                                        class="w-9 h-9 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center text-base flex-shrink-0">
                                         <i class="fa-solid fa-microchip"></i>
                                     </div>
                                     <div class="text-left">
-                                        <h6 class="font-bold text-slate-400 text-sm">運算晶片 (無上市公司)</h6>
+                                        <h6 class="font-bold text-slate-700 text-sm">運算晶片</h6>
                                     </div>
                                 </div>
                                 <div onclick="toggleCompanyList(companySectors, '元件裝置', 'indigo')"
@@ -203,13 +204,14 @@ $category = "區塊鏈";
                                         <h6 class="font-bold text-slate-700 text-sm">元件裝置</h6>
                                     </div>
                                 </div>
-                                <div class="bg-slate-100 opacity-60 border border-slate-200 rounded-lg p-3 flex items-center gap-3 shadow-sm cursor-not-allowed">
+                                <div onclick="toggleCompanyList(companySectors, '節點服務', 'indigo')"
+                                    class="cursor-pointer bg-white border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 rounded-lg p-3 transition-all flex items-center gap-3 hover:-translate-y-1 shadow-sm">
                                     <div
-                                        class="w-9 h-9 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-base flex-shrink-0">
+                                        class="w-9 h-9 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center text-base flex-shrink-0">
                                         <i class="fa-solid fa-network-wired"></i>
                                     </div>
                                     <div class="text-left">
-                                        <h6 class="font-bold text-slate-400 text-sm">節點服務 (無上市公司)</h6>
+                                        <h6 class="font-bold text-slate-700 text-sm">節點服務</h6>
                                     </div>
                                 </div>
                             </div>

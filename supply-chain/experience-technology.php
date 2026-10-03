@@ -17,6 +17,13 @@ $category = "體驗科技";
         
         // 體驗科技專屬的 Icon Map 配置
         const iconMap = new Map([
+            ["處理器/IC", new Map([
+                ["IC", "fa-solid fa-microchip text-teal-500"],
+                ["SoC", "fa-solid fa-microchip text-emerald-500"],
+                ["HPU", "fa-solid fa-cube text-blue-500"],
+                ["GPU", "fa-solid fa-cube text-lime-500"],
+                ["CPU", "fa-solid fa-desktop text-amber-500"],
+            ])],
             ["近眼顯示", new Map([
                 ["光學元件/模組", "fa-solid fa-glasses text-teal-500"],
                 ["微型顯示器/光機引擎(LightEngine)", "fa-solid fa-vr-cardboard text-emerald-500"]
@@ -27,7 +34,10 @@ $category = "體驗科技";
                 ["SLAM", "fa-solid fa-location-dot text-indigo-500"],
                 ["使用者感知", "fa-solid fa-user-gear text-teal-600"],
                 ["視覺", "fa-solid fa-eye text-sky-500"],
-                ["手勢/動作", "fa-solid fa-hand-pointer text-amber-500"]
+                ["手勢/動作", "fa-solid fa-hand-pointer text-amber-500"],
+                ["其他", "fa-solid fa-ellipsis text-purple-500"],
+                ["觸覺", "fa-solid fa-hand-point-left text-pink-500"],
+                ["語音", "fa-solid fa-microphone text-slant-500"],
             ])],
             ["其他零組件", new Map([
                 ["其他", "fa-solid fa-microchip text-slate-500"],
@@ -87,17 +97,14 @@ $category = "體驗科技";
                     <div class="lg:col-span-3 bg-slate-100/70 p-5 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-3">
                         <h3 class="text-center font-bold text-slate-700 pb-2 border-b border-slate-200">關鍵硬體零組件</h3>
                         
-                        <!-- 屏蔽：處理器/IC (無上市公司) -->
-                        <div class="w-full bg-slate-200/60 border border-slate-300 py-3 px-3 rounded-xl font-bold text-slate-400 shadow-sm flex items-center gap-3 cursor-not-allowed">
-                            <div class="w-9 h-9 rounded-full bg-slate-300/60 text-slate-400 flex items-center justify-center text-base flex-shrink-0">
+                        <!-- 處理器/IC -->
+                        <div onclick="toggleCompanyList(companySectors, '處理器/IC', 'teal', iconMap.get('處理器/IC'))" class="cursor-pointer w-full bg-white hover:bg-teal-50 border border-slate-200 hover:border-teal-500 py-3 px-3 rounded-xl font-bold text-slate-700 shadow-sm hover:shadow transition-all flex items-center gap-3 hover:-translate-y-0.5">
+                            <div class="w-9 h-9 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center text-base flex-shrink-0">
                                 <i class="fa-solid fa-microchip"></i>
                             </div>
-                            <div class="text-left">
-                                <span class="block leading-tight text-sm">處理器 / IC</span>
-                                <span class="text-xs block font-normal">（無上市公司）</span>
-                            </div>
+                            <span>處理器/IC</span>
                         </div>
-                        
+
                         <div onclick="toggleCompanyList(companySectors, '近眼顯示', 'teal', iconMap.get('近眼顯示'))" class="cursor-pointer w-full bg-white hover:bg-teal-50 border border-slate-200 hover:border-teal-500 py-3 px-3 rounded-xl font-bold text-slate-700 shadow-sm hover:shadow transition-all flex items-center gap-3 hover:-translate-y-0.5">
                             <div class="w-9 h-9 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center text-base flex-shrink-0">
                                 <i class="fa-solid fa-glasses"></i>
@@ -188,17 +195,14 @@ $category = "體驗科技";
                                 <span>應用軟體 / 內容</span>
                             </div>
                             
-                            <!-- 屏蔽：垂直應用方案 (無上市公司) -->
-                            <div class="w-full bg-slate-200/60 border border-slate-300 py-2.5 px-3 rounded-lg font-bold text-slate-400 text-sm shadow-sm flex items-center gap-3 cursor-not-allowed">
-                                <div class="w-8 h-8 rounded-full bg-slate-300/60 text-slate-400 flex items-center justify-center text-sm flex-shrink-0">
+                            <!-- 垂直應用方案-->
+                            <div onclick="toggleCompanyList(companySectors, '垂直應用方案', 'purple', iconMap.get('應用軟體/內容'))" class="cursor-pointer w-full bg-white hover:bg-purple-50 border border-purple-200 hover:border-purple-400 py-2.5 px-3 rounded-lg font-bold text-slate-700 text-sm shadow-sm hover:shadow transition-all flex items-center gap-3 hover:-translate-y-0.5">
+                                <div class="w-8 h-8 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-sm flex-shrink-0">
                                     <i class="fa-solid fa-sitemap"></i>
                                 </div>
-                                <div class="text-left">
-                                    <span class="block leading-tight">垂直應用方案</span>
-                                    <span class="text-xs block font-normal">（無上市公司）</span>
-                                </div>
+                                <span>垂直應用方案</span>
                             </div>
-                            
+
                             <div onclick="toggleCompanyList(companySectors, '支援服務', 'purple')" class="cursor-pointer w-full bg-white hover:bg-purple-50 border border-purple-200 hover:border-purple-400 py-2.5 px-3 rounded-lg font-bold text-slate-700 text-sm shadow-sm hover:shadow transition-all flex items-center gap-3 hover:-translate-y-0.5">
                                 <div class="w-8 h-8 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-sm flex-shrink-0">
                                     <i class="fa-solid fa-headset"></i>

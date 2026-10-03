@@ -87,19 +87,19 @@ $category = "太空衛星科技";
                                     <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-lg flex-shrink-0">
                                         <i class="fa-solid fa-rocket"></i>
                                     </div>
-                                    <h6 class="font-bold text-slate-400 text-sm">發射服務 (無上市公司)</h6>
+                                    <h6 class="font-bold text-slate-400">發射服務 (無上市公司)</h6>
                                 </div>
                                 <div class="bg-slate-100 opacity-60 border border-slate-200 rounded-lg p-4 flex items-center gap-4 shadow-sm cursor-not-allowed">
                                     <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-lg flex-shrink-0">
                                         <i class="fa-solid fa-handshake"></i>
                                     </div>
-                                    <h6 class="font-bold text-slate-400 text-sm">仲介服務 (無上市公司)</h6>
+                                    <h6 class="font-bold text-slate-400">仲介服務 (無上市公司)</h6>
                                 </div>
                                 <div class="bg-slate-100 opacity-60 border border-slate-200 rounded-lg p-4 flex items-center gap-4 shadow-sm cursor-not-allowed">
                                     <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-lg flex-shrink-0">
                                         <i class="fa-solid fa-gears"></i>
                                     </div>
-                                    <h6 class="font-bold text-slate-400 text-sm">營運管理 (無上市公司)</h6>
+                                    <h6 class="font-bold text-slate-400">營運管理 (無上市公司)</h6>
                                 </div>
                             </div>
                         </div>
@@ -118,23 +118,22 @@ $category = "太空衛星科技";
                                     <div class="w-10 h-10 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center text-lg flex-shrink-0">
                                         <i class="fa-solid fa-tower-broadcast"></i>
                                     </div>
-                                    <h6 class="font-bold text-slate-700 text-sm">通訊</h6>
+                                    <h6 class="font-bold text-slate-700">通訊</h6>
                                 </div>
 
                                 <div onclick="toggleCompanyList(companySectors, '影像遙測', 'sky')" class="cursor-pointer bg-white border border-slate-200 hover:border-sky-400 hover:bg-sky-50 rounded-lg p-4 transition-all flex items-center gap-4 hover:-translate-y-1 shadow-sm">
                                     <div class="w-10 h-10 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center text-lg flex-shrink-0">
                                         <i class="fa-solid fa-earth-asia"></i>
                                     </div>
-                                    <h6 class="font-bold text-slate-700 text-sm">影像遙測</h6>
+                                    <h6 class="font-bold text-slate-700">影像遙測</h6>
                                 </div>
 
                                 <div onclick="toggleCompanyList(companySectors, '導航定位', 'sky')" class="cursor-pointer bg-white border border-slate-200 hover:border-sky-400 hover:bg-sky-50 rounded-lg p-4 transition-all flex items-center gap-4 hover:-translate-y-1 shadow-sm">
                                     <div class="w-10 h-10 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center text-lg flex-shrink-0">
                                         <i class="fa-solid fa-location-crosshairs"></i>
                                     </div>
-                                    <h6 class="font-bold text-slate-700 text-sm">導航定位</h6>
+                                    <h6 class="font-bold text-slate-700">導航定位</h6>
                                 </div>
-                
                             </div>
                         </div>
                     </div>

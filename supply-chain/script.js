@@ -56,16 +56,25 @@ function enableSectorsWithCompanies() {
 		node.removeAttribute('aria-disabled');
 		node.setAttribute('role', 'button');
 		node.tabIndex = 0;
-		node.classList.remove('cursor-not-allowed', 'opacity-60', 'opacity-70', 'bg-slate-100', 'bg-slate-100/60');
-		node.classList.add('cursor-pointer', 'bg-white', `hover:border-${color}-400`, `hover:bg-${color}-50`, 'hover:shadow-md', 'transition');
+		// 改成和同頁其他可點擊節點一樣的外觀：拿掉停用的灰底、灰框、灰字，圖示圓圈換成該區塊的顏色
+		node.classList.remove('cursor-not-allowed', 'opacity-60', 'opacity-70', 'disabled-node',
+			'bg-slate-100', 'bg-slate-100/60', 'bg-slate-200/60', 'border-slate-300');
+		node.classList.add('cursor-pointer', 'bg-white', 'border-slate-200',
+			`hover:border-${color}-500`, `hover:bg-${color}-50`, 'hover:shadow-md', 'transition');
 		for (const el of [node, ...node.querySelectorAll('*')]) {
-			el.classList.replace('text-slate-400', 'text-slate-700');
-			el.classList.replace('text-slate-500', 'text-slate-700');
+			const isIcon = el !== node && el.classList.contains('rounded-full');
+			for (const cls of [...el.classList]) {
+				if (isIcon && /^bg-slate-\d+(\/\d+)?$/.test(cls)) el.classList.replace(cls, `bg-${color}-50`);
+				else if (isIcon && /^text-slate-\d+$/.test(cls)) el.classList.replace(cls, `text-${color}-600`);
+				else if (/^text-slate-[45]00$/.test(cls)) el.classList.replace(cls, 'text-slate-700');
+			}
 		}
-		// 「(無上市公司)」改成「(外國企業)」
+		// 拿掉「(無上市公司)」這類標註（外國企業在公司列表裡已經自成一組）；其他說明文字保留，例如「(油墨)」
 		const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
-		while (walker.nextNode()) {
-			walker.currentNode.nodeValue = walker.currentNode.nodeValue.replace('無上市公司', '外國企業');
+		const texts = [];
+		while (walker.nextNode()) texts.push(walker.currentNode);
+		for (const el of [...node.querySelectorAll('span, p, div')]) {
+			if (el.children.length === 0 && el.textContent.trim() === '') el.remove();
 		}
 
 		const open = () => toggleCompanyList(sectors, name, color);

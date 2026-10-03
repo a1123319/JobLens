@@ -138,15 +138,15 @@ $category = "風力發電";
                             <div class="bg-slate-200 rounded-xl p-4 relative z-10">
                                 <h5 class="font-bold text-slate-700 mb-3 text-center text-base">風機設備</h5>
                                 <div class="grid grid-cols-2 gap-3">
-                                    <div 
-                                         class="cursor-not-allowed bg-slate-100 opacity-60 border border-slate-200 rounded-lg p-3 text-center shadow-sm flex flex-col items-center justify-center gap-1.5">
-                                        <i class="fa-solid fa-water text-slate-400 text-lg"></i>
-                                        <span class="font-bold text-slate-400 text-sm">離岸風機 (無上市公司)</span>
+                                    <div onclick="toggleCompanyList(companySectors, '離岸風機', 'cyan')"
+                                         class="cursor-pointer bg-white border border-slate-200 hover:border-cyan-400 hover:bg-cyan-50 rounded-lg p-3 transition-all text-center shadow-sm hover:-translate-y-0.5 flex flex-col items-center justify-center gap-1.5">
+                                        <i class="fa-solid fa-water text-cyan-600 text-lg"></i>
+                                        <span class="font-bold text-slate-700 text-sm">離岸風機</span>
                                     </div>
-                                    <div 
-                                         class="cursor-not-allowed bg-slate-100 opacity-60 border border-slate-200 rounded-lg p-3 text-center shadow-sm flex flex-col items-center justify-center gap-1.5">
-                                        <i class="fa-solid fa-mountain-sun text-slate-400 text-lg"></i>
-                                        <span class="font-bold text-slate-400 text-sm">陸域風機 (無上市公司)</span>
+                                    <div onclick="toggleCompanyList(companySectors, '陸域風機', 'cyan')"
+                                         class="cursor-pointer bg-white border border-slate-200 hover:border-cyan-400 hover:bg-cyan-50 rounded-lg p-3 transition-all text-center shadow-sm hover:-translate-y-0.5 flex flex-col items-center justify-center gap-1.5">
+                                        <i class="fa-solid fa-mountain-sun text-cyan-600 text-lg"></i>
+                                        <span class="font-bold text-slate-700 text-sm">陸域風機</span>
                                     </div>
                                 </div>
                             </div>

@@ -63,9 +63,9 @@ $category = "水泥";
                                     <div class="text-slate-400 w-8 text-center"><i class="fa-solid fa-trowel-bricks text-xl"></i></div>
                                     <h5 class="font-bold text-slate-400">矽砂 (無上市公司)</h5>
                                 </div>
-                                <div class="bg-slate-100 opacity-60 border border-slate-200 rounded-lg p-4 flex items-center gap-4 shadow-sm cursor-not-allowed">
-                                    <div class="text-slate-400 w-8 text-center"><i class="fa-solid fa-dumpster text-xl"></i></div>
-                                    <h5 class="font-bold text-slate-400">鐵渣 (無上市公司)</h5>
+                                <div onclick="toggleCompanyList(companySectors, '鐵渣', 'amber')" class="cursor-pointer bg-white border border-slate-200 hover:border-amber-400 rounded-lg p-4 shadow-sm hover:shadow-md hover:bg-amber-50 transition-all text-center hover:-translate-y-1 flex items-center gap-4">
+                                    <div class="text-slate-500 w-8 text-center"><i class="fa-solid fa-dumpster text-xl"></i></div>
+                                    <h5 class="font-bold text-slate-700">鐵渣</h5>
                                 </div>
                             </div>
                         </div>
