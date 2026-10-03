@@ -853,12 +853,9 @@ $companyData = safeGetCompanies($category);
                     <!-- 上游 原料與工程前期 -->
                     <div class="chain-step relative bg-slate-100/80 p-6 rounded-2xl border border-slate-200 flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center justify-between mb-6 cursor-pointer group" onclick="showCompanyList('上游', 'amber')">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold shadow-sm group-hover:bg-amber-600 group-hover:text-white transition-colors">1</div>
-                                    <h4 class="text-xl font-bold text-slate-700 group-hover:text-amber-700 transition-colors">上游 <span class="text-sm text-slate-500 font-normal">原料與工程前期</span></h4>
-                                </div>
-                                <span class="text-xs bg-amber-100 text-amber-800 font-semibold px-2.5 py-1 rounded-full">檢視全部</span>
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold shadow-sm">1</div>
+                                <h4 class="text-xl font-bold text-slate-700">上游 <span class="text-sm text-slate-500 font-normal">原料與工程前期</span></h4>
                             </div>
                             
                             <div class="flex flex-col gap-3">
@@ -923,12 +920,9 @@ $companyData = safeGetCompanies($category);
                     <!-- 中游 營造與建設主體 -->
                     <div class="chain-step relative bg-slate-100/80 p-6 rounded-2xl border border-slate-200 flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center justify-between mb-6 cursor-pointer group" onclick="showCompanyList('中游', 'orange')">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold shadow-sm group-hover:bg-orange-600 group-hover:text-white transition-colors">2</div>
-                                    <h4 class="text-xl font-bold text-slate-700 group-hover:text-orange-600 transition-colors">中游 <span class="text-sm text-slate-500 font-normal">營造與建設</span></h4>
-                                </div>
-                                <span class="text-xs bg-orange-100 text-orange-800 font-semibold px-2.5 py-1 rounded-full">檢視全部</span>
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold shadow-sm">2</div>
+                                <h4 class="text-xl font-bold text-slate-700">中游 <span class="text-sm text-slate-500 font-normal">營造與建設</span></h4>
                             </div>
                             
                             <div class="flex flex-col gap-3">
@@ -971,12 +965,9 @@ $companyData = safeGetCompanies($category);
                     <!-- 下游 終端應用、裝潢與物業管理 -->
                     <div class="chain-step relative bg-slate-100/80 p-6 rounded-2xl border border-slate-200 flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center justify-between mb-6 cursor-pointer group" onclick="showCompanyList('下游', 'emerald')">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold shadow-sm group-hover:bg-emerald-600 group-hover:text-white transition-colors">3</div>
-                                    <h4 class="text-xl font-bold text-slate-700 group-hover:text-emerald-600 transition-colors">下游 <span class="text-sm text-slate-500 font-normal">終端應用與物業</span></h4>
-                                </div>
-                                <span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2.5 py-1 rounded-full">檢視全部</span>
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold shadow-sm">3</div>
+                                <h4 class="text-xl font-bold text-slate-700">下游 <span class="text-sm text-slate-500 font-normal">終端應用與物業</span></h4>
                             </div>
                             
                             <div class="flex flex-col gap-3">
