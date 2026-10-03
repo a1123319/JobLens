@@ -21,6 +21,70 @@ window.addEventListener('DOMContentLoaded', () => {
 	`;
 });
 
+// 子產業比對用的名稱：忽略空白與括號說明。公司總覽（櫃買中心產業鏈）的名稱有時帶說明，
+// 例如「電容器材料(如電蝕／化成鋁箔、介面瓷粉)」，頁面按鈕則是「電容器材料」「處理器 / IC」。
+function sectorKey(name) {
+	return name.split(/[(（]/)[0].replace(/\s+/g, '');
+}
+
+// 按鈕上的子產業名稱對應到的所有公司
+function companiesOf(sectors, sector) {
+	const key = sectorKey(sector);
+	return [...sectors].filter(([name]) => name === sector || sectorKey(name) === key).flatMap(([, list]) => list);
+}
+
+// 頁面上的灰色「(無上市公司)」節點：該子產業若已有公司（目前是外國企業），就改成可點擊。
+// 各頁的公司資料放在 companySectors 或 companyChainNodes（頁面頂層 const）。
+function enableSectorsWithCompanies() {
+	const sectors = typeof companySectors !== 'undefined' ? companySectors
+		: typeof companyChainNodes !== 'undefined' ? companyChainNodes : null;
+	if (!(sectors instanceof Map)) return;
+
+	const nodes = document.querySelectorAll('.cursor-not-allowed, [aria-disabled="true"]');
+	for (const node of nodes) {
+		// 節點文字的第一段就是子產業名稱，例如「PET膜 (無上市公司)」「軟體工具 (無上市公司)\n（例如…）」
+		const name = node.textContent.trim().split(/[\n(（]/)[0].trim();
+		if (!name || companiesOf(sectors, name).length === 0) continue;
+
+		// 顏色沿用同一區塊裡既有按鈕的 toggleCompanyList(…, '顏色')
+		let color = 'cyan';
+		for (let el = node.parentElement; el; el = el.parentElement) {
+			const m = el.querySelector('[onclick*="toggleCompanyList"]')?.getAttribute('onclick').match(/,\s*'(\w+)'\s*[,)]/);
+			if (m) { color = m[1]; break; }
+		}
+
+		node.removeAttribute('aria-disabled');
+		node.setAttribute('role', 'button');
+		node.tabIndex = 0;
+		// 改成和同頁其他可點擊節點一樣的外觀：拿掉停用的灰底、灰框、灰字，圖示圓圈換成該區塊的顏色
+		node.classList.remove('cursor-not-allowed', 'opacity-60', 'opacity-70', 'disabled-node',
+			'bg-slate-100', 'bg-slate-100/60', 'bg-slate-200/60', 'border-slate-300');
+		node.classList.add('cursor-pointer', 'bg-white', 'border-slate-200',
+			`hover:border-${color}-500`, `hover:bg-${color}-50`, 'hover:shadow-md', 'transition');
+		for (const el of [node, ...node.querySelectorAll('*')]) {
+			const isIcon = el !== node && el.classList.contains('rounded-full');
+			for (const cls of [...el.classList]) {
+				if (isIcon && /^bg-slate-\d+(\/\d+)?$/.test(cls)) el.classList.replace(cls, `bg-${color}-50`);
+				else if (isIcon && /^text-slate-\d+$/.test(cls)) el.classList.replace(cls, `text-${color}-600`);
+				else if (/^text-slate-[45]00$/.test(cls)) el.classList.replace(cls, 'text-slate-700');
+			}
+		}
+		// 拿掉「(無上市公司)」這類標註（外國企業在公司列表裡已經自成一組）；其他說明文字保留，例如「(油墨)」
+		const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
+		const texts = [];
+		while (walker.nextNode()) texts.push(walker.currentNode);
+		for (const el of [...node.querySelectorAll('span, p, div')]) {
+			if (el.children.length === 0 && el.textContent.trim() === '') el.remove();
+		}
+
+		const open = () => toggleCompanyList(sectors, name, color);
+		node.addEventListener('click', open);
+		node.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+	}
+}
+
+window.addEventListener('DOMContentLoaded', enableSectorsWithCompanies);
+
 function fromCompanyDatabase(entities) {
 	const sectors = new Map();
 
@@ -38,7 +102,7 @@ function fromCompanyDatabase(entities) {
 
 
 function toggleCompanyList(sectors, sector, color, iconMap = null) {
-	const companies = sectors.get(sector);
+	const companies = companiesOf(sectors, sector);
 
 	const companyListDiv = document.getElementById('company-list');
 	companyListDiv.className = `bg-white p-6 rounded-xl border border-slate-200 shadow-sm ring-2 ring-${color}-200`;
@@ -70,10 +134,14 @@ function toggleCompanyList(sectors, sector, color, iconMap = null) {
 		const res = {
 			domestic: [],
 			foreign: [],
+			enterprise: [],
 		};
 
 		for (const company of companies) {
-			if (foreignRe.test(company.CompanyName)) {
+			// 知名外國企業（company.Id 從 1000000 起）
+			if (+company.CompanyId >= 1000000) {
+				res.enterprise.push(company);
+			} else if (foreignRe.test(company.CompanyName)) {
 				res.foreign.push(company);
 			} else {
 				res.domestic.push(company);
@@ -83,16 +151,18 @@ function toggleCompanyList(sectors, sector, color, iconMap = null) {
 		return res;
 	}
 
-	if (companies[0].Subsector !== null) {
+	// 只要有一家公司有細分產業就分組；沒有細分產業的公司放在「其他」
+	if (companies.some(company => company.Subsector !== null)) {
 		contentHtml += `<div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-10">`;
 		const subsectors = new Map();
 
 		for (const company of companies) {
-			if (!subsectors.has(company.Subsector)) {
-				subsectors.set(company.Subsector, []);
+			const key = company.Subsector ?? '其他';
+			if (!subsectors.has(key)) {
+				subsectors.set(key, []);
 			}
 
-			const subsector = subsectors.get(company.Subsector);
+			const subsector = subsectors.get(key);
 			subsector.push(company);
 		}
 
@@ -107,7 +177,7 @@ function toggleCompanyList(sectors, sector, color, iconMap = null) {
 
 			contentHtml += `${subsector}</h5>`;
 			
-			const { domestic, foreign } = categorizeDomestic(companiesInSubsectors);
+			const { domestic, foreign, enterprise } = categorizeDomestic(companiesInSubsectors);
 
 			if (domestic.length > 0) {
 				contentHtml += sectionOf("本國上市公司", domestic, color);
@@ -116,12 +186,16 @@ function toggleCompanyList(sectors, sector, color, iconMap = null) {
 			if (foreign.length > 0) {
 				contentHtml += sectionOf("外國上市公司", foreign, color);
 			}
+
+			if (enterprise.length > 0) {
+				contentHtml += sectionOf("外國企業", enterprise, color);
+			}
 			contentHtml += "</div>";
 		}
 
 		contentHtml += "</div>";
 	} else {
-		const { domestic, foreign } = categorizeDomestic(companies);
+		const { domestic, foreign, enterprise } = categorizeDomestic(companies);
 
 		contentHtml += `<div class="company-details">`;
 
@@ -131,6 +205,10 @@ function toggleCompanyList(sectors, sector, color, iconMap = null) {
 
 		if (foreign.length > 0) {
 			contentHtml += sectionOf("外國上市公司", foreign, color);
+		}
+
+		if (enterprise.length > 0) {
+			contentHtml += sectionOf("外國企業", enterprise, color);
 		}
 
 		contentHtml += "</div>";

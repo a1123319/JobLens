@@ -51,18 +51,18 @@ $category = "觸控面板";
                                 <p class="mb-3 text-sm font-bold tracking-wider text-cyan-800">基板與薄膜材料</p>
                                 <div class="grid grid-cols-2 gap-3">
                                     <button type="button" onclick="toggleCompanyList(companySectors, '玻璃基板', 'cyan')" class="touch-node rounded-lg border border-cyan-100 bg-white px-3 py-3 text-sm font-bold text-slate-700 shadow-sm hover:border-cyan-400">玻璃基板</button>
-                                    <div aria-disabled="true" class="cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 py-3 text-center text-sm font-bold text-slate-400 opacity-60">ITO導電玻璃 <span class="block text-xs font-normal">(無上市公司)</span></div>
-                                    <div aria-disabled="true" class="cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 py-3 text-center text-sm font-bold text-slate-400 opacity-60">PET膜 <span class="block text-xs font-normal">(無上市公司)</span></div>
+                                    <button type="button" onclick="toggleCompanyList(companySectors, 'ITO導電玻璃', 'cyan')" class="touch-node rounded-lg border border-cyan-100 bg-white px-3 py-3 text-sm font-bold text-slate-700 shadow-sm hover:border-cyan-400">ITO導電玻璃</button>
+                                    <button type="button" onclick="toggleCompanyList(companySectors, 'PET膜', 'cyan')" class="touch-node rounded-lg border border-cyan-100 bg-white px-3 py-3 text-sm font-bold text-slate-700 shadow-sm hover:border-cyan-400">PET膜</button>
                                     <button type="button" onclick="toggleCompanyList(companySectors, 'ITO導電薄膜', 'cyan')" class="touch-node rounded-lg border border-cyan-100 bg-white px-3 py-3 text-sm font-bold text-slate-700 shadow-sm hover:border-cyan-400">ITO導電薄膜</button>
-                                    <div aria-disabled="true" class="cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 py-3 text-center text-sm font-bold text-slate-400 opacity-60">ITO靶材 <span class="block text-xs font-normal">(無上市公司)</span></div>
+                                    <button type="button" onclick="toggleCompanyList(companySectors, 'ITO靶材', 'cyan')" class="touch-node rounded-lg border border-cyan-100 bg-white px-3 py-3 text-sm font-bold text-slate-700 shadow-sm hover:border-cyan-400">ITO靶材</button>
                                     <button type="button" onclick="toggleCompanyList(companySectors, '膠材', 'cyan')" class="touch-node rounded-lg border border-cyan-100 bg-white px-3 py-3 text-sm font-bold text-slate-700 shadow-sm hover:border-cyan-400">膠材</button>
                                 </div>
                             </div>
                             <div class="border-t border-slate-200 pt-4">
                                 <p class="mb-3 text-sm font-bold tracking-wider text-cyan-800">關鍵零組件</p>
                                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-1">
-                                    <div aria-disabled="true" class="cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 py-3 text-center text-sm font-bold text-slate-400 opacity-60">印刷材料 <span class="font-normal">(油墨、無上市公司)</span></div>
-                                    <div aria-disabled="true" class="cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 py-3 text-center text-sm font-bold text-slate-400 opacity-60">軟性電路板 <span class="block text-xs font-normal">(無上市公司)</span></div>
+                                    <button type="button" onclick="toggleCompanyList(companySectors, '印刷材料', 'cyan')" class="touch-node rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm font-bold text-slate-700 shadow-sm hover:border-cyan-400">印刷材料</button>
+                                    <button type="button" onclick="toggleCompanyList(companySectors, '軟性電路板', 'cyan')" class="touch-node rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm font-bold text-slate-700 shadow-sm hover:border-cyan-400">軟性電路板</button>
                                     <button type="button" onclick="toggleCompanyList(companySectors, '控制IC', 'cyan')" class="touch-node rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm font-bold text-slate-700 shadow-sm hover:border-cyan-400">控制IC</button>
                                 </div>
                             </div>
@@ -93,15 +93,15 @@ $category = "觸控面板";
                         <div class="flex flex-1 flex-col rounded-xl border border-slate-200 bg-slate-50 p-4 shadow-sm sm:p-5">
                             <p class="mb-3 text-sm font-bold tracking-wider text-indigo-800">終端設備與自助系統</p>
                             <div class="grid flex-1 grid-cols-2 content-start gap-3">
-                                <div aria-disabled="true" class="cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 py-4 text-center text-sm font-bold text-slate-400 opacity-60">行動電話 <span class="block text-xs font-normal">(無上市公司)</span></div>
-                                <div aria-disabled="true" class="cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 py-4 text-center text-sm font-bold text-slate-400 opacity-60">PDA <span class="block text-xs font-normal">(無上市公司)</span></div>
+                                <button type="button" onclick="toggleCompanyList(companySectors, '行動電話', 'indigo')" class="touch-node rounded-lg border border-indigo-100 bg-white px-3 py-4 text-sm font-bold text-slate-700 shadow-sm hover:border-indigo-400">行動電話</button>
+                                <button type="button" onclick="toggleCompanyList(companySectors, 'PDA', 'indigo')" class="touch-node rounded-lg border border-indigo-100 bg-white px-3 py-4 text-sm font-bold text-slate-700 shadow-sm hover:border-indigo-400">PDA</button>
                                 <div aria-disabled="true" class="cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 py-4 text-center text-sm font-bold text-slate-400 opacity-60">衛星定位系統 <span class="block text-xs font-normal">(無上市公司)</span></div>
-                                <div aria-disabled="true" class="cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 py-4 text-center text-sm font-bold text-slate-400 opacity-60">工業用設備 <span class="block text-xs font-normal">(無上市公司)</span></div>
+                                <button type="button" onclick="toggleCompanyList(companySectors, '工業用設備', 'indigo')" class="touch-node rounded-lg border border-indigo-100 bg-white px-3 py-4 text-sm font-bold text-slate-700 shadow-sm hover:border-indigo-400">工業用設備</button>
                                 <button type="button" onclick="toggleCompanyList(companySectors, '自動售票機', 'indigo')" class="touch-node rounded-lg border border-indigo-100 bg-white px-3 py-4 text-sm font-bold text-slate-700 shadow-sm hover:border-indigo-400">自動售票機</button>
-                                <div aria-disabled="true" class="cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 py-4 text-center text-sm font-bold text-slate-400 opacity-60">電子觸控白板 <span class="block text-xs font-normal">(無上市公司)</span></div>
-                                <div aria-disabled="true" class="cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 py-4 text-center text-sm font-bold text-slate-400 opacity-60">資訊收集設備 <span class="block text-xs font-normal">(無上市公司)</span></div>
+                                <button type="button" onclick="toggleCompanyList(companySectors, '電子觸控白板', 'indigo')" class="touch-node rounded-lg border border-indigo-100 bg-white px-3 py-4 text-sm font-bold text-slate-700 shadow-sm hover:border-indigo-400">電子觸控白板</button>
+                                <button type="button" onclick="toggleCompanyList(companySectors, '資訊收集設備', 'indigo')" class="touch-node rounded-lg border border-indigo-100 bg-white px-3 py-4 text-sm font-bold text-slate-700 shadow-sm hover:border-indigo-400">資訊收集設備</button>
                                 <button type="button" onclick="toggleCompanyList(companySectors, '金融提款機(ATM)', 'indigo')" class="touch-node rounded-lg border border-indigo-100 bg-white px-3 py-4 text-sm font-bold text-slate-700 shadow-sm hover:border-indigo-400">金融提款機 <span class="block text-xs font-normal text-slate-500">(ATM)</span></button>
-                                <div aria-disabled="true" class="col-span-2 cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 py-4 text-center text-sm font-bold text-slate-400 opacity-60">公共資訊查詢站 <span class="font-normal">(Kiosk、無上市公司)</span></div>
+                                <button type="button" onclick="toggleCompanyList(companySectors, '公共資訊查詢站(Kiosk)', 'indigo')" class="col-span-2 touch-node rounded-lg border border-indigo-100 bg-white px-3 py-4 text-sm font-bold text-slate-700 shadow-sm hover:border-indigo-400">公共資訊查詢站 <span class="block text-xs font-normal text-slate-500">(Kiosk)</span></button>
                             </div>
                         </div>
                     </article>

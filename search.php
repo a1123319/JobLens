@@ -159,6 +159,12 @@ if (!$company) {
     exit;
 }
 
+// 外國公司（自編 Id >= 1000000）的薪資、排名、職安、ESG 區塊改用 foreign/ 底下的資料與畫面
+$isForeign = (int)$company['Id'] >= 1000000;
+if ($isForeign) {
+    require __DIR__ . '/foreign/data.php';
+}
+
 $catStmt = $pdo->prepare("SELECT DISTINCT Category, Sector FROM companycategory WHERE CompanyId = ?");
 $catStmt->execute([$company['Id']]);
 $categories = $catStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -188,7 +194,7 @@ $stmt = $pdo->prepare("
     WHERE cc.Sector = ?
     ORDER BY s.NonAdminstrativeMedian DESC
 ");
-$stmt->execute([$categories[0]['Sector']]);
+$stmt->execute([$categories[0]['Sector'] ?? null]);
 $medians = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Industry average rankings (Top 10 in same Sector)
@@ -200,7 +206,7 @@ $stmt = $pdo->prepare("
     WHERE cc.Sector = ?
     ORDER BY s.NonAdminstrativeAverage DESC
 ");
-$stmt->execute([$categories[0]['Sector']]);
+$stmt->execute([$categories[0]['Sector'] ?? null]);
 $averages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $stmt = $pdo->prepare("SELECT * FROM disaster WHERE BusinessUnitUniformId = ? OR ProjectOwnerUniformId  = ?");
@@ -408,7 +414,9 @@ foreach ($wordcloudData as $row) {
                 <div class="flex flex-col sm:flex-row items-start gap-3 mb-2">
                     <div>
                         <h2 class="text-3xl font-bold text-slate-900">
-                            <?= htmlspecialchars($company['Name']); ?> (<?= htmlspecialchars($company['Id']); ?>)
+                            <?php // 外國公司的 Id 是自編流水號，標題改顯示股票代碼 ?>
+                            <?php $displayCode = $isForeign ? ($foreignInfo['Ticker'] ?? null) : $company['Id']; ?>
+                            <?= htmlspecialchars($company['Name']); ?><?= $displayCode !== null ? ' (' . htmlspecialchars($displayCode) . ')' : '' ?>
                         </h2>
                         <?php if (!empty($nicknames)): ?>
                         <p class="text-slate-500 text-sm mt-2">
@@ -418,7 +426,11 @@ foreach ($wordcloudData as $row) {
                     </div>
                     <div id="category-tags" class="flex flex-wrap gap-2 items-center mt-2"></div>
                 </div>
+                <?php if ($isForeign): ?>
+                <p class="text-slate-500 text-sm">資料年度：<?= $foreignHeaderYear ?? '—' ?> | 資料來源：<?= $foreignHeaderSource ?></p>
+                <?php else: ?>
                 <p class="text-slate-500 text-sm">資料年度：<?= $year ?> | 資料來源：公開資訊觀測站</p>
+                <?php endif ?>
             </div>
         </div>
 
@@ -517,6 +529,9 @@ foreach ($wordcloudData as $row) {
             </div>
             <?php endif ?>
         </section>
+        <?php if ($isForeign): ?>
+        <?php include __DIR__ . '/foreign/sections.php'; ?>
+        <?php else: ?>
         <?php
             $hasThisYearSalary = isset($company['NonAdminstrativeMedian']) || isset($company['NonAdminstrativeAverage']);
             $hasSalary = !empty($salaries);
@@ -906,6 +921,7 @@ foreach ($wordcloudData as $row) {
                 </div>
             </div>
         </section>
+        <?php endif ?>
 
         <?php if ($comments): ?>
         <section id="section-comments-sphere" class="scroll-mt-24 relative">

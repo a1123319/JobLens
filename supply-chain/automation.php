@@ -54,27 +54,22 @@ $category = "自動化";
                             <div class="bg-slate-200/60 border border-slate-300 rounded-xl p-4 space-y-3">
                                 <h5 class="font-bold text-slate-800 text-center text-base mb-2">硬體元件</h5>
                                 <div class="space-y-3">
-                                    <!-- 區塊 1: 感測器 (無上市公司) -->
-                                    <div class="w-full bg-slate-100 opacity-60 border border-slate-200 py-3 rounded-lg font-bold text-slate-400 shadow-sm text-center cursor-not-allowed">
-                                        感測器 (無上市公司)
-                                    </div>
-                                    <!-- 區塊 2: 控制器 (無上市公司) -->
-                                    <div class="w-full bg-slate-100 opacity-60 border border-slate-200 py-3 rounded-lg font-bold text-slate-400 shadow-sm text-center cursor-not-allowed">
-                                        控制器 (無上市公司)
-                                    </div>
-                                    <!-- 區塊 3: HMI (無上市公司) -->
-                                    <div class="w-full bg-slate-100 opacity-60 border border-slate-200 py-3 rounded-lg font-bold text-slate-400 shadow-sm text-center cursor-not-allowed">
-                                        HMI (無上市公司)
-                                    </div>
+                                    <button onclick="toggleCompanyList(companySectors, '感測器', 'cyan')" class="w-full bg-white border border-slate-200 hover:border-cyan-500 hover:bg-cyan-50/50 p-2 py-4 rounded-lg font-bold text-slate-700 shadow-sm transition-all hover:-translate-y-0.5 text-center leading-snug">
+                                        感測器
+                                    </button>
+                                    <button onclick="toggleCompanyList(companySectors, '控制器', 'cyan')" class="w-full bg-white border border-slate-200 hover:border-cyan-500 hover:bg-cyan-50/50 p-2 py-4 rounded-lg font-bold text-slate-700 shadow-sm transition-all hover:-translate-y-0.5 text-center leading-snug">
+                                        控制器
+                                    </button>
+                                    <button onclick="toggleCompanyList(companySectors, 'HMI', 'cyan')" class="w-full bg-white border border-slate-200 hover:border-cyan-500 hover:bg-cyan-50/50 p-2 py-4 rounded-lg font-bold text-slate-700 shadow-sm transition-all hover:-translate-y-0.5 text-center leading-snug">
+                                        HMI
+                                    </button>
                                 </div>
                             </div>
 
-                            <!-- 區塊 4: 軟體工具 (無上市公司) -->
-                            <div class="w-full bg-slate-100 opacity-60 border border-slate-200 p-4 rounded-xl shadow-sm text-center flex flex-col items-center justify-center cursor-not-allowed">
-                                <div class="font-bold text-slate-400 text-base mb-1">軟體工具 (無上市公司)</div>
-                                <div class="text-xs text-slate-400 font-normal">（例如 CAD/CAE/CAM、數據分析與視覺化工具）</div>
-                            </div>
-
+                            <button onclick="toggleCompanyList(companySectors, '軟體工具', 'cyan')" class="w-full bg-white border border-slate-200 hover:border-cyan-500 hover:bg-cyan-50/50 p-2 py-4 rounded-lg font-bold text-slate-700 shadow-sm transition-all hover:-translate-y-0.5 text-center leading-snug">
+                                <div class="font-bold text-slate-700 text-base mb-1">軟體工具</div>
+                                <div class="text-xs text-slate-600 font-normal">（如 CAD/CAE/CAM、數據分析與視覺化工具）</div>
+                            </button>
                         </div>
                     </div>
 
@@ -96,58 +91,45 @@ $category = "自動化";
                                     <div class="bg-blue-100/60 border border-blue-200/80 rounded-xl p-3 space-y-2">
                                         <h5 class="text-center font-bold text-slate-700 text-base mb-2">機器人</h5>
                                         <div class="grid grid-cols-3 gap-2">
-                                            <!-- 區塊 5: 工業型機器人 (唯二保留為可點擊按鈕) -->
                                             <button onclick="toggleCompanyList(companySectors, '工業型機器人', 'blue')" class="bg-white border border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 p-2 py-4 rounded-lg font-bold text-xs md:text-sm text-slate-700 shadow-sm transition-all hover:-translate-y-0.5 text-center leading-snug flex items-center justify-center">
                                                 工業型<br>機器人
                                             </button>
-                                            <!-- 區塊 6: AGV 及 AMR (無上市公司) -->
                                             <div class="bg-slate-100 opacity-60 border border-slate-200 p-2 py-4 rounded-lg font-bold text-xs md:text-sm text-slate-400 shadow-sm text-center leading-snug flex items-center justify-center cursor-not-allowed">
                                                 AGV 及 AMR<br>(無上市公司)
                                             </div>
-                                            <!-- 區塊 7: 服務型及人型機器人 (無上市公司) -->
                                             <div class="bg-slate-100 opacity-60 border border-slate-200 p-2 py-4 rounded-lg font-bold text-xs md:text-sm text-slate-400 shadow-sm text-center leading-snug flex items-center justify-center cursor-not-allowed">
                                                 服務型及人型機器人<br>(無上市公司)
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- 區塊 8: 自動化機台 (無上市公司) -->
-                                    <div class="w-full bg-slate-100 opacity-60 border border-slate-200 p-3 rounded-xl shadow-sm text-center cursor-not-allowed">
-                                        <div class="font-bold text-slate-400 text-base mb-1">自動化機台 (無上市公司)</div>
-                                        <div class="text-xs text-slate-400 font-normal">（例如加工、運輸、檢測、包裝等機台）</div>
-                                    </div>
+                                    <button onclick="toggleCompanyList(companySectors, '自動化機台', 'blue')" class="bg-white border border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 p-2 py-4 rounded-lg font-bold text-slate-700 shadow-sm transition-all hover:-translate-y-0.5 text-center leading-snug">
+                                        <div>自動化機台</div><div class="text-xs text-slate-600 font-normal">（如加工、運輸、檢測、包裝等機台）</div>
+                                    </button>
 
-                                    <!-- 區塊 9: 資訊系統 (無上市公司) -->
-                                    <div class="w-full bg-slate-100 opacity-60 border border-slate-200 p-3 rounded-xl shadow-sm text-center cursor-not-allowed">
-                                        <div class="font-bold text-slate-400 text-base mb-1">資訊系統 (無上市公司)</div>
-                                        <div class="text-xs text-slate-400 font-normal">（如 MES、SCADA、APS、PLM 等）</div>
-                                    </div>
+                                    <button onclick="toggleCompanyList(companySectors, '資訊系統', 'blue')" class="bg-white border border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 p-2 py-4 rounded-lg font-bold text-slate-700 shadow-sm transition-all hover:-translate-y-0.5 text-center leading-snug">
+                                        <div>資訊系統</div>
+                                        <div class="text-xs text-slate-600 font-normal">（如 MES、SCADA、APS、PLM 等）</div>
+                                    </button>
                                 </div>
 
-                                <!-- 右區塊: 區塊 10: 整體解決方案 (無上市公司) -->
-                                <div class="md:col-span-5 flex">
-                                    <div class="w-full bg-slate-200/80 opacity-60 border border-slate-300 text-slate-400 rounded-xl p-6 shadow-sm flex flex-col items-center justify-center text-center h-full cursor-not-allowed">
-                                        <div class="font-bold text-lg md:text-xl mb-3">整體解決方案 (無上市公司)</div>
-                                        <div class="text-xs md:text-sm text-slate-400 font-light leading-relaxed">
-                                            （例如自動倉儲、運輸搬運、智慧工廠、能源管理等）
-                                        </div>
+                                <button onclick="toggleCompanyList(companySectors, '整體解決方案', 'blue')" class="md:col-span-5 bg-white border border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 p-2 py-4 rounded-lg font-bold text-slate-700 shadow-sm transition-all hover:-translate-y-0.5 text-center leading-snug">
+                                    <div class="font-bold text-lg md:text-xl mb-2">整體解決方案</div>
+                                    <div class="text-xs md:text-sm text-slate-600 font-light leading-relaxed">
+                                        （如自動倉儲、運輸搬運、智慧工廠、能源管理等）
                                     </div>
-                                </div>
-
+                                </button>
                             </div>
 
                             <!-- 下半部：綠色服務諮詢區域 -->
                             <div class="bg-emerald-100/70 border border-emerald-200/80 rounded-xl p-3">
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                    <!-- 區塊 11: 系統整合 (無上市公司) -->
-                                    <div class="bg-slate-100 opacity-60 border border-slate-200 py-3 rounded-lg font-bold text-slate-400 shadow-sm text-center cursor-not-allowed">
-                                        系統整合 (無上市公司)
-                                    </div>
-                                    <!-- 區塊 12: 顧問諮詢 (無上市公司) -->
-                                    <div class="bg-slate-100 opacity-60 border border-slate-200 py-3 rounded-lg font-bold text-slate-400 shadow-sm text-center cursor-not-allowed">
-                                        顧問諮詢 (無上市公司)
-                                    </div>
-                                    <!-- 區塊 13: 導入部署 (無上市公司) -->
+                                    <button onclick="toggleCompanyList(companySectors, '系統整合', 'blue')" class="bg-white border border-slate-200 hover:border-emerald-500 hover:bg-[#F5FDF9] p-2 py-4 rounded-lg font-bold text-slate-700 shadow-sm transition-all hover:-translate-y-0.5 text-center leading-snug">
+                                        系統整合
+                                    </button>
+                                    <button onclick="toggleCompanyList(companySectors, '顧問諮詢', 'blue')" class="bg-white border border-slate-200 hover:border-emerald-500 hover:bg-[#F5FDF9] p-2 py-4 rounded-lg font-bold text-slate-700 shadow-sm transition-all hover:-translate-y-0.5 text-center leading-snug">
+                                        顧問諮詢
+                                    </button>
                                     <div class="bg-slate-100 opacity-60 border border-slate-200 py-3 rounded-lg font-bold text-slate-400 shadow-sm text-center cursor-not-allowed">
                                         導入部署 (無上市公司)
                                     </div>
