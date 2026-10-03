@@ -944,13 +944,13 @@ $companyData = safeGetCompanies($category);
                                     </div>
 
                                     <div class="md:col-span-5">
-                                        <div onclick="showCompanyList('建設業', 'orange')" class="cursor-pointer bg-gradient-to-br from-orange-500 to-amber-600 text-white rounded-xl p-3.5 transition-all flex items-center gap-3 hover:-translate-y-0.5 shadow-lg shadow-orange-100 hover:shadow-xl h-full">
-                                            <div class="w-9 h-9 rounded-lg bg-white/20 text-white flex items-center justify-center text-base flex-shrink-0">
+                                        <div onclick="showCompanyList('建設業', 'orange')" class="cursor-pointer bg-white border border-slate-200 hover:border-orange-400 hover:bg-orange-50 rounded-xl p-3.5 transition-all flex items-center gap-3 hover:-translate-y-0.5 shadow-sm h-full">
+                                            <div class="w-9 h-9 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center text-base flex-shrink-0">
                                                 <i class="fa-solid fa-building"></i>
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <h5 class="font-bold text-white text-sm">建設業</h5>
-                                                <p class="text-[11px] text-orange-100 truncate">土地開發與商辦建案</p>
+                                                <h5 class="font-bold text-slate-700 text-sm">建設業</h5>
+                                                <p class="text-[11px] text-slate-400 truncate">土地開發與商辦建案</p>
                                             </div>
                                         </div>
                                     </div>
@@ -979,14 +979,14 @@ $companyData = safeGetCompanies($category);
                             </div>
                             
                             <div class="flex flex-col gap-3">
-                                <!-- 上方：個人、民間企業、政府機構 -->
-                                <div onclick="showCompanyList('個人、民間企業、政府機構', 'emerald')" class="cursor-pointer bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-xl p-4 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-md shadow-emerald-100 hover:shadow-lg">
-                                    <div class="w-10 h-10 rounded-lg bg-white/20 text-white flex items-center justify-center text-lg flex-shrink-0">
+                                <!-- 上方：個人、民間企業、政府機構 (白底) -->
+                                <div onclick="showCompanyList('個人、民間企業、政府機構', 'emerald')" class="cursor-pointer bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50 rounded-xl p-3.5 transition-all flex items-center gap-4 hover:-translate-y-0.5 shadow-sm">
+                                    <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0">
                                         <i class="fa-solid fa-landmark"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <h5 class="font-bold text-white text-sm">個人、民間企業、政府機構</h5>
-                                        <p class="text-xs text-emerald-100 truncate">終端買方、公共建設主體</p>
+                                        <h5 class="font-bold text-slate-700 text-sm">個人、民間企業、政府機構</h5>
+                                        <p class="text-xs text-slate-400 truncate">終端買方、公共建設主體</p>
                                     </div>
                                 </div>
 
