@@ -100,6 +100,11 @@ $fHolding = ($foreignLatestSalary['Scope'] ?? null) === '控股總部';
                 <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
                     <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 前 10 名薪資排名<?php if (!empty($foreignRank)) { echo "【外國企業・{$fSrc['name']}】"; } ?>
                 </h3>
+                <?php if (!empty($foreignRank)): ?>
+                <a href="foreign-leaderboard.php?id=<?= (int)$company['Id'] ?>" class="bg-blue-600 text-white px-5 py-1.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition shadow-sm flex items-center gap-2 group">
+                    查看完整排行榜 <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </a>
+                <?php endif ?>
             </div>
             <?php if (!empty($foreignRank)): ?>
             <div class="bg-white border border-slate-100 rounded-xl shadow-lg p-6 relative overflow-hidden">
