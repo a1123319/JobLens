@@ -56,10 +56,10 @@ try {
     </header>
 
     <section class="container mx-auto px-4 py-16 -mt-10 relative z-10">
-        <h3 class="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-2">
+        <h3 class="text-2xl font-bold text-center mb-4 flex items-center justify-center gap-2">
             <i class="fa-solid fa-layer-group text-blue-500"></i> 或者，從產業開始探索
         </h3>
-        
+        <input type="text" id="filter-category" placeholder="搜尋產業" class="bg-white border-2 border-box w-[200px] border-slate-300 block mx-auto mb-8 rounded-xl p-2 transition-all outline-none focus:border-blue-700">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto" id="button-group"></div>
     </section>
 
@@ -249,18 +249,66 @@ try {
         ]
 
         const buttonGroup = document.getElementById("button-group");
+        const filterCategoryInput = document.getElementById("filter-category");
 
-        buttonGroup.innerHTML = supplyChains.map(s => {
-            return `
-            <a href="${s.href}" class="block group">
-                <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full flex flex-col items-center justify-center text-center">
-                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors p-3">
-                        <img src="${s.icon}" alt="${s.name}" class="w-full h-full object-contain">
-                    </div>
-                    <h4 class="text-xl font-bold group-hover:text-blue-600">${s.name}</h4>
-                </div>
-            </a>`;
-        }).join("");
+        function updateButtonGroups(text, changeIfNoneFound) {
+            text = text?.trim();
+            let filteredSupplyChains = supplyChains;
+            console.log(text);
+
+            if (text) {
+                filteredSupplyChains = supplyChains.filter(s => {
+                    const name = s.name;
+                    let index = 0;
+
+                    for (const a of text) {
+                        if (index === name.length) {
+                            break;
+                        }
+
+                        if (a === name[index]) {
+                            index++;
+                        }
+                    }
+
+                    return (index >= 1 && text.length <= 2) ||
+                        (index >= 2 && text.length <= 4) ||
+                        (index / text.length >= 0.6);
+                });
+            }
+
+            if (filteredSupplyChains.length == 0 && !changeIfNoneFound) {
+                return;
+            }
+
+            if (filteredSupplyChains.length > 0) {
+                buttonGroup.innerHTML = filteredSupplyChains.map(s => {
+                    return `<a href="${s.href}" class="block group">
+                        <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 transition-all duration-300 hover:shadow-2xl hover-card cursor-pointer h-full flex flex-col items-center justify-center text-center">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors p-3">
+                                <img src="${s.icon}" alt="${s.name}" class="w-full h-full object-contain">
+                            </div>
+                            <h4 class="text-xl font-bold group-hover:text-blue-600">${s.name}</h4>
+                        </div>
+                    </a>`;
+                }).join("");
+            } else {
+                buttonGroup.innerHTML = `<div class="font-bold text-4xl my-12 text-slate-700 col-span-3 mx-auto text-center">
+                    <div class="mb-4">找不到您要的產業！</div>
+                    <div>請重新搜尋</div>
+                </div>`;
+            }
+        }
+
+        updateButtonGroups(filterCategoryInput.value);
+
+        filterCategoryInput.addEventListener("input", e => {
+            updateButtonGroups(e.target.value, false);
+        });
+
+        filterCategoryInput.addEventListener("change", e => {
+            updateButtonGroups(e.target.value, true);
+        });
     </script>
 </body>
 </html>
