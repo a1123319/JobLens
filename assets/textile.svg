@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60A5FA" />
+      <stop offset="100%" stop-color="#2563EB" />
+    </linearGradient>
+    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+  </defs>
+  <!-- Fabric Weave Background Pattern -->
+  <rect x="32" y="32" width="192" height="192" rx="24" fill="#EFF6FF" stroke="#93C5FD" stroke-width="4" />
+  <!-- Vertical Thread Lines -->
+  <line x1="76" y1="48" x2="76" y2="208" stroke="#60A5FA" stroke-width="8" stroke-linecap="round" opacity="0.6" />
+  <line x1="108" y1="48" x2="108" y2="208" stroke="#3B82F6" stroke-width="8" stroke-linecap="round" />
+  <line x1="140" y1="48" x2="140" y2="208" stroke="#2563EB" stroke-width="8" stroke-linecap="round" />
+  <line x1="172" y1="48" x2="172" y2="208" stroke="#1D4ED8" stroke-width="8" stroke-linecap="round" opacity="0.8" />
+  <!-- Horizontal Thread Lines Interlaced -->
+  <path d="M 48 76 L 208 76" stroke="#3B82F6" stroke-width="8" stroke-linecap="round" opacity="0.7" />
+  <path d="M 48 108 L 208 108" stroke="#2563EB" stroke-width="8" stroke-linecap="round" />
+  <path d="M 48 140 L 208 140" stroke="#1D4ED8" stroke-width="8" stroke-linecap="round" />
+  <path d="M 48 172 L 208 172" stroke="#60A5FA" stroke-width="8" stroke-linecap="round" opacity="0.8" />
+  <!-- Spool / Yarn Overlay -->
+  <g transform="translate(128, 128) scale(0.95)">
+    <ellipse cx="0" cy="-35" rx="36" ry="12" fill="url(#grad1)" stroke="#1E40AF" stroke-width="3"/>
+    <path d="M -36 -35 C -36 -10 -20 15 -28 35 L 28 35 C 20 15 36 -10 36 -35 Z" fill="url(#grad2)" stroke="#1E40AF" stroke-width="3"/>
+    <ellipse cx="0" cy="35" rx="28" ry="10" fill="url(#grad3)" stroke="#B45309" stroke-width="3"/>
+    <!-- Thread winding texture -->
+    <path d="M -32 -20 Q 0 -12 32 -20" stroke="#EFF6FF" stroke-width="2.5" fill="none" opacity="0.7"/>
+    <path d="M -28 -5 Q 0 3 28 -5" stroke="#EFF6FF" stroke-width="2.5" fill="none" opacity="0.7"/>
+    <path d="M -26 10 Q 0 18 26 10" stroke="#EFF6FF" stroke-width="2.5" fill="none" opacity="0.7"/>
+    <path d="M -27 25 Q 0 33 27 25" stroke="#EFF6FF" stroke-width="2.5" fill="none" opacity="0.7"/>
+    <!-- Thread hanging off -->
+    <path d="M 28 35 Q 55 45 45 70 Q 35 90 70 85" stroke="#F59E0B" stroke-width="4" stroke-linecap="round" fill="none"/>
+  </g>
+</svg>

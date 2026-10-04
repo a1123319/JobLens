@@ -241,6 +241,10 @@ try {
                 href: "supply-chain/construction.php",
                 name: "建材營造",
                 icon: "assets/construction.png",
+            },{
+                href: "supply-chain/textile.php",
+                name: "紡織",
+                icon: "assets/textile.svg",
             }
         ]
 
