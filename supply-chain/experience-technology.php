@@ -14,8 +14,6 @@ $category = "體驗科技";
     <script src="script.js"></script>
     <script>
         const companySectors = fromCompanyDatabase(<?= json_encode(getCompanies($category), JSON_UNESCAPED_UNICODE) ?>);
-        
-        // 體驗科技專屬的 Icon Map 配置
         const iconMap = new Map([
             ["處理器/IC", new Map([
                 ["IC", "fa-solid fa-microchip text-teal-500"],
@@ -26,7 +24,29 @@ $category = "體驗科技";
             ])],
             ["近眼顯示", new Map([
                 ["光學元件/模組", "fa-solid fa-glasses text-teal-500"],
-                ["微型顯示器/光機引擎(LightEngine)", "fa-solid fa-vr-cardboard text-emerald-500"]
+                ["微型顯示器/光機引擎(Light Engine)", "fa-solid fa-vr-cardboard text-emerald-500"],
+                ["顯示技術", "fa-solid fa-display text-sky-500"],
+                ["Micro LED", "fa-solid fa-lightbulb text-yellow-500"],
+                ["LCoS", "fa-solid fa-tv text-blue-500"],
+                ["OLED", "fa-solid fa-circle-half-stroke text-indigo-500"]
+            ])],
+            ["垂直應用方案", new Map([
+                ["物流", "fa-solid fa-truck text-blue-500"],
+                ["製造", "fa-solid fa-industry text-slate-500"],
+                ["安防", "fa-solid fa-shield-halved text-emerald-500"],
+                ["重工業", "fa-solid fa-helmet-safety text-amber-500"],
+                ["醫療", "fa-solid fa-stethoscope text-rose-500"],
+                ["其他", "fa-solid fa-ellipsis text-slate-500"]
+            ])],
+            ["組裝廠", new Map([
+                ["ODM/OEM", "fa-solid fa-gears text-purple-500"]
+            ])],
+            ["支援服務", new Map([
+                ["顧問", "fa-solid fa-user-tie text-indigo-500"]
+            ])],
+            ["資服", new Map([
+                ["系統整合", "fa-solid fa-network-wired text-indigo-500"],
+                ["IT服務", "fa-solid fa-headset text-teal-500"]
             ])],
             ["感測器/模組", new Map([
                 ["環境感知", "fa-solid fa-earth-americas text-cyan-500"],
@@ -37,7 +57,7 @@ $category = "體驗科技";
                 ["手勢/動作", "fa-solid fa-hand-pointer text-amber-500"],
                 ["其他", "fa-solid fa-ellipsis text-purple-500"],
                 ["觸覺", "fa-solid fa-hand-point-left text-pink-500"],
-                ["語音", "fa-solid fa-microphone text-slant-500"],
+                ["語音", "fa-solid fa-microphone text-slate-500"],
             ])],
             ["其他零組件", new Map([
                 ["其他", "fa-solid fa-microchip text-slate-500"],
@@ -45,11 +65,12 @@ $category = "體驗科技";
                 ["散熱元件/模組", "fa-solid fa-fan text-blue-400"]
             ])],
             ["頭顯裝置品牌廠", new Map([
-                ["VRHeadset", "fa-solid fa-headset text-indigo-500"],
-                ["ARSmartGlasses", "fa-solid fa-glasses text-purple-500"],
-                ["MRHeadset&SG", "fa-solid fa-mask text-violet-600"]
+                ["VR Headset", "fa-solid fa-headset text-indigo-500"],
+                ["AR Smart Glasses", "fa-solid fa-glasses text-purple-500"],
+                ["MR Headset & SG", "fa-solid fa-mask text-violet-600"],
             ])],
             ["硬體開發工具", new Map([
+                ["Qualcomm XR Platform", "fa-solid fa-microchip text-red-500"],
                 ["工作流程創建", "fa-solid fa-diagram-project text-indigo-500"]
             ])],
             ["軟體開發工具", new Map([
@@ -62,7 +83,8 @@ $category = "體驗科技";
                 ["會議", "fa-solid fa-users text-indigo-600"],
                 ["工作流程引導", "fa-solid fa-route text-teal-600"],
                 ["地圖", "fa-solid fa-map-location-dot text-emerald-600"],
-                ["遊戲", "fa-solid fa-gamepad text-rose-500"]
+                ["遊戲", "fa-solid fa-gamepad text-rose-500"],
+                ["其他", "fa-solid fa-ellipsis text-slate-500"]
             ])]
         ]);
     </script>
@@ -165,7 +187,7 @@ $category = "體驗科技";
                                 </div>
                                 <span>技術標準 / 聯盟</span>
                             </div>
-                            <div onclick="toggleCompanyList(companySectors, '資服', 'indigo')" class="cursor-pointer bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-500 py-3 px-3 rounded-xl font-bold text-slate-700 text-sm shadow-sm hover:shadow transition-all flex items-center gap-2 hover:-translate-y-0.5">
+                            <div onclick="toggleCompanyList(companySectors, '資服', 'indigo', iconMap.get('資服'))" class="cursor-pointer bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-500 py-3 px-3 rounded-xl font-bold text-slate-700 text-sm shadow-sm hover:shadow transition-all flex items-center gap-2 hover:-translate-y-0.5">
                                 <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm flex-shrink-0">
                                     <i class="fa-solid fa-handshake-angle"></i>
                                 </div>
@@ -177,7 +199,7 @@ $category = "體驗科技";
                     <!-- 右區：組裝與應用內容 (佔 4 欄) -->
                     <div class="lg:col-span-4 bg-slate-100/70 p-5 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-3">
                         <!-- 上層：組裝廠 -->
-                        <div onclick="toggleCompanyList(companySectors, '組裝廠', 'purple')" class="cursor-pointer w-full bg-white hover:bg-purple-50 border border-slate-200 hover:border-purple-500 py-3 px-3 rounded-xl font-bold text-slate-700 shadow-sm hover:shadow transition-all flex items-center gap-3 hover:-translate-y-0.5">
+                        <div onclick="toggleCompanyList(companySectors, '組裝廠', 'purple', iconMap.get('組裝廠'))" class="cursor-pointer w-full bg-white hover:bg-purple-50 border border-slate-200 hover:border-purple-500 py-3 px-3 rounded-xl font-bold text-slate-700 shadow-sm hover:shadow transition-all flex items-center gap-3 hover:-translate-y-0.5">
                             <div class="w-9 h-9 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-base flex-shrink-0">
                                 <i class="fa-solid fa-industry"></i>
                             </div>
@@ -196,14 +218,14 @@ $category = "體驗科技";
                             </div>
                             
                             <!-- 垂直應用方案-->
-                            <div onclick="toggleCompanyList(companySectors, '垂直應用方案', 'purple', iconMap.get('應用軟體/內容'))" class="cursor-pointer w-full bg-white hover:bg-purple-50 border border-purple-200 hover:border-purple-400 py-2.5 px-3 rounded-lg font-bold text-slate-700 text-sm shadow-sm hover:shadow transition-all flex items-center gap-3 hover:-translate-y-0.5">
+                            <div onclick="toggleCompanyList(companySectors, '垂直應用方案', 'purple', iconMap.get('垂直應用方案'))" class="cursor-pointer w-full bg-white hover:bg-purple-50 border border-purple-200 hover:border-purple-400 py-2.5 px-3 rounded-lg font-bold text-slate-700 text-sm shadow-sm hover:shadow transition-all flex items-center gap-3 hover:-translate-y-0.5">
                                 <div class="w-8 h-8 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-sm flex-shrink-0">
                                     <i class="fa-solid fa-sitemap"></i>
                                 </div>
                                 <span>垂直應用方案</span>
                             </div>
 
-                            <div onclick="toggleCompanyList(companySectors, '支援服務', 'purple')" class="cursor-pointer w-full bg-white hover:bg-purple-50 border border-purple-200 hover:border-purple-400 py-2.5 px-3 rounded-lg font-bold text-slate-700 text-sm shadow-sm hover:shadow transition-all flex items-center gap-3 hover:-translate-y-0.5">
+                            <div onclick="toggleCompanyList(companySectors, '支援服務', 'purple', iconMap.get('支援服務'))" class="cursor-pointer w-full bg-white hover:bg-purple-50 border border-purple-200 hover:border-purple-400 py-2.5 px-3 rounded-lg font-bold text-slate-700 text-sm shadow-sm hover:shadow transition-all flex items-center gap-3 hover:-translate-y-0.5">
                                 <div class="w-8 h-8 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-sm flex-shrink-0">
                                     <i class="fa-solid fa-headset"></i>
                                 </div>

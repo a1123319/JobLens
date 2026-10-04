@@ -27,6 +27,14 @@ $downstreamSectors = [
     <script src="script.js"></script>
     <script>
         const companySectors = fromCompanyDatabase(<?= json_encode(getCompanies($category), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>);
+        const iconMap = new Map([
+            ["石化中間原料(例如乙烯、丙烯、丁二烯、苯、酚等)", new Map([
+                ["PTA(對苯二甲酸)觸媒", "fa-solid fa-flask-vial text-violet-500"],
+                ["工業用合成樹脂", "fa-solid fa-cubes text-indigo-500"],
+                ["界面活性劑", "fa-solid fa-pump-soap text-sky-500"],
+                ["橡塑膠添加劑", "fa-solid fa-vial text-emerald-500"],
+            ])],
+        ]);
 
         function petroToggleCompanyList(sector, color) {
             if (!companySectors.has(sector)) {
@@ -40,7 +48,7 @@ $downstreamSectors = [
                 return;
             }
 
-            toggleCompanyList(companySectors, sector, color);
+            toggleCompanyList(companySectors, sector, color, iconMap.get(sector));
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

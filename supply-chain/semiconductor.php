@@ -20,6 +20,8 @@ $category = "半導體";
                 [ "光源管理IC", "fa-solid fa-sun text-orange-400" ],
                 [ "消費性IC", "fa-solid fa-laptop text-blue-500" ],
                 [ "記憶體IC", "fa-solid fa-memory text-purple-500" ],
+                [ "記憶體控制IC", "fa-solid fa-sd-card text-violet-500" ],
+                [ "光通訊IC", "fa-solid fa-tower-broadcast text-sky-500" ],
                 [ "微控制器IC", "fa-solid fa-microchip text-emerald-500" ],
                 [ "電源管理IC", "fa-solid fa-bolt text-green-500" ],
                 [ "磁碟儲存控制器IC", "fa-solid fa-hard-drive text-slate-500" ],
