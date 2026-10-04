@@ -1,9 +1,9 @@
 function banner(title, subtitle) {
 	const headerHTML = `
-        <header class="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-10 px-4">
+        <header class="bg-sky-50 border-b border-sky-100 text-slate-800 py-10 px-4">
             <div class="container mx-auto text-center max-w-2xl">
                 <h1 class="text-2xl md:text-3xl font-bold mb-3">${title}</h1>
-                <p class="text-slate-400 mb-6 text-sm">${subtitle}</p>
+                <p class="text-slate-600 mb-6 text-sm">${subtitle}</p>
             </div>
         </header>
     `;

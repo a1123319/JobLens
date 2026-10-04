@@ -33,24 +33,24 @@ try {
 </head>
 <body class="text-slate-800">
 
-    <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+    <nav class="bg-white text-slate-800 border-b border-slate-200 p-4 shadow-sm sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <a class="flex items-center gap-3 cursor-pointer" href="index.php">
                 <img src="assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
                 <span class="text-xl font-bold tracking-wider">JobLens</span>
             </a>
             <div class="hidden md:flex gap-6 text-sm font-medium">
-                <a href="about.html" class="border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full font-full hover:bg-cyan-500 hover:text-white transition-all">
+                <a href="about.html" class="border border-cyan-600 text-cyan-700 px-5 py-2 rounded-full font-full hover:bg-cyan-500 hover:text-white transition-all">
                     關於我們
                 </a>
             </div>
         </div>
     </nav>
 
-    <header class="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-20 px-4">
+    <header class="bg-sky-50 border-b border-sky-100 text-slate-800 py-20 px-4">
         <div class="container mx-auto text-center max-w-3xl">
             <h1 class="text-3xl md:text-5xl font-bold mb-6">給求職者透視企業的放大鏡</h1>
-            <p class="text-slate-400 mb-10 text-lg">整合證交所 ESG 揭露與職安署大數據，提供最真實的薪資與風險情報。</p>
+            <p class="text-slate-600 mb-10 text-lg">整合證交所 ESG 揭露與職安署大數據，提供最真實的薪資與風險情報。</p>
             <?php renderSearch($pdo); ?>
         </div>
     </header>
