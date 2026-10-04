@@ -155,13 +155,13 @@ $companyData = safeGetCompanies($category);
                                 <span class="font-bold text-slate-700 text-base">數據分析</span>
                             </button>
 
-                            <button type="button" onclick="showCompanyList('資訊安全', 'blue')"
+                            <a href="cybersecurity.php"
                                 class="bg-white border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 rounded-xl p-4 transition-all duration-200 flex items-center gap-3 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5 flex-1">
                                 <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
                                     <i class="fa-solid fa-shield-halved"></i>
                                 </div>
                                 <span class="font-bold text-slate-700 text-base">資訊安全</span>
-                            </button>
+                            </a>
 
                             <button type="button" onclick="showCompanyList('資料聚合', 'blue')"
                                 class="bg-white border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 rounded-xl p-4 transition-all duration-200 flex items-center gap-3 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5 flex-1">
@@ -190,37 +190,37 @@ $companyData = safeGetCompanies($category);
                         </div>
                         
                         <div class="flex flex-col gap-4 flex-1 justify-between">
-                            <button type="button" onclick="showCompanyList('人工智慧', 'indigo')"
+                            <a href="artificial-intelligence.php"
                                 class="bg-white border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/50 rounded-xl p-4 transition-all duration-200 flex items-center gap-3 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5 flex-1">
                                 <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
                                     <i class="fa-solid fa-brain"></i>
                                 </div>
                                 <span class="font-bold text-slate-700 text-base">人工智慧</span>
-                            </button>
+                            </a>
 
-                            <button type="button" onclick="showCompanyList('大數據', 'indigo')"
+                            <a href="big_data.php"
                                 class="bg-white border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/50 rounded-xl p-4 transition-all duration-200 flex items-center gap-3 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5 flex-1">
                                 <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
                                     <i class="fa-solid fa-database"></i>
                                 </div>
                                 <span class="font-bold text-slate-700 text-base">大數據</span>
-                            </button>
+                            </a>
 
-                            <button type="button" onclick="showCompanyList('雲端運算', 'indigo')"
+                            <a href="cloud-computation.php"
                                 class="bg-white border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/50 rounded-xl p-4 transition-all duration-200 flex items-center gap-3 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5 flex-1">
                                 <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
                                     <i class="fa-solid fa-cloud"></i>
                                 </div>
                                 <span class="font-bold text-slate-700 text-base">雲端運算</span>
-                            </button>
+                            </a>
 
-                            <button type="button" onclick="showCompanyList('區塊鏈', 'indigo')"
+                            <a href="blockchain.php"
                                 class="bg-white border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/50 rounded-xl p-4 transition-all duration-200 flex items-center gap-3 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5 flex-1">
                                 <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
                                     <i class="fa-solid fa-link"></i>
                                 </div>
                                 <span class="font-bold text-slate-700 text-base">區塊鏈</span>
-                            </button>
+                            </a>
                         </div>
                     </div>
 
