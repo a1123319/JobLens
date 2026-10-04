@@ -12,7 +12,7 @@ $companies = getCompanies($category);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JobLens - <?= $category ?>供應鏈分析</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="script.js?v=<?= filemtime(__DIR__ . '/script.js') ?>"></script>
+    <script src="script.js"></script>
     <script>
         const companySectors = fromCompanyDatabase(<?= json_encode($companies, JSON_UNESCAPED_UNICODE) ?>);
         const companyChainNodes = new Map();
