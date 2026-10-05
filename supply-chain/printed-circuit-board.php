@@ -112,7 +112,7 @@ $category = "印刷電路板";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從關鍵材料與設備、基板製造及組裝，到各類電子產品應用，掌握印刷電路板產業鏈脈絡。");
     </script>

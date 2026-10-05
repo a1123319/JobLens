@@ -1,5 +1,5 @@
 <?php
-require_once "search-component.php";
+require "util.php";
 
 // 1. Database Connection
 $host = 'localhost';
@@ -32,20 +32,7 @@ try {
     </style>
 </head>
 <body class="text-slate-800">
-
-    <nav class="bg-white text-slate-800 border-b border-slate-200 p-4 shadow-sm sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <a class="flex items-center gap-3 cursor-pointer" href="index.php">
-                <img src="assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
-                <span class="text-xl font-bold tracking-wider">JobLens</span>
-            </a>
-            <div class="hidden md:flex gap-6 text-sm font-medium">
-                <a href="about.html" class="border border-cyan-600 text-cyan-700 px-5 py-2 rounded-full font-full hover:bg-cyan-500 hover:text-white transition-all">
-                    關於我們
-                </a>
-            </div>
-        </div>
-    </nav>
+    <?php nav() ?>
 
     <header class="bg-sky-50 border-b border-sky-100 text-slate-800 py-20 px-4">
         <div class="container mx-auto text-center max-w-3xl">
@@ -63,10 +50,8 @@ try {
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto" id="button-group"></div>
     </section>
 
-    <footer class="border-t border-slate-200 mt-12 py-8 text-center text-xs text-slate-400 [&_a]:underline">
-        <p>JobLens 2026 | 本系統使用政府資料開放平臺數據</p>
-        <p>Icons by <a href="https://www.flaticon.com">Flaticon</a> and <a href="https://www.iconpacks.net">Iconpacks</a></p>
-    </footer>
+    <?php footer() ?>
+
     <script>
         const supplyChains = [
             {

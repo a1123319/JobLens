@@ -149,7 +149,7 @@ $category = "太空衛星科技";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從設備製造、發射營運到應用服務，掌握太空衛星科技產業鏈脈絡");
     </script>

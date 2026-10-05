@@ -156,7 +156,7 @@ $category = "醫療器材";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從原材料供應到醫療院所通路，一站式掌握醫療器材生態系");
     </script>

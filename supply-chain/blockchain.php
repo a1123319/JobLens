@@ -281,7 +281,7 @@ $category = "區塊鏈";
             </div>
         </section>
     </main>
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從應用服務到支援服務，全面透視產業鏈夥伴");
     </script>

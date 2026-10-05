@@ -1,4 +1,30 @@
-<?php
+<?php 
+function nav($id = null) { ?>
+    <nav class="bg-white text-slate-800 border-b border-slate-200 p-4 shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <a class="flex items-center gap-3 cursor-pointer" href="index.php">
+                <img src="assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
+                <span class="text-xl font-bold tracking-wider">JobLens</span>
+            </a>
+            <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+                <?php if ($id !== null): ?>
+                <a href="search.php?id=<?= $id ?>" class="hover:text-cyan-600 transition">企業資訊</a>
+                <?php endif; ?>
+                <a href="about.html" class="border border-cyan-600 text-cyan-700 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">
+                    關於我們
+                </a>
+            </div>
+        </div>
+    </nav>
+<?php }
+
+function footer() { ?>
+    <footer class="border-t-2 bg-slate-100 border-slate-300 mt-12 py-8 text-center text-xs text-slate-500 [&_a]:underline">
+        <p>JobLens 2026 | 本系統使用政府開放資料</p>
+        <p>Icons by <a href="https://www.flaticon.com">Flaticon</a> and <a href="https://www.iconpacks.net">Iconpacks</a></p>
+    </footer>
+<?php }
+
 /**
  * Renders and initializes the complete JobLens Search Component.
  * Require include fuse 7.3.0 (e.g., <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.3.0"></script>)

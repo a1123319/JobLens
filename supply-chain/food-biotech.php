@@ -120,7 +120,7 @@ $category = "食品生技";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "整合生物技術與食品加工，透視保健食品產業生態圈");
     </script>

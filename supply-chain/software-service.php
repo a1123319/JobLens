@@ -132,7 +132,7 @@ $category = "軟體服務";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從軟體設計、系統整合到資料服務與通路經銷，探索產業鏈中的企業");
     </script>

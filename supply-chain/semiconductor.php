@@ -243,7 +243,7 @@ $category = "半導體";
         
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從上游到下游，全面透視產業鏈夥伴");
     </script>

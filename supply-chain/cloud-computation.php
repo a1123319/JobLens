@@ -209,7 +209,7 @@ $category = "雲端運算";
         
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從硬體設施到應用暨支援服務，全面透視產業鏈夥伴");
     </script>

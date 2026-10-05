@@ -20,6 +20,13 @@ function nav($id = null)
     </nav>
 <?php }
 
+function footer() { ?>
+    <footer class="border-t-2 bg-slate-100 border-slate-300 mt-12 py-8 text-center text-xs text-slate-500 [&_a]:underline">
+        <p>JobLens 2026 | 本系統使用政府開放資料</p>
+        <p>Icons by <a href="https://www.flaticon.com">Flaticon</a> and <a href="https://www.iconpacks.net">Iconpacks</a></p>
+    </footer>
+<?php }
+
 function getCompanies($category) {
     $host = 'localhost';
     $db_name = 'joblens';

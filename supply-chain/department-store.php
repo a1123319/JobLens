@@ -111,7 +111,7 @@ $category = "貿易百貨";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從製造、貿易代理到零售通路，全面透視貿易百貨產業鏈夥伴");
     </script>

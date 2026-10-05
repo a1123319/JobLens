@@ -244,7 +244,7 @@ $category = "體驗科技";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "包含關鍵硬體零組件、開發引擎、頭顯品牌廠至應用軟體與垂直方案");
     </script>

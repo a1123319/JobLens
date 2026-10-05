@@ -118,7 +118,7 @@ $companies = getCompanies($category);
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業鏈", "從設備供應、工程整合到電廠營運，探索汽電共生產業鏈中的企業");
     </script>

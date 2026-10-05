@@ -182,7 +182,7 @@ $category = "大數據";
             </div>
         </section>
     </main>
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從應用服務、軟體工具到基礎資源，全面透視大數據產業鏈夥伴");
     </script>

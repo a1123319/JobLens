@@ -1,5 +1,5 @@
 <?php
-require_once "search-component.php";
+require_once "util.php";
 
 $defaultUseSector = $_COOKIE["useSector"] ?? 0;
 
@@ -374,18 +374,7 @@ foreach ($wordcloudData as $row) {
     </style>
 </head>
 <body class="text-slate-800 relative">
-
-    <nav class="bg-white text-slate-800 border-b border-slate-200 p-4 shadow-sm sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <a class="flex items-center gap-3 cursor-pointer" href="index.php">
-                <img src="assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
-                <span class="text-xl font-bold tracking-wider">JobLens</span>
-            </a>
-            <div class="hidden md:flex items-center gap-6 text-sm font-medium">
-                <a href="about.html" class="border border-cyan-600 text-cyan-700 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">關於我們</a>
-            </div>
-        </div>
-    </nav>
+    <?php nav() ?>
 
     <div class="fixed right-4 xl:right-12 top-1/2 transform -translate-y-1/2 z-50 hidden xl:flex items-stretch gap-4 h-[400px]">
         <div class="relative w-24" id="slider-labels"></div>
@@ -1044,6 +1033,10 @@ foreach ($wordcloudData as $row) {
             </div>
         </section>
     </main>
+    <footer class="border-t-2 bg-slate-100 border-slate-300 mt-12 py-8 text-center text-xs text-slate-500 [&_a]:underline">
+        <p>JobLens 2026 | 本系統使用政府開放資料</p>
+        <p>Icons by <a href="https://www.flaticon.com">Flaticon</a> and <a href="https://www.iconpacks.net">Iconpacks</a></p>
+    </footer>
 
     <script>
         Chart.defaults.font.family = "'Noto Sans TC', sans-serif";

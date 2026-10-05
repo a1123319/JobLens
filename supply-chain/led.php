@@ -131,7 +131,7 @@ $category = "LED照明";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從藍寶石晶圓到燈具，透視 LED 照明產業鏈全貌");
     </script>

@@ -184,7 +184,7 @@ $category = "水泥";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "精準解析傳統基建核心，掌握水泥產業鏈脈絡");
     </script>

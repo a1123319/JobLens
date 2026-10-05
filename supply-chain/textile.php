@@ -256,7 +256,7 @@ $category = "紡織";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("紡織產業供應鏈分析", "從石化原料、人造與天然纖維、紡紗織布到染整成衣，探索台灣紡織產業生態系");
     </script>

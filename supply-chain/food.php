@@ -140,7 +140,7 @@ $category = "食品";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從原物料、加工食品到終端食品與餐飲通路的完整產業鏈");
     </script>

@@ -179,7 +179,7 @@ $companyData = safeGetCompanies($category);
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("製藥產業鏈分析", "從新藥研發、原料藥製造到西藥製劑與銷售通路，探索台灣製藥產業生態系");
     </script>

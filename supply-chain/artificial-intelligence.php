@@ -192,7 +192,7 @@ $category = "人工智慧";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從應用與服務、核心技術到運算資源，掌握人工智慧產業鏈脈絡");
     </script>
