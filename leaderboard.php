@@ -1,6 +1,6 @@
 <?php
 
-require_once "search-component.php";
+require "util.php";
 
 // Database Configuration
 $host = 'localhost';
@@ -70,19 +70,7 @@ $jsonData = json_encode($rawData, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
     </style>
 </head>
 <body class="text-slate-800">
-
-    <nav class="bg-white text-slate-800 border-b border-slate-200 p-4 shadow-sm sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <a class="flex items-center gap-3 cursor-pointer" href="index.php">
-                <img src="assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
-                <span class="text-xl font-bold tracking-wider">JobLens</span>
-            </a>
-            <div class="hidden md:flex items-center gap-6 text-sm font-medium">
-                <a href="search.php?id=<?= $companyId ?>" class="hover:text-cyan-600 transition">企業資訊頁面</a>
-                <a href="about.html" class="border border-cyan-600 text-cyan-700 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">關於我們</a>
-            </div>
-        </div>
-    </nav>
+    <?php nav($companyId) ?>
 
     <header class="bg-sky-50 border-b border-sky-100 text-slate-800 py-10 px-4">
         <div class="container mx-auto text-center max-w-2xl">
@@ -143,6 +131,8 @@ $jsonData = json_encode($rawData, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
                 </div>
         </div>
     </main>
+
+    <?php footer() ?>
 
     <script>
         Chart.defaults.font.family = "'Noto Sans TC', sans-serif";

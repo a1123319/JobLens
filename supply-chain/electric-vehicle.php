@@ -154,7 +154,7 @@ $companyData = safeGetCompanies($category);
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>banner("<?= $category ?>產業鏈分析", "從鋰電池材料、零組件到電動汽車、電動機車與電動自行車，探索電動車產業生態系。");</script>
 </body>
 </html>

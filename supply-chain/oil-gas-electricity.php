@@ -77,7 +77,7 @@ $category = "油電燃氣";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "掌握天然瓦斯供應與加油站通路的產業脈絡");
     </script>

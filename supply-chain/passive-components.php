@@ -161,7 +161,7 @@ $category = "被動元件";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從材料、元件製造到終端應用，全面透視被動元件產業鏈夥伴");
     </script>

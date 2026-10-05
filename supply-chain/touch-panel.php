@@ -115,7 +115,7 @@ $category = "觸控面板";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "掌握觸控面板從材料、模組製造到終端應用的產業脈絡");
     </script>

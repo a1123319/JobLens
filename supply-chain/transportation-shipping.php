@@ -94,7 +94,7 @@ $category = "交通運輸及航運";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "掌握航運、貨運承攬、倉儲與大眾運輸服務的上市公司資訊");
     </script>

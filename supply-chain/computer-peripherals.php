@@ -74,7 +74,7 @@ $category = "電腦周邊";
             </div>
         </section>
     </main>
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從零組件到終端與設備系統，全面透視產業鏈夥伴");
 

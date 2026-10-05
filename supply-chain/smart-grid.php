@@ -139,7 +139,7 @@ $category = "智慧電網";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從發電、電網設置到應用服務，全面透視智慧電網產業鏈夥伴");
     </script>

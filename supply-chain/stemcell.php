@@ -121,7 +121,7 @@ $companies = getCompanies($category);
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
 
     <script>
         banner("<?= $category ?>產業鏈", "從上游到下游，全面透視產業鏈夥伴");

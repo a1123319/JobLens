@@ -232,7 +232,7 @@ $category = "風力發電";
         
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從設備製造到發電業，全面透視產業鏈夥伴");
     </script>

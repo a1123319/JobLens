@@ -143,7 +143,7 @@ $category = "文化創意";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從不同業別之間切入，認識文化創意產業的上市公司資訊");
     </script>

@@ -189,7 +189,7 @@ $companyData = safeGetCompanies($category);
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("金融產業鏈分析", "整合金控、銀行、保險、證券、期貨與租賃，探索台灣金融業職缺、薪資與真實評價");
     </script>

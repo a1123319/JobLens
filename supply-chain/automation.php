@@ -152,7 +152,7 @@ $category = "自動化";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "智慧製造核心脈絡，精準掌握自動化技術夥伴");
     </script>

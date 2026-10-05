@@ -177,7 +177,7 @@ $companyData = safeGetCompanies($category);
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業鏈分析", "從原材料、電池芯到電池模組，探索能源元件產業生態系與企業");
     </script>

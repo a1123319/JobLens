@@ -140,7 +140,7 @@ $category = "太陽能";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "全面剖析綠能科技轉型，掌握太陽能產業鏈脈絡");
     </script>

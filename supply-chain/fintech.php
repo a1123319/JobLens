@@ -236,7 +236,7 @@ $companyData = safeGetCompanies($category);
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業鏈分析", "涵蓋領域應用、中介工具與底層技術，探索金融科技產業生態系與企業");
     </script>

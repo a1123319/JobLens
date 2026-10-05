@@ -94,7 +94,7 @@ $category = "造紙";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "掌握造紙產業從紙漿原料、製造加工到市場通路的完整脈絡");
     </script>

@@ -126,7 +126,7 @@ $downstreamSectors = [
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從網路晶片、通訊零組件到網通設備與電信服務，掌握通信網路產業鏈脈絡");
     </script>

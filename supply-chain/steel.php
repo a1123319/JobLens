@@ -285,7 +285,7 @@ function steelLabel(string $label, string $sector, array $availableSectors): str
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         document.querySelectorAll('.steel-sector').forEach((button) => {
             const sector = button.dataset.sector;

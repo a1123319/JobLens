@@ -292,7 +292,7 @@ $category = "建材營造";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "全面透視建材原料、營造工程與建設開發產業鏈上市公司");
         // Default show 上游 on load

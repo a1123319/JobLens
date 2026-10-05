@@ -189,7 +189,7 @@ $companyData = safeGetCompanies($category);
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業鏈分析", "從上游汽車零配件生產到中下游組裝與銷售，全方位掌握精選企業");
     </script>

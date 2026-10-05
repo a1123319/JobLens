@@ -134,7 +134,7 @@ $category = "連接器";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從原材料、設計製造到終端電子產品應用，全面透視產業鏈夥伴");
     </script>

@@ -135,7 +135,7 @@ $downstreamSectors = [
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從原油、石化中間原料到塑橡膠與化學製品，掌握石化產業鏈脈絡");
     </script>

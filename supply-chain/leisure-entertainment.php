@@ -135,7 +135,7 @@ $category = "休閒娛樂";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從不同業別之間切入，認識休閒娛樂產業的上市公司資訊");
     </script>

@@ -197,7 +197,7 @@ $category = "資通訊安全";
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <?php footer() ?>
     <script>
         banner("<?= $category ?>產業供應鏈", "從資安產品到資安服務，全面透視產業鏈夥伴");
     </script>
