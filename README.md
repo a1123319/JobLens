@@ -20,6 +20,12 @@ git clone至Apache2的htdocs。
 sudo apt install php7.4-intl
 ```
 
+若是在Ubuntu LTS 22.04上，則安裝`php8.1-intl`:
+
+```
+sudo apt install php8.1-intl
+```
+
 在資料庫管理系統新增帳密皆為`joblens`的使用者，並需擁有SELECT權限。
 
 > [!NOTE]
