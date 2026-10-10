@@ -239,7 +239,6 @@ try {
         function updateButtonGroups(text, changeIfNoneFound) {
             text = text?.trim();
             let filteredSupplyChains = supplyChains;
-            console.log(text);
 
             if (text) {
                 filteredSupplyChains = supplyChains.filter(s => {

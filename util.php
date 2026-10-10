@@ -10,14 +10,13 @@ function nav($id = null) { ?>
                 <?php if ($id !== null): ?>
                 <a href="search.php?id=<?= $id ?>" class="hover:text-cyan-600 transition">企業資訊</a>
                 <?php endif; ?>
-                <a href="about.html" class="border border-cyan-600 text-cyan-700 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">
+                <a href="about.html" class="border border-cyan-600 text-cyan-700 px-5 py-2 rounded-full font-bold hover:bg-cyan-600 hover:text-white transition-all">
                     關於我們
                 </a>
             </div>
         </div>
     </nav>
 <?php }
-
 function footer() { ?>
     <footer class="border-t-2 bg-slate-100 border-slate-300 mt-12 py-8 text-center text-xs text-slate-500 [&_a]:underline">
         <p>JobLens 2026 | 本系統使用政府開放資料</p>
@@ -73,12 +72,12 @@ function renderSearch(
                placeholder="輸入公司股票代碼或名稱" 
                class="w-full p-4 pl-6 rounded-full text-slate-900 shadow-2xl focus:outline-none focus:ring-4 focus:ring-cyan-600/50 transition text-lg border border-slate-100">
         
-        <button id="<?php echo $buttonId; ?>" 
-                class="absolute right-2 top-2 bg-cyan-600 hover:bg-cyan-700 text-white px-8 py-2.5 rounded-full transition font-bold text-lg shadow-lg opacity-50 cursor-not-allowed">
+        <a id="<?php echo $buttonId; ?>"
+            class="absolute right-2 top-2 bg-cyan-600 hover:bg-cyan-700 text-white px-8 py-2.5 rounded-full transition font-bold text-lg shadow-lg opacity-50 cursor-not-allowed">
             透視
-        </button>
+        </a>
 
-        <div id="<?php echo $boxId; ?>" class="hidden absolute w-full bg-white mt-2 rounded-2xl shadow-xl overflow-hidden z-50 text-left border border-slate-100 max-h-64 overflow-y-auto no-scrollbar">
+        <div id="<?php echo $boxId; ?>" class="hidden absolute w-full bg-white mt-2 rounded-2xl shadow-xl overflow-hidden z-40 text-left border border-slate-100 max-h-64 overflow-y-auto no-scrollbar">
         </div>
     </div>
 
@@ -117,20 +116,15 @@ function renderSearch(
             return queryIdx === query.length;
         }
 
-        function updateButtonState(len) {
-            if (len === 1) {
+        function updateButtonState() {
+            if (currentResults.length === 1) {
                 searchButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                searchButton.classList.add('cursor-pointer');
+                searchButton.href = `search.php?id=${encodeURIComponent(currentResults[0].item.Id)}`;
             } else {
                 searchButton.classList.add('opacity-50', 'cursor-not-allowed');
-            }
-        }
-
-        // Centralized redirection logic used by both click and enter press
-        function executeRedirect() {
-            const query = searchInput.value.trim();
-            if (query && currentResults.length === 1) {
-                const target = currentResults[0].item;
-                window.location.href = `search.php?id=${encodeURIComponent(target.Id)}`;
+                searchButton.classList.remove('cursor-pointer');
+                searchButton.href = "javascript:void(0)";
             }
         }
 
@@ -138,7 +132,7 @@ function renderSearch(
             const query = e.target.value.trim();
             if (query.length === 0) {
                 currentResults = [];
-                updateButtonState(0);
+                updateButtonState();
                 suggestionBox.classList.add('hidden');
                 return;
             }
@@ -151,7 +145,7 @@ function renderSearch(
                 currentResults = fuse.search(query);
             }
 
-            updateButtonState(currentResults.length);
+            updateButtonState();
 
             if (currentResults.length === 0) {
                 suggestionBox.innerHTML = `<div class="p-4 text-sm text-slate-500 text-center">找不到符合的公司</div>`;
@@ -162,57 +156,62 @@ function renderSearch(
             suggestionBox.innerHTML = currentResults.slice(0, 10).map(res => {
                 const item = res.item;
                 let categoryHtml = "";
+                let remaining = 0;
+
                 if (item.Category)
                 {
-                    categoryHtml = item.Category.slice(0, 3).map(cat => 
-                        `<span class="text-xs text-slate-400 border border-slate-200 px-2 py-0.5 rounded-full group-hover:border-emerald-200 group-hover:text-cyan-600">${cat}</span>`
+                    categoryHtml = item.Category.map(cat =>
+                        `<span class="text-xs text-slate-400 border border-slate-200 px-2 py-0.5 rounded-full group-hover:border-emerald-200 group-hover:text-cyan-600 min-w-max">${cat}</span>`
                     ).join('');
-                    const remaining = item.Category.length - 3;
-                    if (remaining > 0) 
-                    {
-                        categoryHtml += `<span class="text-xs text-slate-400">...以及其他${remaining}個產業</span>`;
-                    }
                 }
 
-                return `
-                    <div data-id="${item.Id}" data-code="${item.Code}" data-name="${item.Name}"
-                         class="joblens-item p-4 hover:bg-slate-50 border-b border-slate-100 last:border-none cursor-pointer flex items-center justify-between transition-colors group">
-                        <div class="flex flex-col text-left">
-                            <span class="font-bold text-slate-700 group-hover:text-cyan-800">${item.Name}</span>
-                            ${item.Nickname ? `<span class="text-xs text-slate-400">${item.Nickname}</span>` : ''}
-                        </div>
-                        <div class="flex items-center gap-3 text-right">
+                return `<a data-name="${item.Name}" href="search.php?id=${encodeURIComponent(item.Id)}" class="joblens-item p-4 hover:bg-slate-50 border-b border-slate-100 last:border-none cursor-pointer flex items-center justify-between transition-colors group">
+                    <div class="flex flex-col min-w-40 shrink-[10] gap-1">
+                        <span class="font-bold text-slate-700 group-hover:text-cyan-800">${item.Name}</span>
+                        ${item.Nickname ? `<span class="text-xs text-slate-400">${item.Nickname}</span>` : ''}
+                    </div>
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="category-container flex items-left gap-3 text-right flex-initial overflow-hidden">
                             ${categoryHtml}
-                            <span class="font-mono font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded text-sm">${item.Code}</span>
                         </div>
-                    </div>`;
+                        <span class="text-xs text-slate-400 flex-none" hidden></span>
+                        <span class="font-mono font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded text-sm">${item.Code}</span>
+                    </div>
+                </a>`
             }).join('');
+
             suggestionBox.classList.remove('hidden');
+
+            const boxes = suggestionBox.children;
+
+            for (const box of boxes) {
+                const container = box.querySelector('.category-container');
+                const remainingLabel = container.nextElementSibling;
+                let remaining = 0;
+
+                while (container.scrollWidth > container.clientWidth && container.childElementCount > 1) {
+                    container.lastElementChild.remove();
+                    remaining++;
+
+                    remainingLabel.textContent = `...以及其他${remaining}個產業`;
+                    remainingLabel.hidden = false;
+                }
+
+                box.addEventListener('click', (e) => {
+                    searchInput.value = box.dataset.name;
+                    suggestionBox.hidden = true;
+                });
+            }
         });
 
         // NEW: Listen for 'Enter' key presses inside the search input field
         searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                executeRedirect();
+            if (currentResults.length == 1 && e.key === 'Enter') {
+                searchButton.click();
             }
         });
 
         // Event Delegation pattern avoids needing global function names on window object
-        suggestionBox.addEventListener('click', (e) => {
-            const row = e.target.closest('.joblens-item');
-            if (row) {
-                const id = row.getAttribute('data-id');
-                const name = row.getAttribute('data-name');
-                const code = row.getAttribute('data-code');
-                searchInput.value = `${code} ${name}`;
-                suggestionBox.classList.add('hidden');
-                window.location.href = `search.php?id=${encodeURIComponent(id)}`;
-            }
-        });
-
-        searchButton.addEventListener('click', () => {
-            executeRedirect();
-        });
 
         document.addEventListener('click', (e) => {
             if (!searchInput.contains(e.target) && !suggestionBox.contains(e.target)) {
