@@ -131,7 +131,7 @@ function searchNews(PDO $pdo, string $raw, int $limit = 10, bool $use_ngram = tr
 // 2. Validate ID and Redirect if missing
 $companyId = isset($_GET['id']) ? trim($_GET['id']) : '';
 if (empty($companyId)) {
-    header("Location: not-found.html");
+    header("Location: index.php");
     exit;
 }
 
@@ -155,7 +155,7 @@ $stmt->execute([$companyId, $companyId]);
 $company = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$company) {
-    header("Location: not-found.html");
+    header("Location: index.php");
     exit;
 }
 
@@ -371,6 +371,10 @@ foreach ($wordcloudData as $row) {
           opacity: 0;
           transition: all 0.4s ease;
         }
+
+        .group:has(.peer:hover) .news-thumbnail {
+          transform: scale(1.05);
+        }
     </style>
 </head>
 <body class="text-slate-800 relative">
@@ -490,13 +494,16 @@ foreach ($wordcloudData as $row) {
             
             <?php if (isset($company['OneHundredAndFour'])): ?>
             <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                    <h4 class="font-bold text-slate-700">最新職缺摘要</h4>
+                <div class="px-6 py-4 flex justify-between items-center">
+                    <h4 class="text-lg font-bold flex items-center gap-2 text-slate-700">
+                        <img src="assets/working-woman.svg" class="w-6 h-6 object-contain">
+                        最新職缺摘要
+                    </h4>
                     <span class="text-xs text-slate-400" id="job-count-label"></span>
                 </div>
                 <?php if (!empty($jobsList)): ?>
                 <div id="job-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4"></div>
-                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
+                <div class="px-6 py-4 flex justify-between items-center">
                     <button onclick="changePage(-1)" id="prev-btn" class="text-sm font-bold text-slate-500 hover:text-cyan-700 disabled:opacity-30 disabled:hover:text-slate-500 transition flex items-center gap-1">
                         <i class="fa-solid fa-chevron-left"></i> 上一頁
                     </button>
@@ -993,16 +1000,16 @@ foreach ($wordcloudData as $row) {
                 <?php if ($news): ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <?php foreach($news as $n): ?>
-                    <div class="flex gap-4 group cursor-pointer border-b border-slate-100 pb-4 last:border-b-0 hover:bg-slate-50 p-3 rounded-xl transition-all duration-300">
-                        <div class="w-20 h-20 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center text-slate-300 shadow-sm">
+                    <div class="flex gap-4 group border-b border-slate-100 pb-4 last:border-b-0 p-3 rounded-xl transition-all duration-300">
+                        <a href="<?= htmlspecialchars($n["Url"]) ?>" target="_blank" class="w-20 h-20 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center text-slate-300 shadow-sm">
                             <?php if (isset($n["ThumbnailUrl"]) && $n["ThumbnailUrl"] !== ''): ?>
-                            <img src="<?= htmlspecialchars($n["ThumbnailUrl"]) ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            <img src="<?= htmlspecialchars($n["ThumbnailUrl"]) ?>" class="news-thumbnail w-full h-full object-cover hover:scale-105 transition-transform duration-300">
                             <?php else: ?>
                             <span class="fa-solid fa-image text-xl"></span>
                             <?php endif ?>
-                        </div>
+                        </a>
                         <div class="flex flex-col justify-between flex-1">
-                            <a class="text-sm font-bold text-slate-800 group-hover:text-cyan-700 transition-colors line-clamp-2 leading-snug" href="<?= htmlspecialchars($n["Url"]) ?>" target="_blank">
+                            <a class="peer text-sm font-bold text-slate-800 hover:text-cyan-700 transition-colors line-clamp-2 leading-snug" href="<?= htmlspecialchars($n["Url"]) ?>" target="_blank">
                                 <?= htmlspecialchars($n["Title"]) ?>
                             </a>
                             <p class="text-[10px] text-slate-400 mt-2"><?= formatDate($n["PublishedTime"]) ?>
@@ -1080,8 +1087,8 @@ foreach ($wordcloudData as $row) {
 
                     // 建立小刻度點
                     const dot = document.createElement('div');
-                    // 加上 pointer-events-auto 突破父層限制，加 z-30 確保在上層，並放大範圍為 w-2.5 h-2.5
-                    dot.className = "absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-slate-300 rounded-full cursor-pointer hover:bg-cyan-500 transition-all pointer-events-auto z-30 hover:scale-150 shadow-sm";
+                    // 加上 pointer-events-auto 突破父層限制，加 z-10 確保在上層，並放大範圍為 w-2.5 h-2.5
+                    dot.className = "absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-slate-300 rounded-full cursor-pointer hover:bg-cyan-500 transition-all pointer-events-auto z-10 hover:scale-150 shadow-sm";
                     dot.style.top = percent + '%';
                     dot.onclick = () => scrollToSection(el);
                     dotsContainer.appendChild(dot);
@@ -1472,6 +1479,7 @@ foreach ($wordcloudData as $row) {
             ]
             const labels = ['直接排放', '能源間接排放', '其他間接排放']
             if (canvasGHG) {
+                const formatter = new Intl.NumberFormat();
                 new Chart(canvasGHG.getContext('2d'), {
                     type: 'bar',
                     data: {
@@ -1495,7 +1503,7 @@ foreach ($wordcloudData as $row) {
                                             return '未揭露'
                                         }
 
-                                        return context.raw
+                                        return `${formatter.format(context.raw)} 公噸 CO₂e`
                                     }
                                 }
                             }

@@ -12,7 +12,7 @@ function nav($id = null)
                 <?php if ($id !== null): ?>
                 <a href="../search.php?id=<?= $id ?>" class="hover:text-cyan-600 transition">企業資訊</a>
                 <?php endif; ?>
-                <a href="../about.html" class="border border-cyan-600 text-cyan-700 px-5 py-2 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition-all">
+                <a href="../about.html" class="border border-cyan-600 text-cyan-700 px-5 py-2 rounded-full font-bold hover:bg-cyan-600 hover:text-white transition-all">
                     關於我們
                 </a>
             </div>
