@@ -627,7 +627,7 @@ foreach ($wordcloudData as $row) {
             <div class="bg-white border border-slate-100 rounded-xl shadow-lg p-6 relative overflow-hidden">
                 <p class="text-xs text-slate-400 mb-4 text-right">單位：萬元 / 年</p>
                 <div class="w-full h-[450px]">
-                    <canvas id="salary-rank-chart" style="display: block; box-sizing: border-box; height: 450px; width: 941.6px;" width="1177" height="562"></canvas>
+                    <canvas id="salary-rank-chart"></canvas>
                 </div>
             </div>
             <?php else: ?>
@@ -799,7 +799,7 @@ foreach ($wordcloudData as $row) {
                         <?php if (isset($company['Scope1EmissionTonCO2e']) || isset($company['Scope2EmissionTonCO2e']) || isset($company['Scope3EmissionTonCO2e'])): ?>
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             <div class="lg:col-span-2 h-[280px]">
-                                <canvas id="ghgChart" style="display: block; box-sizing: border-box; height: 280px; width: 606.4px;" width="758" height="350"></canvas>
+                                <canvas id="ghgChart"></canvas>
                             </div>
                             <div class="space-y-3">
                                 <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
@@ -938,7 +938,7 @@ foreach ($wordcloudData as $row) {
                     </div>
                     <!-- Right side: Word Cloud -->
                     <div class="w-full lg:w-1/2 h-[380px] bg-slate-50 rounded-2xl border border-slate-200 shadow-inner flex items-center justify-center relative p-6">
-                        <canvas id="word-cloud-canvas" class="w-full h-full"></canvas>
+                        <canvas id="word-cloud-canvas"></canvas>
                     </div>
                 </div>
                 <!-- Bottom Row: Selected Comment details panel -->
@@ -1330,6 +1330,10 @@ foreach ($wordcloudData as $row) {
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
                     plugins: {
                         legend: { position: 'top', labels: { font: { weight: 'bold' } } },
                         tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + c.raw.toLocaleString() + ' 萬'; } } }
@@ -1346,7 +1350,11 @@ foreach ($wordcloudData as $row) {
                                 }
                             }
                         },
-                        x: { grid: { display: false } }
+                        x: {
+                            grid: {
+                                color: '#f1f5f9'
+                            },
+                        }
                     }
                 }
             });
@@ -1479,7 +1487,6 @@ foreach ($wordcloudData as $row) {
             ]
             const labels = ['直接排放', '能源間接排放', '其他間接排放']
             if (canvasGHG) {
-                const formatter = new Intl.NumberFormat();
                 new Chart(canvasGHG.getContext('2d'), {
                     type: 'bar',
                     data: {
@@ -1503,7 +1510,7 @@ foreach ($wordcloudData as $row) {
                                             return '未揭露'
                                         }
 
-                                        return `${formatter.format(context.raw)} 公噸 CO₂e`
+                                        return `${context.raw.toLocaleString()} 公噸 CO₂e`
                                     }
                                 }
                             }
@@ -1578,8 +1585,6 @@ foreach ($wordcloudData as $row) {
             const verticalPadding = parseFloat(parentStyle.paddingTop) + parseFloat(parentStyle.paddingBottom);
             const cloudWidth = Math.max(1, Math.floor(parent.clientWidth - horizontalPadding));
             const cloudHeight = Math.max(1, Math.floor(parent.clientHeight - verticalPadding));
-            canvas.style.width = `${cloudWidth}px`;
-            canvas.style.height = `${cloudHeight}px`;
             canvas.width = cloudWidth;
             canvas.height = cloudHeight;
             
