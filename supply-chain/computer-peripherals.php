@@ -2,7 +2,7 @@
 require "util.php";
 
 $id = $_GET["id"] ?? null;
-$category = "電腦周邊";
+$category = "電腦週邊";
 ?>
 <!DOCTYPE html>
 <html lang="zh-TW" class="scroll-smooth">
