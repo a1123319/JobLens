@@ -239,7 +239,7 @@ try {
         const filterCategoryInput = document.getElementById("filter-category");
 
         function updateButtonGroups(text, changeIfNoneFound) {
-            text = text?.trim();
+            text = text?.trim().toUpperCase();
             let filteredSupplyChains = supplyChains;
 
             if (text) {
