@@ -65,14 +65,14 @@ function formatDate(string $date) {
 }
 
 function formatNumber(int $num) {
-    $fmt = NumberFormatter::create(Locale::getDefault(), NumberFormatter::DECIMAL);
+    $fmt = NumberFormatter::create("zh_TW", NumberFormatter::DECIMAL);
     $fmt->setAttribute(NumberFormatter::ROUNDING_MODE, NumberFormatter::ROUND_DOWN);
 
     return $fmt->format($num);
 }
 
 function formatPercentage(float $num, int $digit) {
-    $fmt = NumberFormatter::create(Locale::getDefault(), NumberFormatter::PERCENT);
+    $fmt = NumberFormatter::create("zh_TW", NumberFormatter::PERCENT);
     $fmt->setAttribute(NumberFormatter::MIN_FRACTION_DIGITS, $digit);
     $fmt->setAttribute(NumberFormatter::MAX_FRACTION_DIGITS, $digit);
     
