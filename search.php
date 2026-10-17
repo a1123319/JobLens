@@ -68,7 +68,7 @@ function formatNumber(int $num) {
     $fmt = NumberFormatter::create(Locale::getDefault(), NumberFormatter::DECIMAL);
     $fmt->setAttribute(NumberFormatter::ROUNDING_MODE, NumberFormatter::ROUND_DOWN);
 
-    return $fmt->format($num, NumberFormatter::DECIMAL_SEPARATOR_SYMBOL);
+    return $fmt->format($num);
 }
 
 function formatPercentage(float $num, int $digit) {
