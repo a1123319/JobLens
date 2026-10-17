@@ -66,7 +66,7 @@ try {
                 icon: "assets/printed-circuit-board.png",
             },{
                 href: "supply-chain/computer-peripherals.php",
-                name: "電腦周邊",
+                name: "電腦週邊",
                 icon: "assets/pc.png",
             },{
                 href: "supply-chain/electric-vehicle.php",
