@@ -1153,32 +1153,12 @@ foreach ($wordcloudData as $row) {
         window.addEventListener('scroll', () => {
             const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
             if (maxScroll <= 0) return;
-            
+
             let percent = (window.scrollY / maxScroll) * 100;
             percent = Math.max(0, Math.min(100, percent));
-            
+ 
             document.getElementById('vertical-progress').style.height = percent + '%';
             document.getElementById('vertical-thumb').style.top = percent + '%';
-
-            // 更新文字高亮狀態
-            let currentIdx = 0;
-            sectionsList.forEach((sec, index) => {
-                const el = document.getElementById(sec);
-                if(el && window.scrollY >= el.offsetTop - 250) {
-                    currentIdx = index;
-                }
-            });
-            
-            const labels = document.querySelectorAll('.slider-text-label');
-            labels.forEach((lbl, idx) => {
-                if(idx === currentIdx) {
-                    lbl.classList.add('text-cyan-600', 'scale-110');
-                    lbl.classList.remove('text-slate-400');
-                } else {
-                    lbl.classList.remove('text-cyan-600', 'scale-110');
-                    lbl.classList.add('text-slate-400');
-                }
-            });
         });
 
         const tagDiv = document.getElementById("category-tags");
