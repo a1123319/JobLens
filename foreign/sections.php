@@ -98,7 +98,7 @@ $fHolding = ($foreignLatestSalary['Scope'] ?? null) === '控股總部';
         <section id="section-rank" class="scroll-mt-24 relative">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                 <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 前 10 名薪資排名<?php if (!empty($foreignRank)) { echo "【外國企業・{$fSrc['name']}】"; } ?>
+                    <span class="bg-cyan-600 w-1.5 h-6 rounded-full"></span> 前 10 名薪資排名<?php if (!empty($foreignRank)) { echo $foreignRankSector ? "【{$foreignRankSector['Category']}】" : "【外國企業・{$fSrc['name']}】"; } ?>
                 </h3>
                 <?php if (!empty($foreignRank)): ?>
                 <a href="foreign-leaderboard.php?id=<?= (int)$company['Id'] ?>" class="bg-blue-600 text-white px-5 py-1.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition shadow-sm flex items-center gap-2 group">
@@ -109,7 +109,7 @@ $fHolding = ($foreignLatestSalary['Scope'] ?? null) === '控股總部';
             <?php if (!empty($foreignRank)): ?>
             <div class="bg-white border border-slate-100 rounded-xl shadow-lg p-6 relative overflow-hidden">
                 <p class="text-xs text-slate-400 mb-4 text-right">
-                    <?= $foreignRankKey === 'MedianPay' ? '員工薪資中位數' : '員工平均薪資' ?>｜單位：<?= $fCur ?> / 年｜各公司最新一期揭露（共 <?= count($foreignRank) ?> 家）｜僅與同一資料來源的外國企業比較，不與台灣企業混排
+                    <?= $foreignRankKey === 'MedianPay' ? '員工薪資中位數' : '員工平均薪資' ?>｜單位：<?= $fCur ?> / 年｜各公司最新一期揭露（共 <?= count($foreignRank) ?> 家）｜僅與同產業、同一資料來源的外國企業比較，不與台灣企業混排
                 </p>
                 <div class="w-full h-[450px]">
                     <canvas id="foreign-salary-rank-chart"></canvas>
