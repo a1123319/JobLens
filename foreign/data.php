@@ -42,12 +42,22 @@ $foreignHeaderSource = $foreignSourceLabels[$foreignSalarySource]['name'] ?? '�
 // 有中位數就用中位數，否則用平均數。
 $foreignRank = [];
 $foreignRankKey = null;
+$foreignRankSector = null;
 if ($foreignLatestSalary) {
     $foreignRankKey = isset($foreignLatestSalary['MedianPay']) ? 'MedianPay' : 'AveragePay';
+    // 和本國公司一樣，只與同產業（Category，和完整排行榜的「同產業」一致）的公司比較；沒有分類資料時才退回整個來源。
+    $foreignRankCat = foreignQuery($pdo, "SELECT DISTINCT Category, Sector FROM companycategory WHERE CompanyId = ?", [$company['Id']])[0] ?? null;
+    $foreignRankSector = $foreignRankCat;
+    $sectorJoin = '';
+    $sectorParams = [];
+    if ($foreignRankCat) {
+        $sectorJoin = "AND c.Id IN (SELECT CompanyId FROM companycategory WHERE Category <=> ?)";
+        $sectorParams = [$foreignRankCat['Category']];
+    }
     $foreignRank = foreignQuery($pdo, "
         SELECT c.Id, c.Name, s.Year, s.Scope, s.{$foreignRankKey} AS Pay
         FROM foreignsalary s
-        JOIN company c ON c.Id = s.CompanyId
+        JOIN company c ON c.Id = s.CompanyId {$sectorJoin}
         JOIN (
             SELECT CompanyId, MAX(Year) AS Year
             FROM foreignsalary
@@ -56,7 +66,7 @@ if ($foreignLatestSalary) {
         ) latest ON latest.CompanyId = s.CompanyId AND latest.Year = s.Year
         WHERE s.Source = ?
         ORDER BY s.{$foreignRankKey} DESC
-    ", [$foreignSalarySource, $foreignSalarySource]);
+    ", array_merge($sectorParams, [$foreignSalarySource, $foreignSalarySource]));
 }
 
 // ESG：資料表建立後自動生效。
