@@ -1258,37 +1258,33 @@ foreach ($wordcloudData as $row) {
         function initSalaryTrendChart() {
             const canvas = document.getElementById('salary-trend-chart');
             if(!canvas) return;
-            
+
             <?php 
-            $years = array_map(fn($a) => $a['Year'], array_filter($salaries, fn($s) => isset($s['NonAdminstrativeAverage']) || isset($s['NonAdminstrativeAverage'])));
+            $filteredSalaries = array_filter($salaries, fn($s) =>
+                isset($s['NonAdminstrativeAverage']) ||
+                isset($s['NonAdminstrativeMedian'])
+            );
+
+            $labels = [];
+            $i_averages = [];
+            $i_medians = [];
+
+            foreach ($filteredSalaries as $s) {
+                $labels[] = $s['Year'] . '年';
+
+                $i_averages[] = isset($s['NonAdminstrativeAverage'])
+                    ? $s['NonAdminstrativeAverage'] / 10000
+                    : null;
+
+                $i_medians[] = isset($s['NonAdminstrativeMedian'])
+                    ? $s['NonAdminstrativeMedian'] / 10000
+                    : null;
+            }
             ?>
-            const labels = <?= json_encode(array_map(fn($year) => sprintf('%s年', $year), $years)); ?>;
-            const averages = <?php
-            echo json_encode(
-                array_map(function ($year) {
-                    global $salaries;
-                    foreach ($salaries as $s) {
-                        if ($s['Year'] === $year) {
-                            return $s['NonAdminstrativeAverage'] / 10000;
-                        }
-                    }
-                    return null;
-                }, $years)
-            );
-            ?>;
-            const medians = <?php
-            echo json_encode(
-                array_map(function ($year) {
-                    global $salaries;
-                    foreach ($salaries as $s) {
-                        if ($s['Year'] === $year) {
-                            return $s['NonAdminstrativeMedian'] / 10000;
-                        }
-                    }
-                    return null;
-                }, $years)
-            );
-            ?>;
+
+            const labels = <?= json_encode($labels, JSON_UNESCAPED_UNICODE) ?>;
+            const averages = <?= json_encode($i_averages) ?>;
+            const medians = <?= json_encode($i_medians) ?>;
             new Chart(canvas.getContext('2d'), {
                 type: 'line',
                 data: {
