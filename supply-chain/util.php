@@ -8,7 +8,7 @@ function nav($id = null)
                 <img src="../assets/magnifying-glass.png" alt="Logo" class="w-8 h-8 object-contain">
                 <span class="text-xl font-bold tracking-wider">JobLens</span>
             </a>
-            <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+            <div class="flex items-center gap-6 text-sm font-medium">
                 <?php if ($id !== null): ?>
                 <a href="../search.php?id=<?= $id ?>" class="hover:text-cyan-600 transition">企業資訊</a>
                 <?php endif; ?>
