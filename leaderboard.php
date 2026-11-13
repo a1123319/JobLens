@@ -34,18 +34,17 @@ try {
         SELECT 
             c.Id,
             c.Name,
-            MAX(s.Average) Average,
-            MAX(s.NonAdminstrativeAverage) NonAdminstrativeAverage,
-            MAX(s.NonAdminstrativeMedian) NonAdminstrativeMedian,
+            s.Average,
+            s.NonAdminstrativeAverage,
+            s.NonAdminstrativeMedian,
             cc.Category,
             cc.Sector
         FROM company c
         INNER JOIN salary s ON c.Id = s.CompanyId
         INNER JOIN companycategory cc ON c.Id = cc.CompanyId
         WHERE s.Year = (SELECT MAX(Year) FROM salary)
-        GROUP BY c.Id, cc.Category, cc.Sector
-    ";
-    
+        GROUP BY c.Id, cc.Category, cc.Sector";
+
     $stmt = $pdo->query($query);
     $rawData = $stmt->fetchAll();
 } catch (PDOException $e) {
@@ -188,15 +187,15 @@ $jsonData = json_encode($rawData, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
             const metricKey = document.getElementById('filter-metric').value;
             const scope = document.getElementById('filter-scope').value;
             const order = document.getElementById('filter-order').value;
-            
+
             const activeProfile = matchingCompanyProfiles[selectedProfileIndex] || matchingCompanyProfiles[0];
             let tempGrid = [...rawData];
-            
+
             if (activeProfile) {
                 if (scope === 'category') {
                     tempGrid = rawData.filter(item => item['Category'] === activeProfile['Category']);
                 } else if (scope === 'sector') {
-                    tempGrid = rawData.filter(item => item['Sector'] === activeProfile['Sector']);
+                    tempGrid = rawData.filter(item => item['Category'] === activeProfile['Category'] && item['Sector'] === activeProfile['Sector']);
                 }
             }
 
@@ -204,7 +203,7 @@ $jsonData = json_encode($rawData, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
             tempGrid = tempGrid.filter(item => {
                 const duplicate = seen.has(item.Id);
                 seen.add(item.Id);
-                return !duplicate;
+                return !duplicate && item[metricKey];
             });
 
             tempGrid.sort((a, b) => order === 'desc' ? b[metricKey] - a[metricKey] : a[metricKey] - b[metricKey]);
