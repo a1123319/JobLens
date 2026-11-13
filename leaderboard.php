@@ -42,8 +42,7 @@ try {
         FROM company c
         INNER JOIN salary s ON c.Id = s.CompanyId
         INNER JOIN companycategory cc ON c.Id = cc.CompanyId
-        WHERE s.Year = (SELECT MAX(Year) FROM salary)
-        GROUP BY c.Id, cc.Category, cc.Sector";
+        WHERE s.Year = (SELECT MAX(Year) FROM salary)";
 
     $stmt = $pdo->query($query);
     $rawData = $stmt->fetchAll();
