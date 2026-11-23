@@ -83,98 +83,62 @@ $companyData = safeGetCompanies($category);
                     <p class="text-sm text-slate-500 mt-1">涵蓋文化印刷、環保潔能、電子服務、特殊照明、農業科技及綜合性領域，點擊各板塊查看對應企業與職缺情報。</p>
                 </div>
 
-                <!-- 6大子產業平行卡片網格（統一翡翠綠色系） -->
+                <!-- 6大子產業直接按鈕網格（無副標題） -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative mb-12">
                     
                     <!-- 1. 文化印刷業 -->
-                    <div class="bg-slate-100/80 p-6 rounded-2xl border border-slate-200 flex flex-col">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold shadow-sm">1</div>
-                            <h4 class="text-lg font-bold text-slate-700">文化印刷業</h4>
+                    <button type="button" onclick="showCompanyList('文化印刷業', 'emerald')"
+                        class="bg-slate-50/80 hover:bg-emerald-50/60 border border-slate-200 hover:border-emerald-400 rounded-2xl p-6 transition-all duration-200 flex items-center gap-4 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5">
+                        <div class="w-11 h-11 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-print"></i>
                         </div>
-                        <button type="button" onclick="showCompanyList('文化印刷業', 'emerald')"
-                            class="bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 transition-all duration-200 flex items-center gap-3 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5 flex-1">
-                            <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
-                                <i class="fa-solid fa-print"></i>
-                            </div>
-                            <span class="font-bold text-slate-700 text-sm">文化出版與商業印刷</span>
-                        </button>
-                    </div>
+                        <span class="font-bold text-slate-700 text-base">文化印刷業</span>
+                    </button>
 
                     <!-- 2. 環保潔能服務產業 -->
-                    <div class="bg-slate-100/80 p-6 rounded-2xl border border-slate-200 flex flex-col">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold shadow-sm">2</div>
-                            <h4 class="text-lg font-bold text-slate-700">環保潔能服務產業</h4>
+                    <button type="button" onclick="showCompanyList('環保潔能服務產業', 'emerald')"
+                        class="bg-slate-50/80 hover:bg-emerald-50/60 border border-slate-200 hover:border-emerald-400 rounded-2xl p-6 transition-all duration-200 flex items-center gap-4 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5">
+                        <div class="w-11 h-11 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-leaf"></i>
                         </div>
-                        <button type="button" onclick="showCompanyList('環保潔能服務產業', 'emerald')"
-                            class="bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 transition-all duration-200 flex items-center gap-3 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5 flex-1">
-                            <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
-                                <i class="fa-solid fa-leaf"></i>
-                            </div>
-                            <span class="font-bold text-slate-700 text-sm">廢棄物處理與綠能環保</span>
-                        </button>
-                    </div>
+                        <span class="font-bold text-slate-700 text-base">環保潔能服務產業</span>
+                    </button>
 
                     <!-- 3. 其他電子產品及電子服務產業 -->
-                    <div class="bg-slate-100/80 p-6 rounded-2xl border border-slate-200 flex flex-col">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold shadow-sm">3</div>
-                            <h4 class="text-lg font-bold text-slate-700">其他電子產品及服務</h4>
+                    <button type="button" onclick="showCompanyList('其他電子產品及電子服務產業', 'emerald')"
+                        class="bg-slate-50/80 hover:bg-emerald-50/60 border border-slate-200 hover:border-emerald-400 rounded-2xl p-6 transition-all duration-200 flex items-center gap-4 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5">
+                        <div class="w-11 h-11 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-microchip"></i>
                         </div>
-                        <button type="button" onclick="showCompanyList('其他電子產品及電子服務產業', 'emerald')"
-                            class="bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 transition-all duration-200 flex items-center gap-3 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5 flex-1">
-                            <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
-                                <i class="fa-solid fa-microchip"></i>
-                            </div>
-                            <span class="font-bold text-slate-700 text-sm">其他電子產品及電子服務產業</span>
-                        </button>
-                    </div>
+                        <span class="font-bold text-slate-700 text-base">其他電子產品及電子服務產業</span>
+                    </button>
 
                     <!-- 4. 特殊照明業 -->
-                    <div class="bg-slate-100/80 p-6 rounded-2xl border border-slate-200 flex flex-col">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold shadow-sm">4</div>
-                            <h4 class="text-lg font-bold text-slate-700">特殊照明業</h4>
+                    <button type="button" onclick="showCompanyList('特殊照明業', 'emerald')"
+                        class="bg-slate-50/80 hover:bg-emerald-50/60 border border-slate-200 hover:border-emerald-400 rounded-2xl p-6 transition-all duration-200 flex items-center gap-4 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5">
+                        <div class="w-11 h-11 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-lightbulb"></i>
                         </div>
-                        <button type="button" onclick="showCompanyList('特殊照明業', 'emerald')"
-                            class="bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 transition-all duration-200 flex items-center gap-3 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5 flex-1">
-                            <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
-                                <i class="fa-solid fa-lightbulb"></i>
-                            </div>
-                            <span class="font-bold text-slate-700 text-sm">光電與特殊照明設備</span>
-                        </button>
-                    </div>
+                        <span class="font-bold text-slate-700 text-base">特殊照明業</span>
+                    </button>
 
                     <!-- 5. 農業科技業 -->
-                    <div class="bg-slate-100/80 p-6 rounded-2xl border border-slate-200 flex flex-col">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold shadow-sm">5</div>
-                            <h4 class="text-lg font-bold text-slate-700">農業科技業</h4>
+                    <button type="button" onclick="showCompanyList('農業科技業', 'emerald')"
+                        class="bg-slate-50/80 hover:bg-emerald-50/60 border border-slate-200 hover:border-emerald-400 rounded-2xl p-6 transition-all duration-200 flex items-center gap-4 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5">
+                        <div class="w-11 h-11 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-seedling"></i>
                         </div>
-                        <button type="button" onclick="showCompanyList('農業科技業', 'emerald')"
-                            class="bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 transition-all duration-200 flex items-center gap-3 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5 flex-1">
-                            <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
-                                <i class="fa-solid fa-seedling"></i>
-                            </div>
-                            <span class="font-bold text-slate-700 text-sm">智慧農業與生技應用</span>
-                        </button>
-                    </div>
+                        <span class="font-bold text-slate-700 text-base">農業科技業</span>
+                    </button>
 
                     <!-- 6. 其他 -->
-                    <div class="bg-slate-100/80 p-6 rounded-2xl border border-slate-200 flex flex-col">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold shadow-sm">6</div>
-                            <h4 class="text-lg font-bold text-slate-700">其他綜合類</h4>
+                    <button type="button" onclick="showCompanyList('其他', 'emerald')"
+                        class="bg-slate-50/80 hover:bg-emerald-50/60 border border-slate-200 hover:border-emerald-400 rounded-2xl p-6 transition-all duration-200 flex items-center gap-4 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5">
+                        <div class="w-11 h-11 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-globe"></i>
                         </div>
-                        <button type="button" onclick="showCompanyList('其他', 'emerald')"
-                            class="bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 transition-all duration-200 flex items-center gap-3 shadow-sm hover:shadow-md text-left group hover:-translate-y-0.5 flex-1">
-                            <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
-                                <i class="fa-solid fa-globe"></i>
-                            </div>
-                            <span class="font-bold text-slate-700 text-sm">其他綜合型企業</span>
-                        </button>
-                    </div>
+                        <span class="font-bold text-slate-700 text-base">其他</span>
+                    </button>
 
                 </div>
                 
@@ -190,7 +154,7 @@ $companyData = safeGetCompanies($category);
 
     <footer id="footer"></footer>
     <script>
-        banner("其他產業鏈分析", "整合文化印刷、環保潔能、電子服務、特殊照明與農業科技，探索多元產業職缺與薪資情報");
+        banner("其他產業供應鏈", "整合文化印刷、環保潔能、電子服務、特殊照明與農業科技，探索多元產業職缺與薪資情報");
     </script>
 </body>
 </html>
