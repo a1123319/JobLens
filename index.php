@@ -232,6 +232,10 @@ try {
                 href: "supply-chain/textile.php",
                 name: "紡織",
                 icon: "assets/textile.svg",
+            },{
+                href: "supply-chain/other.php",
+                name: "其他",
+                icon: "assets/other.png",
             }
         ]
 
